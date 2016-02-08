@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	
+	</head>
+	<body>
+		<script src="/client/js/fractal.js"></script>
+		<script>
+			var Fractal = new FractalHelper();
+
+			Fractal.request(
+				{
+					request: "registerUrl",
+					url: "/wallet/",
+					page: "wallet/index.html",
+					title: "Wallet",
+					menus: {}
+				},
+				function(response){
+					if(response.success){
+						Fractal.request({
+							
+						}, function(){
+							request: "addMenuItem"
+						});
+					}
+					console.log(response);
+				}
+			);
+		</script>
+	</body>
+</html>
