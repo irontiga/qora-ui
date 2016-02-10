@@ -17,14 +17,8 @@
 					menus: {}
 				},
 				function(response){
-					if(response.success){
-						Fractal.request({
-							
-						}, function(){
-							request: "addMenuItem"
-						});
-					}
 					console.log(response);
+					document.write("<h1>Chicket</h1>");
 				}
 			);
 		</script>

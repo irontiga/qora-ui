@@ -11,19 +11,30 @@ function FractalHelper(){
 		
 		var id = data.requestID;
 		
-		pendingRequests[id](data);
+		console.log(data)
 		
-		console.log(pendingRequests[id](data););
-		
-		delete pendingRequests[id];
+		if(pendingRequests[id]){
+
+			pendingRequests[id](data);
+
+			console.log(pendingRequests);
+
+			delete pendingRequests[id];	
+		}
 		
 	});
 	
 	this.request = function(data, callback){
+		
 		data.requestID = Math.random().toString(36).substr(2, 8);
+		
 		window.parent.postMessage(data, '*');
+		
+		
 		pendingRequests[data.requestID] = callback;
-	}
+		
+		//console.log(pendingRequests);
+	};
 	
 	this.changeUrl = function(url){
 		// Update the url, and therefor the active plugin
