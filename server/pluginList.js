@@ -6,15 +6,34 @@ var getPlugins = function(){
 	
 	this.readPluginDir = function(){
 		try{
-			this.dir = fs.readdirSync(pluginPath);
+			return fs.readdirSync(pluginPath);
 		}
 		catch(e){
 			throw(e);
 		}
-	}
-}
+	};
+	this.getPlugins = function(){
+		this.dir = this.readPluginDir();
+		this.plugins = [];
+		
+		for(var i=0; i < this.dir.length; i++){
+			try{
+				var thisDir = fs.readFileSync(pluginPath + this.dir[i] + "/main.js");
+				if(thisDir){
+					this.plugins.push(this.dir[i]);
+				}
+			}
+			catch(e){
+				throw(e);
+			}
+		}
+	};
+	
+};
 
 var plugins = new getPlugins();
-plugins.readPluginDir();
+plugins.getPlugins();
 
-console.log(plugins.dir);
+console.log(plugins);
+
+module.exports = plugins;

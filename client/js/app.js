@@ -1,10 +1,10 @@
 Polymer({
 	is: 'fractal-app',
 	properties: {
-		activePlugin: {
+		activeUrl: {
 			type: Object,
 			value: {
-				url: "/plugins/wallet/index.html"
+				page: "/plugins/wallet/index.html"
 			},
 			notify: true
 		},
@@ -12,14 +12,50 @@ Polymer({
 			type: Array,
 			value: [],
 			notify: true
+		},
+		urls : {
+			type: Array,
+			value: [],
+			notify: true
+		},
+		launchUrl : {
+			type: String,
+			value : window.location.pathname.replace("/fractal",""),
+			notify:true
 		}
 	},
 	
 	messageHandler : pluginMessageHandler,
 	
-	activateUrl : function(){
-		
+	activateUrl : function(event){
+		var href = event.model.item.url;
+		history.pushState({}, '', "/fractal" + href);
+		window.dispatchEvent(new Event('popstate'));
 	},
+	
+	getUrl : function(){
+		var href =  window.location.pathname.replace("/fractal","");
+		console.log(href);
+		return href;
+	},
+	
+	popstateHanlder : function(event){
+		var href = this.getUrl();
+		console.log(href);
+		var urls = this.urls;
+		if(href=="/"){
+			//this.activateUrl(urls[0].url);
+		}
+		else{
+			for(var i=0;i < urls.length;i++){
+				if(urls[i].url == href){
+				   this.activeUrl = urls[i];
+				}
+			}
+		}
+		//this.activateUrl(urls[0].url);
+	},
+	
 	
 	ready: function(){
 		
@@ -29,13 +65,14 @@ Polymer({
 		
 		console.log(path);
 		
-		this.hello = "World";
+		window.addEventListener("message", this.messageHandler.bind(this), false);
 		
-		var that = this;
-		window.addEventListener("message", that.messageHandler, false);
+		window.addEventListener('popstate', this.popstateHanlder.bind(this));
 	}
 });
 
+
+/*
 var menuOptions = [
 	{
 		toggle: {
@@ -77,4 +114,4 @@ var menuOptions = [
 			]
 		}
 	}
-];
+];*/

@@ -33,8 +33,9 @@
 				</paper-toolbar>
 
 				<paper-menu>
-					<paper-item>Item 1</paper-item>
-					<paper-item>Item 2</paper-item>
+					<template is="dom-repeat" items="{{urls}}">
+						<paper-item on-click="activateUrl">{{item.title}}</paper-item>
+					</template>
 				</paper-menu>
 
 			</paper-header-panel>
@@ -54,7 +55,7 @@
 						</paper-menu>
 					</paper-menu-button>
 				</paper-toolbar>
-				<iframe src="{{activePlugin.url}}"></iframe>
+				<iframe src="{{activeUrl.page}}"></iframe>
 			</paper-header-panel>
 
 		</paper-drawer-panel>

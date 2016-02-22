@@ -36,6 +36,14 @@ var routes = [
 				index: true
 			}
 		}
+	},
+	{
+		method: 'GET',
+		path: '/getPlugins',
+		handler: function(request, reply){
+			var pluginList = require("./pluginList.js");
+			return reply(pluginList.plugins);
+		}
 	}
 ];
 

@@ -4,8 +4,21 @@ function pluginMessageHandler(event){
 	
 	var response = {};
 	
+	console.log(this.urls);
+	
 	switch(data.request){
 		case "registerUrl":
+			var parent = false;
+			if(data.parent){
+				parent = true;
+			}
+			this.push("urls",{
+				url :  data.url,
+				title : data.title,
+				menus : data.menus,
+				page : data.page,
+				parent: parent
+			});
 			response = {
 				success : true
 			}

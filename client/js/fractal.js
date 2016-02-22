@@ -3,21 +3,22 @@
 // License: GPL-V3.0
 
 function FractalHelper(){
-	var pendingRequests = {};
 	
+	// Handler for responses
+	var pendingRequests = {};
 	window.addEventListener("message", function(event){
 		
 		var data = event.data;
 		
 		var id = data.requestID;
 		
-		console.log(data)
+		//console.log(data)
 		
 		if(pendingRequests[id]){
 
 			pendingRequests[id](data);
 
-			console.log(pendingRequests);
+			//console.log(pendingRequests);
 
 			delete pendingRequests[id];	
 		}
@@ -56,7 +57,7 @@ registerUrl
 
 returns
 	success/error
-	urlID // required to change/remove a url, it's menu items, and it's page 
+	urlID // required to change/remove a url and/or it's page 
 
 */
 
@@ -87,3 +88,27 @@ returns
 		}
 	};
 	*/
+
+
+// // // // // // //
+// PLUGIN  LOADER //
+// // // // // // //
+
+function pluginLoader(plugins){
+	for(var i=0; i<plugins.length;i++){
+		var script = document.createElement("script");
+		script.setAttribute('type', 'text/javascript');
+		script.setAttribute("src", "/plugins/" + plugins[i] + "/main.js");
+		document.body.appendChild(script);
+	}
+}
+
+var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+	if (xhttp.readyState == 4 && xhttp.status == 200) {
+		var response = JSON.parse(xhttp.responseText);
+		pluginLoader(response);
+	}
+};
+xhttp.open("GET", "/getPlugins", true);
+xhttp.send();
