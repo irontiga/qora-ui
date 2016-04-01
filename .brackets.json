@@ -1,0 +1,6 @@
+{
+    "jscodehints.detectedExclusions": [
+        "C:/Users/HP/Documents/GitHub/Fractal-UI/client/bower_components/prism/components/prism-csharp.min.js",
+        "C:/Users/HP/Documents/GitHub/Fractal-UI/client/bower_components/prism/components/prism-css.min.js"
+    ]
+}

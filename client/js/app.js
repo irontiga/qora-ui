@@ -1,13 +1,6 @@
 Polymer({
 	is: 'fractal-app',
 	properties: {
-		activeUrl: {
-			type: Object,
-			value: {
-				page: "/plugins/wallet/index.html"
-			},
-			notify: true
-		},
 		plugins: {
 			type: Array,
 			value: [],
@@ -18,56 +11,46 @@ Polymer({
 			value: [],
 			notify: true
 		},
-		launchUrl : {
-			type: String,
-			value : window.location.pathname.replace("/fractal",""),
-			notify:true
+		route: {
+			type: Object
+		},
+		data: {
+			type: Object
 		}
 	},
 	
-	messageHandler : pluginMessageHandler,
+	_messageHandler : pluginMessageHandler,
 	
-	activateUrl : function(event){
-		var href = event.model.item.url;
-		history.pushState({}, '', "/fractal" + href);
-		window.dispatchEvent(new Event('popstate'));
-	},
-	
-	getUrl : function(){
-		var href =  window.location.pathname.replace("/fractal","");
-		console.log(href);
-		return href;
-	},
-	
-	popstateHanlder : function(event){
-		var href = this.getUrl();
-		console.log(href);
-		var urls = this.urls;
-		if(href=="/"){
-			//this.activateUrl(urls[0].url);
+	_checkActiveRoute : function(item, route){
+		if(route.path == "/fractal" + item.url){
+			return false;
 		}
 		else{
-			for(var i=0;i < urls.length;i++){
-				if(urls[i].url == href){
-				   this.activeUrl = urls[i];
-				}
-			}
+			return true;
 		}
-		//this.activateUrl(urls[0].url);
 	},
 	
+	_checkPageNotFound : function(urls, route){
+		var noPage = false;
+		for(var i=0; i < urls.length; i++){
+			if("/fractal" + urls[i].url == route.path){
+				noPage=true;
+			}
+		}
+		return noPage;
+	},
+	
+	_joinPluginUrl : function(url, hash){
+		return "/plugins/" + url + "#" + hash;
+	},
+	
+	_genIframeUrl : function(url){
+		return "/fractal" + url;
+	},
 	
 	ready: function(){
-		
-		var location = window.location;
-		
-		var path = location.pathname.replace('/fractal','');
-		
-		console.log(path);
-		
-		window.addEventListener("message", this.messageHandler.bind(this), false);
-		
-		window.addEventListener('popstate', this.popstateHanlder.bind(this));
+		console.log(this);
+		window.addEventListener("message", this._messageHandler.bind(this), false);
 	}
 });
 

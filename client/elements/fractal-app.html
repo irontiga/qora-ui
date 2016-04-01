@@ -2,7 +2,7 @@
 
 <script src="/client/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
 
-<!-- ELEMENTS -->
+<!-- POLYMER ELEMENTS -->
 <link rel="import" href="/client/bower_components/paper-material/paper-material.html">
 <link rel="import" href="/client/bower_components/paper-drawer-panel/paper-drawer-panel.html">
 <link rel="import" href="/client/bower_components/paper-header-panel/paper-header-panel.html">
@@ -17,6 +17,11 @@
 <link rel="import" href="/client/bower_components/paper-item/paper-item.html">
 <link rel="import" href="/client/bower_components/iron-icons/iron-icons.html">
 
+<!-- Router -->
+<link rel="import" href="/client/bower_components/carbon-route/carbon-location.html">
+<link rel="import" href="/client/bower_components/carbon-route/carbon-route-converter.html">
+<link rel="import" href="/client/bower_components/carbon-route/carbon-route.html">
+
 <!-- Fractal styles -->
 <link rel="stylesheet" href="/client/fonts/roboto.css">
 <link rel="stylesheet" href="/client/css/main.css">
@@ -24,6 +29,13 @@
 
 <dom-module id="fractal-app">
 	<template>
+		<carbon-location route="{{route}}"></carbon-location>
+		<carbon-route route="{{route}}" pattern="/fractal/:activePlugin" data="{{data}}" tail="{{tail}}"></carbon-route>
+		
+		<!--<div id="login-screen">
+		
+		</div>-->
+		
 		<paper-drawer-panel>
 
 			<paper-header-panel fixed drawer>
@@ -34,7 +46,9 @@
 
 				<paper-menu>
 					<template is="dom-repeat" items="{{urls}}">
-						<paper-item on-click="activateUrl">{{item.title}}</paper-item>
+						<paper-item>
+							<a is="pushstate-anchor" href="{{_genIframeUrl(item.url)}}">{{item.title}}</a>
+						</paper-item>
 					</template>
 				</paper-menu>
 
@@ -43,7 +57,7 @@
 			<paper-header-panel main>
 				<paper-toolbar>
 					<paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
-					<span class="title">Plugin name</span>
+					<span class="title">Name</span>
 					<paper-icon-button icon="refresh"></paper-icon-button>
 
 					<paper-menu-button horizontal-align="right">
@@ -55,7 +69,15 @@
 						</paper-menu>
 					</paper-menu-button>
 				</paper-toolbar>
-				<iframe src="{{activeUrl.page}}"></iframe>
+				
+				<template is="dom-repeat" items="{{urls}}">
+					<iframe hidden$="{{_checkActiveRoute(item, route)}}" src="{{_joinPluginUrl(item.url)}}"></iframe>
+				</template>
+				
+				<div hidden$="{{_checkPageNotFound(urls, route)}}" id="404-page">
+					<h1>404</h1>
+					<h3>Plugin not found</h3>
+				</div>
 			</paper-header-panel>
 
 		</paper-drawer-panel>

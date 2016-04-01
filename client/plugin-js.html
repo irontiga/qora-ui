@@ -7,21 +7,6 @@
 		<script src="/client/js/fractal.js"></script>
 		<script>
 			var Fractal = new FractalHelper();
-
-			Fractal.request(
-				{
-					request: "registerUrl",
-					url: "/wallet/",
-					page: "wallet/index.html",
-					title: "Wallet",
-					menus: {},
-					parent : false
-				},
-				function(response){
-					console.log(response);
-					document.write("<h1>Chicket</h1>");
-				}
-			);
 		</script>
 	</body>
 </html>

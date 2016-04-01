@@ -1,14 +1,13 @@
 Fractal.request(
 	{
 		request: "registerUrl",
-		url: "/wallet/",
+		url: "/wallet",
 		page: "/plugins/wallet/index.html",
 		title: "Wallet",
 		menus: {},
 		parent : false
 	},
 	function(response){
-		console.log(response);
-		
+		console.log(response);	
 	}
 );

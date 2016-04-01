@@ -12,6 +12,7 @@ function pluginMessageHandler(event){
 			if(data.parent){
 				parent = true;
 			}
+			
 			this.push("urls",{
 				url :  data.url,
 				title : data.title,
@@ -19,6 +20,7 @@ function pluginMessageHandler(event){
 				page : data.page,
 				parent: parent
 			});
+			
 			response = {
 				success : true
 			}

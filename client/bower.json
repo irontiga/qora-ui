@@ -10,7 +10,7 @@
     "irontiga"
   ],
   "license": "GPL",
-  "homepage": "fractal.global",
+  "homepage": "http://fractal.global",
   "ignore": [
     "**/.*",
     "node_modules",
@@ -19,8 +19,10 @@
     "tests"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#1.2.0",
-    "iron-elements": "PolymerElements/iron-elements#~1.0.8",
-    "paper-elements": "PolymerElements/paper-elements#~1.0.7"
+    "polymer": "^1.4.0",
+    "iron-elements": "PolymerElements/iron-elements#^1.0.9",
+    "paper-elements": "PolymerElements/paper-elements#^1.0.7",
+    "carbon-elements": "PolymerElements/carbon-elements#^0.1.0",
+    "pushstate-anchor": "^0.3.2"
   }
 }
