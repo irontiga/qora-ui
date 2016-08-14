@@ -19,10 +19,9 @@
     "tests"
   ],
   "dependencies": {
-    "polymer": "^1.4.0",
-    "iron-elements": "PolymerElements/iron-elements#^1.0.9",
+    "iron-elements": "PolymerElements/iron-elements#^1.0.10",
     "paper-elements": "PolymerElements/paper-elements#^1.0.7",
-    "carbon-elements": "PolymerElements/carbon-elements#^0.1.0",
-    "pushstate-anchor": "^0.3.2"
+    "polymer": "Polymer/polymer#^1.6.1",
+    "app-elements": "PolymerElements/app-elements#^0.10.0"
   }
 }

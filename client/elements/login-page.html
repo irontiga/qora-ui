@@ -1,0 +1,67 @@
+<link rel="import" href="/client/bower_components/polymer/polymer.html">
+
+<script src="/client/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+
+<link rel="import" href="/client/bower_components/paper-input/paper-input.html">
+<link rel="import" href="/client/bower_components/paper-card/paper-card.html">
+<link rel="import" href="/client/bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="/client/bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="/client/styles/app-theme.html">
+
+
+<dom-module id="login-page">
+    
+    <style is="custom-style">
+        #login-container{
+            position:absolute;
+            width:100%;
+            height:100%;
+            background: var(--primary-color);
+            z-index:3;
+        }
+        #login-box{
+            margin-left:auto;
+            margin-right:auto;
+        }
+        :root{
+            --paper-button-ink-color: var(--dark-accent-color)
+        }
+    </style>
+
+    <style include="iron-flex iron-flex-alignment iron-positioning iron-flex-factors"></style>
+    
+    <template>
+        <template is="dom-if" if="{{!loggedIn}}">
+            <div id="login-container" class="layout horizontal center">
+                <div id="login-box">
+                    <paper-card heading="Login">
+                        <div class="card-content">
+                            <paper-input char-counter label="Passphrase" type="password"></paper-input>
+                        </div>
+                        <div class="card-actions">
+                            <paper-button>New Account</paper-button>
+                            <paper-button style="float:right" on-tap="_loginClick">Login</paper-button>
+                        </div>
+                    </paper-card>
+                </div>
+            </div>
+        </template>
+    </template>
+    
+    <script>
+        Polymer({
+            is: "login-page",
+            properties: {
+                loggedIn: {
+                    type: Boolean,
+                    value: false
+                },
+                passphrase: String
+            },
+            _loginClick : function(){
+                this.loggedIn = true;
+            }
+        });
+    </script>
+</dom-module>

@@ -33,7 +33,7 @@ function pluginMessageHandler(event){
 		default:
 			response = {
 				error : true,
-				errorMessage : "Unrecognized request"
+				errorMessage : "Unrecognized request '" + data.request + "'"
 			}
 	}
 	

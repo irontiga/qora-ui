@@ -16,39 +16,59 @@
 <link rel="import" href="/client/bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="/client/bower_components/paper-item/paper-item.html">
 <link rel="import" href="/client/bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="/client/bower_components/paper-ripple/paper-ripple.html">
 
 <!-- Router -->
-<link rel="import" href="/client/bower_components/carbon-route/carbon-location.html">
-<link rel="import" href="/client/bower_components/carbon-route/carbon-route-converter.html">
-<link rel="import" href="/client/bower_components/carbon-route/carbon-route.html">
+<link rel="import" href="/client/bower_components/app-route/app-location.html">
+<link rel="import" href="/client/bower_components/app-route/app-route.html">
 
 <!-- Fractal styles -->
 <link rel="stylesheet" href="/client/fonts/roboto.css">
-<link rel="stylesheet" href="/client/css/main.css">
+<link rel="stylesheet" href="/client/styles/main.css">
 
+<!-- Custom elements -->
+<link rel="import" href="/client/styles/app-theme.html">
+<link rel="import" href="/client/elements/show-plugin.html">
+<link rel="import" href="/client/elements/login-page.html">
 
 <dom-module id="fractal-app">
 	<template>
-		<carbon-location route="{{route}}"></carbon-location>
-		<carbon-route route="{{route}}" pattern="/fractal/:activePlugin" data="{{data}}" tail="{{tail}}"></carbon-route>
+        <app-location route="{{route}}"></app-location>
+        <app-route
+                   route="{{route}}"
+                   pattern="/fractal/:activePlugin"
+                   data="{{routeData}}"
+                   tail="{{subroute}}">
+        </app-route>
 		
 		<!--<div id="login-screen">
 		
 		</div>-->
+        <login-page></login-page>
 		
 		<paper-drawer-panel>
 
 			<paper-header-panel fixed drawer>
 
 				<paper-toolbar>
-					<span class="title">Fractal</span>
+					<span class="title">Burst</span>
 				</paper-toolbar>
 
 				<paper-menu>
+                    {{urls}}
 					<template is="dom-repeat" items="{{urls}}">
-						<paper-item>
-							<a is="pushstate-anchor" href="{{_genIframeUrl(item.url)}}">{{item.title}}</a>
-						</paper-item>
+                        <template is="dom-if" if="menus.length > 0">
+                            <template is="dom-repeat" items="menus">
+                                <a href="{{_genIframeUrl(item.url)}}">{{item.title}}</a>
+                            </template>
+                        </template>
+                        
+                        <template is="dom-if" if="menus.length = 0">
+                            <paper-item>
+                                <paper-ripple></paper-ripple>
+                                <a style="display:block" is="pushstate-anchor" href="{{_genIframeUrl(item.url)}}">{{item.title}}</a>
+                            </paper-item>
+                        </template>
 					</template>
 				</paper-menu>
 
@@ -57,7 +77,7 @@
 			<paper-header-panel main>
 				<paper-toolbar>
 					<paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
-					<span class="title">Name</span>
+					<span class="title">Name - {{subroute.path}}</span>
 					<paper-icon-button icon="refresh"></paper-icon-button>
 
 					<paper-menu-button horizontal-align="right">
@@ -70,14 +90,16 @@
 					</paper-menu-button>
 				</paper-toolbar>
 				
-				<template is="dom-repeat" items="{{urls}}">
+                <show-plugin route="{{route}}" data="{{routeData}}" subroute="{{subroute}}" url="{{activeUrl}}"></show-plugin>
+                
+				<!--<template is="dom-repeat" items="{{urls}}">
 					<iframe hidden$="{{_checkActiveRoute(item, route)}}" src="{{_joinPluginUrl(item.url)}}"></iframe>
 				</template>
 				
 				<div hidden$="{{_checkPageNotFound(urls, route)}}" id="404-page">
 					<h1>404</h1>
 					<h3>Plugin not found</h3>
-				</div>
+				</div>-->
 			</paper-header-panel>
 
 		</paper-drawer-panel>

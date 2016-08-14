@@ -16,7 +16,12 @@ Polymer({
 		},
 		data: {
 			type: Object
-		}
+		},
+        activeUrl: {
+            type: Object,
+            computed: "_getActiveUrl(routeData.activePlugin, urls)",
+            notify: true
+        }
 	},
 	
 	_messageHandler : pluginMessageHandler,
@@ -45,8 +50,28 @@ Polymer({
 	},
 	
 	_genIframeUrl : function(url){
-		return "/fractal" + url;
+		return "/fractal/" + url;
 	},
+    
+    _getActiveUrl :  function(activeUrl, urls){
+        var activePlugin = {
+            url: "404",
+            title: "404",
+            menus:[],
+            page: "/404",
+            parent: false
+        };
+        
+        console.log(urls);
+        
+        for(var i=0;i<urls.length;i++){
+            if(activeUrl == urls[i].url){
+                activePlugin = urls[i];
+            }
+        }
+        
+        return activePlugin;
+    },
 	
 	ready: function(){
 		console.log(this);

@@ -1,10 +1,10 @@
-Fractal.request(
+Burst.request(
 	{
 		request: "registerUrl",
-		url: "/wallet",
-		page: "/plugins/wallet/index.html",
+		url: "wallet",
+		page: "wallet/index.html",
 		title: "Wallet",
-		menus: {},
+		menus: [],
 		parent : false
 	},
 	function(response){

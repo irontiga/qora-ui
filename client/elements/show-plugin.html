@@ -1,0 +1,30 @@
+<link rel="import" href="/client/bower_components/polymer/polymer.html">
+
+<script src="/client/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+
+<dom-module id="show-plugin">
+    <template>
+        <iframe src="{{_frameUrl(route, data, subroute, url)}}"></iframe>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'show-plugin',
+            properties: {
+                route: Object,
+                data: Object,
+                subroute: Object,
+                url: Object
+            },
+            
+            _frameUrl: function(route, data, subroute, url){
+                return "/plugins/" + url.page
+            },
+            
+            toJSON: function(object){
+                return JSON.stringify(object);
+            }
+        });
+    </script>
+
+</dom-module>

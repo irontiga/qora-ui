@@ -128,12 +128,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
+  <test-fixture id="FormValidateNonRequiredCustomElements">
+    <template>
+      <form is="iron-form" action="/responds_with_json" method="post">
+        <paper-input label="numbers" pattern="^[0-9]$" ></paper-input>
+      </form>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="FormValidateNonRequiredElements">
+    <template>
+      <form is="iron-form" action="/responds_with_json" method="post">
+        <input type="text" name="letters" pattern="^[a-z]$" >
+      </form>
+    </template>
+  </test-fixture>
+
   <test-fixture id="FormForResetting">
     <template>
       <form is="iron-form">
         <simple-element name="zig" value="zag"></simple-element>
         <paper-input name="zig" value="zug"></paper-input>
         <paper-textarea name="zig" value="zog"></paper-textarea>
+        <paper-textarea name="empty"></paper-textarea>
         <input name="foo" value="bar">
         <input type="checkbox" name="foo" value="bar1" checked>
         <input type="checkbox" name="foo" value="bar2">
@@ -249,25 +266,58 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       assert.equal(Object.keys(json).length, 1);
     });
 
-  test('native elements are validated if they have a name', function() {
-    var f = fixture('FormWithRequiredElements');
-    assert.equal(f.elements.length, 1);
+    test('native elements are validated if they have a name', function() {
+      var f = fixture('FormWithRequiredElements');
+      assert.equal(f.elements.length, 1);
 
-    var input = f.elements[0];
-    input.name = 'zag';
+      var input = f.elements[0];
+      input.name = 'zag';
 
-    assert.isFalse(f.validate());
-    assert.isFalse(input.validity.valid);
+      assert.isFalse(f.validate());
+      assert.isFalse(input.validity.valid);
 
-    input.value = 'robin';
+      input.value = 'robin';
 
-    assert.isTrue(f.validate());
-    assert.isTrue(input.validity.valid);
+      assert.isTrue(f.validate());
+      assert.isTrue(input.validity.valid);
 
-    // The elements have names, so they're serialized.
-    var json = f.serialize();
-    assert.equal(Object.keys(json).length, 1);
-  });
+      // The elements have names, so they're serialized.
+      var json = f.serialize();
+      assert.equal(Object.keys(json).length, 1);
+    });
+
+    test('non-required custom elements are validated', function() {
+      var
+        f = fixture('FormValidateNonRequiredCustomElements'),
+        elements = f.getEffectiveChildren(),
+        input = elements && elements[0]
+      ;
+
+      assert.equal(elements.length, 1);
+
+      assert.isTrue(f.validate());
+      assert.isTrue(input.validate());
+
+      input.value = "abcdefg";
+
+      assert.isFalse(f.validate());
+      assert.isFalse(input.validate());
+    });
+
+    test('non-required native elements are validated', function() {
+      var f = fixture('FormValidateNonRequiredElements');
+      assert.equal(f.elements.length, 1);
+
+      var input = f.elements[0];
+
+      assert.isTrue(f.validate());
+      assert.isTrue(input.validity.valid);
+
+      input.value = "012345";
+
+      assert.isFalse(f.validate());
+      assert.isFalse(input.validity.valid);
+    });
 });
 
   suite('serializing', function() {
@@ -428,7 +478,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var checkbox1 = form.querySelectorAll('input[type="checkbox"]')[0];
       var checkbox2 = form.querySelectorAll('input[type="checkbox"]')[1];
       var paperInput = form.querySelector('paper-input');
-      var paperTextarea = form.querySelector('paper-textarea');
+      var paperTextarea = form.querySelector('paper-textarea[name="zig"]');
 
       assert.equal(customElement.value, 'zag');
       assert.equal(input.value, 'bar');
@@ -449,6 +499,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(paperInput.inputElement.value, 'zug');
         assert.equal(paperTextarea.value, 'zog');
         assert.equal(paperTextarea.inputElement.textarea.value, 'zog');
+        done();
+      });
+
+      form.reset();
+    });
+
+    test('form restores empty paper-textarea if no changes were made', function(done) {
+      var form = fixture('FormForResetting');
+      var paperTextarea = form.querySelector('paper-textarea[name="empty"]');
+
+      form.addEventListener('iron-form-reset', function(event) {
+        // Restored initial values.
+        assert.equal(paperTextarea.value, null);
+        assert.equal(paperTextarea.inputElement.textarea.value, '');
         done();
       });
 
