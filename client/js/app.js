@@ -8,9 +8,12 @@ Polymer({
 		},
 		urls : {
 			type: Array,
-			value: [],
-			notify: true
+			value: []/*,
+			notify: true*/
 		},
+        routeData: {
+            type: Object
+        },
 		route: {
 			type: Object
 		},
@@ -19,8 +22,13 @@ Polymer({
 		},
         activeUrl: {
             type: Object,
-            computed: "_getActiveUrl(routeData.activePlugin, urls)",
+            computed: "_getActiveUrl(routeData, urls)",
             notify: true
+        },
+        pluginsLoaded: {
+            type: Boolean,
+            value: false,
+            notify:true
         }
 	},
 	
@@ -53,16 +61,20 @@ Polymer({
 		return "/fractal/" + url;
 	},
     
-    _getActiveUrl :  function(activeUrl, urls){
+    _getActiveUrl :  function(routeData, urls){
+        var activeUrl = routeData.currentPluginUrl; 
+        
         var activePlugin = {
             url: "404",
             title: "404",
             menus:[],
-            page: "/404",
+            page: "404",
             parent: false
         };
         
+        console.log("Get active urls...");
         console.log(urls);
+        console.log(routeData);
         
         for(var i=0;i<urls.length;i++){
             if(activeUrl == urls[i].url){
@@ -70,6 +82,7 @@ Polymer({
             }
         }
         
+        console.log(activePlugin);
         return activePlugin;
     },
 	

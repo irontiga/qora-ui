@@ -13,7 +13,7 @@ iframe{
 	padding:0;
 	margin:0;
 }
-iframe#plugin-js-loader{
+iframe.pluginJSFrame{
 	display:none;
 }
 

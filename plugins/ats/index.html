@@ -1,1 +1,30 @@
-<h1>AT's</h1>
+<!DOCTYPE html>
+<html>
+    <head>
+    
+    </head>
+    
+    <body>
+        
+        <h1>AT's</h1>
+        
+        <p id="responseMessage">
+            Hi
+        </p>
+        
+        
+        <script src="/client/js/helpers.js"></script>
+        <script>
+            Burst = new BurstHelper();
+
+            Burst.request("burstApiCall", {
+                requestType: "getBlock",
+                options: {
+                    "height" : 3
+                }
+            }, function(response){
+                document.getElementById("responseMessage").innerHTML = response;
+            });
+        </script>
+    </body>
+</html>

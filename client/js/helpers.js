@@ -16,7 +16,8 @@ function BurstHelper(){
 		
 		if(pendingRequests[id]){
 
-			pendingRequests[id](data);
+            // call callback
+			pendingRequests[id](JSON.parse(data));
 
 			//console.log(pendingRequests);
 
@@ -25,14 +26,19 @@ function BurstHelper(){
 		
 	});
 	
-	this.request = function(data, callback){
+	this.request = function(request, data, callback){
 		
-		data.requestID = Math.random().toString(36).substr(2, 8);
+		var requestID = Math.random().toString(36).substr(2, 10);
+        var messageRequest = JSON.stringify({
+            request: request,
+            requestID : requestID,
+            data: data
+        });
+        
+		window.parent.postMessage(messageRequest, '*');
 		
-		window.parent.postMessage(data, '*');
 		
-		
-		pendingRequests[data.requestID] = callback;
+        pendingRequests[requestID] = callback;
 		
 		//console.log(pendingRequests);
 	};
@@ -94,6 +100,9 @@ returns
 // PLUGIN  LOADER //
 // // // // // // //
 
+/*
+
+// Fetched plugins function
 function pluginLoader(plugins){
     
 	for(var i=0; i<plugins.length;i++){
@@ -105,10 +114,16 @@ function pluginLoader(plugins){
         
 		document.body.appendChild(script);
 	}
+    
+    // Send all plugins loaded message
+    var script = document.createElement("script");
+    script.innerHTML = "Burst.request({request:'pluginsLoaded')";
+    document.body.appendChild(script);
 }
 
-var xhttp = new XMLHttpRequest();
 
+// Fetch plugin list
+var xhttp = new XMLHttpRequest();
 xhttp.onreadystatechange = function(){
     
 	if (xhttp.readyState == 4 && xhttp.status == 200) {
@@ -118,6 +133,7 @@ xhttp.onreadystatechange = function(){
         pluginLoader(response);
 	}
 };
-
 xhttp.open("GET", "/getPlugins", true);
 xhttp.send();
+
+*/

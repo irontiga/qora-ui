@@ -1,6 +1,6 @@
-Burst.request(
-	{
-		request: "registerUrl",
+var Burst = new BurstHelper();
+
+Burst.request("registerUrl", {
 		url: "transactions",
 		page: "transactions/index.html",
 		title: "Transactions",

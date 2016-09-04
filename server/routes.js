@@ -44,7 +44,15 @@ var routes = [
 			var pluginList = require("./pluginList.js");
 			return reply(pluginList.plugins);
 		}
-	}
+	},
+    {
+        method: 'GET',
+        path: "/api/{requestJSON*}",
+        handler: function(request, reply){
+            var parsed = JSON.parse(request.params.requestJSON);
+            reply("Nice!")
+        }
+    }
 ];
 
 module.exports = routes;
