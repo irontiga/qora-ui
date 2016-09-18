@@ -1,5 +1,11 @@
 {
     "jscodehints.detectedExclusions": [
-        "C:/Users/HP/Documents/GitHub/Local-UI-builder/client/bower_components/prism/components/prism-asciidoc.min.js"
+        "C:/Users/HP/Documents/GitHub/Local-UI-builder/client/bower_components/prism/components/prism-asciidoc.min.js",
+        "C:/Users/HP/Documents/GitHub/Local-UI-builder/client/bower_components/prism/components/prism-actionscript.min.js",
+        "C:/Users/HP/Documents/GitHub/Local-UI-builder/client/bower_components/pouchdb-find/lib/index.js",
+        "C:/Users/HP/Documents/GitHub/Local-UI-builder/client/bower_components/pouchdb-find/lib/massageCreateIndexRequest.js",
+        "C:/Users/HP/Documents/GitHub/Local-UI-builder/client/bower_components/prism/components/prism-actionscript.js",
+        "C:/Users/HP/Documents/GitHub/Local-UI-builder/client/bower_components/prism/components/prism-apacheconf.js",
+        "C:/Users/HP/Documents/GitHub/Local-UI-builder/client/bower_components/prism/components/prism-apacheconf.min.js"
     ]
 }

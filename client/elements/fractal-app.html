@@ -44,7 +44,7 @@
 		<!--<div id="login-screen">
 		
 		</div>-->
-        <login-page></login-page>
+        <login-page passphrase="{{passphrase}}"></login-page>
 		
 		<paper-drawer-panel>
 
@@ -76,7 +76,7 @@
 			<paper-header-panel main>
 				<paper-toolbar>
 					<paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
-					<span class="title">Name - {{subroute.path}}</span>
+					<span class="title">{{activeUrl.title}} _-_- {{passphrase}}</span>
 					<paper-icon-button icon="refresh"></paper-icon-button>
 
 					<paper-menu-button horizontal-align="right">

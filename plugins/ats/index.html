@@ -1,30 +1,16 @@
 <!DOCTYPE html>
 <html>
     <head>
-    
+        <script src="/client/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+        <link rel="import" href="/plugins/ats/at-app.html">
+        <style>
+            body{
+                background-color: #eee;
+                padding:10px;
+            }
+        </style>
     </head>
-    
     <body>
-        
-        <h1>AT's</h1>
-        
-        <p id="responseMessage">
-            Hi
-        </p>
-        
-        
-        <script src="/client/js/helpers.js"></script>
-        <script>
-            Burst = new BurstHelper();
-
-            Burst.request("burstApiCall", {
-                requestType: "getBlock",
-                options: {
-                    "height" : 3
-                }
-            }, function(response){
-                document.getElementById("responseMessage").innerHTML = response;
-            });
-        </script>
+        <at-app></at-app>
     </body>
 </html>

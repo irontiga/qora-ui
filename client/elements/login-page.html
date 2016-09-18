@@ -46,7 +46,7 @@
                     <paper-card heading="Login">
                         <paper-progress indeterminate></paper-progress>
                         <div class="card-content">
-                            <paper-input char-counter label="Passphrase" type="password"></paper-input>
+                            <paper-input value="{{passphrase::input}}" id="passphrase" char-counter label="Passphrase" type="password"></paper-input>
                         </div>
                         <div class="card-actions">
                             <paper-button>New Account</paper-button>
@@ -66,10 +66,13 @@
                     type: Boolean,
                     value: false
                 },
-                passphrase: String
+                passphrase: {
+                    type: String
+                }
             },
             _loginClick : function(){
                 this.loggedIn = true;
+                //this.passphrase = this.$$("#passphrase").value
             }
         });
     </script>

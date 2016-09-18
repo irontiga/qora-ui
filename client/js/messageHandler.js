@@ -2,11 +2,11 @@ function pluginMessageHandler(event){
     
     //console.log(this.urls);
     
-    console.log("event");
-    console.log(event)
+    //console.log("event");
+    //console.log(event)
 	var message = JSON.parse(event.data);
-	console.log("Message: ");
-    console.log(message);
+	//console.log("Message: ");
+    //console.log(message);
     
 	var response = {
         requestID: message.requestID
@@ -62,14 +62,10 @@ function pluginMessageHandler(event){
 
                     //finish(parsedResponse);
                     finish(xhttp.responseText);
-                    console.log("WOOOOCHOOOO");
-                    console.log(xhttp.responseText);
+                    //console.log("WOOOOCHOOOO");
+                    //console.log(xhttp.responseText);
                 }
             };
-            
-            var parsedOptions = Object.keys(message.data.options).map(function(k) {
-                return encodeURIComponent(k) + "=" + encodeURIComponent(message.data.options[k]);
-            }).join('&')
             xhttp.open("GET", "/api/" + JSON.stringify(message), true);
             xhttp.send();
             break;

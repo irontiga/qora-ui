@@ -1,3 +1,5 @@
+var http = require("http");
+
 var routes = [
 	{
 		method: 'GET',
@@ -50,7 +52,27 @@ var routes = [
         path: "/api/{requestJSON*}",
         handler: function(request, reply){
             var parsed = JSON.parse(request.params.requestJSON);
-            reply("Nice!")
+            console.log(parsed);
+            
+            var urlParams = Object.keys(parsed.data).map(function(k) {
+                return encodeURIComponent(k) + "=" + encodeURIComponent(parsed.data[k]);
+            }).join('&');
+            
+            var options = {
+                host: "127.0.0.1",
+                port: 8125,
+                path: '/burst?' + urlParams,
+                method: 'POST'
+            };
+
+            http.request(options, function(res){
+                //console.log(res);   
+                res.setEncoding('utf8');
+                res.on('data', function (chunk) {
+                    console.log('BODY: ' + chunk);
+                    reply(chunk);
+                });
+            }).end();
         }
     }
 ];

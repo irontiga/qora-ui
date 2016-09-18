@@ -29,6 +29,10 @@ Polymer({
             type: Boolean,
             value: false,
             notify:true
+        },
+        passphrase: {
+            type: String,
+            value: ""
         }
 	},
 	
@@ -90,6 +94,11 @@ Polymer({
 		console.log(this);
 		window.addEventListener("message", this._messageHandler.bind(this), false);
 	}
+    
+    
+    
+    
+    
 });
 
 

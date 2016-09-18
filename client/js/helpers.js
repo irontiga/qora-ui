@@ -8,7 +8,9 @@ function BurstHelper(){
 	var pendingRequests = {};
 	window.addEventListener("message", function(event){
 		
-		var data = event.data;
+        //console.log(event);
+        
+		var data = JSON.parse(event.data);
 		
 		var id = data.requestID;
 		
@@ -17,7 +19,7 @@ function BurstHelper(){
 		if(pendingRequests[id]){
 
             // call callback
-			pendingRequests[id](JSON.parse(data));
+			pendingRequests[id](data);
 
 			//console.log(pendingRequests);
 
