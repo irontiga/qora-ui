@@ -14,7 +14,7 @@
 
 <dom-module id="login-page">
     
-    <style is="custom-style"  include="iron-flex iron-flex-alignment iron-positioning iron-flex-factors">
+    <style is="custom-style"  include="burst-styles iron-flex iron-flex-alignment iron-positioning iron-flex-factors">
         #login-container{
             position:absolute;
             width:100%;
@@ -39,14 +39,14 @@
     <template>
         <template is="dom-if" if="{{!loggedIn}}">
             <div id="login-container" class="layout vertical center-justified">
-                <div class="layout horizontal center-justified">
+                <!--<div class="layout horizontal center-justified">
                     <paper-spinner active></paper-spinner>
-                </div>
+                </div>-->
                 <div class="layout horizontal center-justified">
                     <paper-card heading="Login">
-                        <paper-progress indeterminate></paper-progress>
+                        <!--<paper-progress indeterminate></paper-progress>-->
                         <div class="card-content">
-                            <paper-input value="{{passphrase::input}}" id="passphrase" char-counter label="Passphrase" type="password"></paper-input>
+                            <paper-input value="{{passphrase::input}}" char-counter label="Passphrase" type="password"></paper-input>
                         </div>
                         <div class="card-actions">
                             <paper-button>New Account</paper-button>
@@ -67,7 +67,9 @@
                     value: false
                 },
                 passphrase: {
-                    type: String
+                    type: String,
+                    notify: true,
+                    reflectToAttribute: true
                 }
             },
             _loginClick : function(){

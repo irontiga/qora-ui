@@ -1,5 +1,5 @@
 Polymer({
-	is: 'fractal-app',
+	is: 'burst-app',
 	properties: {
 		plugins: {
 			type: Array,
@@ -8,8 +8,7 @@ Polymer({
 		},
 		urls : {
 			type: Array,
-			value: []/*,
-			notify: true*/
+			value: []
 		},
         routeData: {
             type: Object
@@ -32,14 +31,25 @@ Polymer({
         },
         passphrase: {
             type: String,
-            value: ""
+            value: "123abc",
+            observer: "_accountInfo"
+        },
+        account: {
+            type: Object,
+            value: {}
+        },
+        sendMoneyPrompt: {
+            type: Object,
+            value: {
+                open: false
+            }
         }
 	},
 	
 	_messageHandler : pluginMessageHandler,
 	
 	_checkActiveRoute : function(item, route){
-		if(route.path == "/fractal" + item.url){
+		if(route.path == "/burst" + item.url){
 			return false;
 		}
 		else{
@@ -50,7 +60,7 @@ Polymer({
 	_checkPageNotFound : function(urls, route){
 		var noPage = false;
 		for(var i=0; i < urls.length; i++){
-			if("/fractal" + urls[i].url == route.path){
+			if("/burst" + urls[i].url == route.path){
 				noPage=true;
 			}
 		}
@@ -62,7 +72,7 @@ Polymer({
 	},
 	
 	_genIframeUrl : function(url){
-		return "/fractal/" + url;
+		return "/burst/" + url;
 	},
     
     _getActiveUrl :  function(routeData, urls){
@@ -89,59 +99,40 @@ Polymer({
         console.log(activePlugin);
         return activePlugin;
     },
+    _accountInfo : function(passphrase){
+        this.account = {};
+        if(typeof(this.account.account) == 'undefined'){
+            this.account.publicKey = converters.byteArrayToHexString(localSign.getPublicKey(passphrase));
+            this.account.account = localSign.getAccountIdFromPublicKey(this.account.publicKey, false);
+        }
+        
+        BurstCall.apiCall({
+            requestType: "getAccount",
+            account: this.account.account
+        }, function(response){
+            console.log(response.data);
+            if(typeof(response.data.account) != "undefined"){
+                this.account = response.data;
+            }
+        });
+    },
 	
+    _acceptSendMoney : function(e){
+        var data = this.sendMoneyPrompt;
+        //console.log(data);
+        //console.log(this.passphrase);
+        data.accept(data);
+    },
+    _cancelSendMoney : function(e){
+        var data = this.sendMoneyPrompt;
+        this.sendMoneyPrompt = {
+            open: false
+        };
+        data.reject();
+    },
+    
 	ready: function(){
 		console.log(this);
 		window.addEventListener("message", this._messageHandler.bind(this), false);
 	}
-    
-    
-    
-    
-    
 });
-
-
-/*
-var menuOptions = [
-	{
-		toggle: {
-			type: "text",
-			content: "Balance: 10 000 Fragments"
-		},
-		action: {
-			type: "none"
-		}
-	},
-	{
-		toggle: {
-			type: "icon",
-			content: "add"
-		},
-		action: {
-			type: "dropdown",
-			content: [
-				{
-					toggle: {
-						type: "text",
-						content: "Send Fragments"
-					},
-					action: {
-						type: "message",
-						message: "sendMoney"
-					}
-				},
-				{
-					toggle: {
-						type: "text",
-						content: "Send Asset"
-					},
-					action: {
-						type: "message",
-						message: "sendAsset"
-					}
-				}
-			]
-		}
-	}
-];*/

@@ -5,6 +5,7 @@ function pluginMessageHandler(event){
     //console.log("event");
     //console.log(event)
 	var message = JSON.parse(event.data);
+    var data = message.data;
 	//console.log("Message: ");
     //console.log(message);
     
@@ -29,15 +30,15 @@ function pluginMessageHandler(event){
             break;
 		case "registerUrl":
 			var parent = false;
-            if(message.data.parent){
+            if(data.parent){
 				parent = true;
 			}
 			
 			this.push("urls",{
-                url :  message.data.url,
-                title : message.data.title,
-                menus : message.data.menus,
-                page : message.data.page,
+                url :  data.url,
+                title : data.title,
+                menus : data.menus,
+                page : data.page,
 				parent: parent
 			});
             
@@ -54,25 +55,32 @@ function pluginMessageHandler(event){
 			finish();
 			break;
         case "burstApiCall":
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function(){
-                if (xhttp.readyState == 4 && xhttp.status == 200) {
-
-                    //var parsedResponse = JSON.parse(xhttp.responseText);
-
-                    //finish(parsedResponse);
-                    finish(xhttp.responseText);
-                    //console.log("WOOOOCHOOOO");
-                    //console.log(xhttp.responseText);
+            BurstCall.apiCall(data, finish);
+        case "sendMoney":
+            this.sendMoneyPrompt = {
+                open: true,
+                recipient : data.recipient,
+                recipientRS : data.recipientRS,
+                amount: data.amount,
+                message: data.message,
+                accept : function(){
+                    BurstCall.sendMoney(data, this.passphrase, finish);
+                },
+                reject: function(){
+                    finish({
+                        error : "Rejected!",
+                        errorDescription : "User rejected transaction"
+                    });
                 }
             };
-            xhttp.open("GET", "/api/" + JSON.stringify(message), true);
-            xhttp.send();
+            break;
+        case "createAT":
+            console.log("Created...not");
             break;
 		default:
 			finish({
-				error : true,
-                errorMessage : "Unrecognized request '" + message.request + "'"
+				error : "Unrecognized request",
+                errorDescription : "Unrecognized request '" + message.request + "'"
 			});
 	}
 };

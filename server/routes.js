@@ -1,4 +1,5 @@
 var http = require("http");
+var config = require("./config.js");
 
 var routes = [
 	{
@@ -6,12 +7,12 @@ var routes = [
 		path: '/',
 		handler: function(request, reply){
 			console.log(request.params);
-			return reply.redirect('/fractal/')
+			return reply.redirect('/burst/')
 		}
 	},
 	{
 		method: 'GET',
-		path: '/fractal/{path*}',
+		path: '/burst/{path*}',
 		handler: function(request, reply){
 			console.log(request.params);
 			return reply.file('./client/index.html');
@@ -54,13 +55,13 @@ var routes = [
             var parsed = JSON.parse(request.params.requestJSON);
             console.log(parsed);
             
-            var urlParams = Object.keys(parsed.data).map(function(k) {
-                return encodeURIComponent(k) + "=" + encodeURIComponent(parsed.data[k]);
+            var urlParams = Object.keys(parsed).map(function(k) {
+                return encodeURIComponent(k) + "=" + encodeURIComponent(parsed[k]);
             }).join('&');
             
             var options = {
-                host: "127.0.0.1",
-                port: 8125,
+                host: config.wallet.host,
+                port: config.wallet.port,
                 path: '/burst?' + urlParams,
                 method: 'POST'
             };
@@ -69,7 +70,7 @@ var routes = [
                 //console.log(res);   
                 res.setEncoding('utf8');
                 res.on('data', function (chunk) {
-                    console.log('BODY: ' + chunk);
+                    console.log(chunk);
                     reply(chunk);
                 });
             }).end();

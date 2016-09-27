@@ -41,13 +41,43 @@ Polymer({
         donateDialogueOpened: {
             type: Boolean,
             value: false
+        },
+        response: {
+            type: Object,
+            value: {}
+        },
+        createATData : {
+            type: Object,
+            value: {
+                name: "",
+                description: "",
+                length: 1,
+                goal: 0
+            }
         }
     },
     
     _donateButton: function(e){
         this.donateItem = e.model.item;
-        
         this.donateDialogueOpened = true;
+        var item = e.model.item;
+        var options = {
+            recipient : item.atData.at,
+            recipientRS: item.atData.atRS,
+            amount: item.amount,
+            message: ""
+        };
+        Burst.request("sendMoney", options, function(response){
+            var data = response.data;
+            if(data.error){
+                this.response = {
+                    title : "Error: " + data.error,
+                    content : data.errorDescription
+                };
+            }
+            console.log(response);
+            this.$.responseDialog.open();
+        }.bind(this));
     },
     
     _niceNumber : function(number){
@@ -133,17 +163,11 @@ Polymer({
         }.bind(this),200);       
     },
 
-
-    //////////////////////////
-    ///////////////////////////
-    /////////////////////
-
     ready: function(){
         Burst.request("burstApiCall", {
             requestType: "getATIds"
         }, function(response){
-            var data = JSON.parse(response.data)
-            getATs.bind(this)(data);
+            getATs.bind(this)(response.data);
         }.bind(this));
     }
 });
@@ -160,10 +184,9 @@ function getAT(atId){
         requestType: "getAT",
         at: atId
     }, function(response){
-        data = JSON.parse(response.data);
-        if (data.description.toLowerCase().indexOf('crowdfund') > -1 ){
+        if (response.data.description.toLowerCase().indexOf('crowdfund') > -1 ){
             this.atCount += 1;
-            getBlockHeight.bind(this)(data);
+            getBlockHeight.bind(this)(response.data);
         }
     }.bind(this));
 }
@@ -172,8 +195,7 @@ function getBlockHeight(atData){
     Burst.request("burstApiCall", {
         requestType: "getBlockchainStatus"
     }, function(response){
-        data = JSON.parse(response.data);
-        getTransaction.bind(this)(data.numberOfBlocks, atData);
+        getTransaction.bind(this)(response.numberOfBlocks, atData);
     }.bind(this));
 }
 
@@ -182,8 +204,7 @@ function getTransaction(blockHeight, atData){
         requestType: "getATLong",
         hexString:atData.machineData.substring(1* 8, 1 *8+8)
     }, function(response){
-        data = JSON.parse(response.data);
-        getDecision.bind(this)(data.hex2long, blockHeight, atData);
+        getDecision.bind(this)(response.data.hex2long, blockHeight, atData);
     }.bind(this));
 }
 
@@ -192,8 +213,7 @@ function getDecision(transaction,blockHeight,atData){
         requestType: "getATLong",
         hexString: atData.machineData.substring(1 * 16, 1 * 16 + 16)
     }, function(response){
-        data = JSON.parse(response.data);
-        getTargetAmount.bind(this)(data.hex2long, transaction, blockHeight, atData);
+        getTargetAmount.bind(this)(response.data.hex2long, transaction, blockHeight, atData);
     }.bind(this));
 }
 
@@ -202,8 +222,7 @@ function getTargetAmount(decision,transaction,blockHeight,atData){
         requestType: "getATLong",
         hexString: atData.machineData.substring(3 * 16, 3 * 16 + 16)
     }, function(response){
-        data = JSON.parse(response.data);
-        getGatheredAmount.bind(this)(data.hex2long , decision, transaction, blockHeight, atData);
+        getGatheredAmount.bind(this)(response.data.hex2long , decision, transaction, blockHeight, atData);
     }.bind(this));
 
 }
@@ -212,8 +231,7 @@ function getGatheredAmount(targetAmount,decision,transaction,blockHeight,atData)
         requestType: "getATLong",
         hexString: atData.machineData.substring(2 * 16, 2 * 16 + 16)
     }, function(response){
-        data = JSON.parse(response.data);
-        getFunded.bind(this)(data.hex2long, targetAmount , decision, transaction, blockHeight, atData);
+        getFunded.bind(this)(response.data.hex2long, targetAmount , decision, transaction, blockHeight, atData);
     }.bind(this));
 
 }
@@ -222,8 +240,7 @@ function getFunded(gatheredAmount, targetAmount, decision,transaction,blockHeigh
         requestType: "getATLong",
         hexString: atData.machineData.substring(7 * 16, 7 * 16 + 16)
     }, function(response){
-        data = JSON.parse(response.data);
-        drawAT.bind(this)(data.hex2long, gatheredAmount, targetAmount , decision, transaction, blockHeight, atData);
+        drawAT.bind(this)(response.data.hex2long, gatheredAmount, targetAmount , decision, transaction, blockHeight, atData);
     }.bind(this));
 
 }
@@ -316,63 +333,4 @@ function drawAT(funded, gatheredAmount, targetAmount, decision, transaction,bloc
     if(this.drawnAts >= this.atCount){
         this.loading = false;
     }
-
-    /*var html = '<div class="col l4 crowd">' +
-            '<div class="crowdbox"> ' +
-            '<h5 class="head">'+atData.name+'</h5>'+
-            '<hr>'+
-            '<div class="crowdtext">' + descr + '</div>'+
-
-            '<div class="state" style="display:none">'+ fundedStr +'</div>'+
-            '<hr>'+
-            '<div class="progress">'+
-            '<span class="progress-value" style="color:'+ color +';left:' + ratioText.toFixed(2) + '% "> <span class="'+ icon +'"></span><span>  ' + ratioDesc +'</span></span>'+
-
-            '<div class="progress-bar" style="width:' + ratio + '%"></div>' +
-            '</div>' +  
-
-            '<div class="text-amount">'+
-            '<div class="row">'+
-            '<div class="col l5">'+
-            '   <span style='+
-            '   "font-size:1.2em;color:black">' + atBalance + '</span>'+
-            '   <span style="font-size:0.9em;color:gray">pledged out of ' + tarAmount +'</span>'+
-            '</div>'+
-
-            '<div class="col l4">'+
-            '   <span><span style='+
-            '   "font-size:0.9em;color:gray">'+ finished +' </span><span style='+
-            '   "font-size:1.2em;color:black">'+ ends +'</span> <span style='+
-            '   "font-size:0.9em;color:gray">'+ blocks +'</span> </span>'+
-            '</div>'+
-
-            '<div class="col l3">'+
-            '   <span><span style='+
-            '   "font-size:1.2em;color:black">'+ ratio.toFixed(2) +'%</span> <span style='+
-            '   "font-size:0.9em;color:gray">funded</span></span>'+
-            '</div>'+
-            '</div>'+
-            '</div>'+
-            '<hr>'+
-
-            '<div class="row">'+
-            '<div class="col l6"><span style='+
-            '"font-size:1.2em;color:black">Creator: </span> <span style='+
-            '"font-size:0.9em;color:gray">'+atData.creatorRS+'</span></div>'+
-
-            '<div class="col l6">'
-        if (buttonState!='disabled')
-        {
-
-            html = html + '<a data-toggle="modal" data-at-id="' + atData.at + 
-                '" data-total-amount="1000" title="Add this item" class="open-buyTicket btn btn-primary btn-sm btn-block" href="#buyTicket"><i class="glyphicon glyphicon-send" style="vertical-align:middle;"></i> '+ buttonStr +' </a>'
-        }
-        html = html + '</div>'+
-            '</div>'+
-            '</div>'+
-            '</div>'
-
-        //$('#at-block').append(html);
-        //filter("ongoing");
-        console.log(html);*/
 }

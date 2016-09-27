@@ -3,10 +3,11 @@
 <link rel="import" href="/client/bower_components/polymer/polymer.html">
 
 <link rel="import" href="/client/bower_components/paper-card/paper-card.html">
-<link rel="import" href="/client/bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
 <link rel="import" href="/client/bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="/client/bower_components/paper-progress/paper-progress.html">
 <link rel="import" href="/client/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/client/bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="/client/bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="/client/bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="/client/bower_components/paper-item/paper-item.html">
@@ -15,7 +16,12 @@
 <link rel="import" href="/client/bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="/client/bower_components/neon-animation/animations/scale-up-animation.html">
 <link rel="import" href="/client/bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="/client/bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="/client/bower_components/iron-icons/av-icons.html">
+<link rel="import" href="/client/bower_components/iron-icons/">
+<link rel="import" href="/client/bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="/client/bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="/client/bower_components/paper-input/paper-input.html">
 
 <link rel="stylesheet" href="/client/fonts/roboto.css">
 <link rel="stylesheet" href="/client/styles/main.css">
@@ -23,11 +29,11 @@
 <link rel="import" href="/client/styles/app-theme.html">
 
 <dom-module id="at-app">
-    <style is="custom-style"  include="iron-flex iron-flex-alignment iron-positioning iron-flex-factors">
+    <style is="custom-style"  include="burst-styles">
         .at-card{
             width:48%;
             margin:1%;
-            height:300px;
+            height:315px;
         }
         .at-card paper-card{
             /*--paper-card-background-color: #eee;
@@ -63,19 +69,37 @@
             --paper-progress-secondary-color: #eee;
             --paper-progress-height:6px;
         }
-        paper-button{
-            background: var(--accent-color);
-            color: #fff;
-            font-size:14px;
-            padding: 2px 16px;
-            height: 32px;
+        
+        .at-card paper-input-container{
+            margin-top: -22px;
+            --paper-input-container-input: {
+                width:70px;
+            }
         }
-        .at-card paper-input{
-            margin-top: -20px;
+        #addCrowdfund{
+            position:fixed;
+            right:24px;
+            bottom:24px;
+        }
+        #topbar{
+            position:fixed;
+            width:100%;
+            z-index:100;
+            background-color: #fff;
+        }
+        #topbar paper-icon-button{
+            margin-top:12px;
+            margin-right:20px;
+            margin-left:20px;
+        }
+        body{
+            padding:10px;
         }
     </style>
     <template>
-        <!--<div class="layout horizontal">
+        
+        <paper-material id="topbar" class="layout horizontal">
+            <span class="title">All the crowfunds</span>
             <span class="flex"></span>
             <paper-dropdown-menu label="Show">
                 <paper-listbox class="dropdown-content" selected="0">
@@ -84,26 +108,11 @@
                     </template>
                 </paper-listbox>
             </paper-dropdown-menu>
-            <span>&nbsp;</span>
-            <div>
-                <br>
-                <paper-button on-tap="_sortAts">Sort alphabetically</paper-button>
-            </div>
-        </div>-->
-        
-        <paper-toolbar>
-            <paper-icon-button icon="menu"></paper-icon-button>
-            <span class="title">Title</span>
-            <paper-dropdown-menu label="Show">
-                <paper-listbox class="dropdown-content" selected="0">
-                    <template is="dom-repeat" items="{{atShowOptions}}">
-                        <paper-item on-tap="_showAts">{{item}}</paper-item>
-                    </template>
-                </paper-listbox>
-            </paper-dropdown-menu>
             <paper-icon-button icon="av:sort-by-alpha" on-tap="_sortAts"></paper-icon-button>
-        </paper-toolbar>
-    
+        </paper-material>
+        <br>
+        <br>
+        <br>
         <template is="dom-if" if="{{loading}}">
             <div class="layout horizontal center-justified">
                 <paper-spinner active></paper-spinner>
@@ -134,8 +143,13 @@
                                 <small>{{_niceNumber(item.atBalance)}} / {{_niceNumber(item.tarAmount)}} ({{_niceNumber(item.ratio)}}%)</small>
                                 <span class="flex"></span>
                                 <div class="layout horizontal">
-                                    <paper-input label="Amount" type="number" width="40px"></paper-input>
-                                    <paper-button on-tap="_donateButton">Donate</paper-button>
+                                    <paper-input-container>
+                                        <label>Amount</label>
+                                        <input value="{{item.amount::input}}" type="number" is="iron-input">
+                                        <paper-icon-button icon="send" suffix on-tap="_donateButton"></paper-icon-button>
+                                    </paper-input-container>
+                                    <!--<paper-input  value="{{item.amount::input}}" label="Amount" type="number"></paper-input>
+                                    <paper-button on-tap="_donateButton">Donate</paper-button>-->
                                 </div>
                             </div>
                         </paper-card>
@@ -146,6 +160,46 @@
             </template>
         </div>
         
+        
+        <paper-fab class="primary" id="addCrowdfund" icon="add" onclick="addCrowdfundDialog.open()"></paper-fab>
+        
+        <paper-dialog modal id="addCrowdfundDialog">
+            <h2>Create crowdfund</h2>
+            <paper-dialog-scrollable>
+                <paper-input value="{{createATData.name::input}}" label="Name (no spaces)"></paper-input>
+                <paper-input-container>
+                    <label>Description</label>
+                    <textarea value="{{createATData.description::input}}" is="iron-textarea"></textarea>
+                </paper-input-container>
+                <paper-input-container>
+                    <label>Duration</label>
+                    <input value="{{createATData.length::input}}" is="iron-input">
+                    <span suffix>weeks</span>
+                </paper-input-container>
+                <paper-input-container>
+                    <label>Goal amount</label>
+                    <input value="{{createATData.goal::input}}" type="number" is="iron-input">
+                    <span suffix>Burst</span>
+                </paper-input-conatiner>
+            </paper-dialog-scrollable>
+            <div class="layout horizontal">
+                <paper-button dialog-dismiss>Cancel</paper-button>
+                <span class="flex"></span>
+                <paper-button on-tap="_createCrowdfund">Create</paper-button>
+            </div>
+        </paper-dialog>
+        
+        
+        <paper-dialog modal id="responseDialog">
+            <h2>{{response.title}}</h2>
+            <paper-dialog-scrollable>
+                <p>{{response.content}}</p>
+            </paper-dialog-scrollable>
+            <div class="layout horizontal">
+                <span class="flex"></span>
+                <paper-button dialog-dismiss>Dismiss</paper-button>
+            </div>
+        </paper-dialog>
     </template>
 
 

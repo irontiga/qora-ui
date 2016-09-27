@@ -52,7 +52,7 @@ function BurstHelper(){
 	
 }
 
-//var Fractal = new BurstHelper();
+//var Burst = new BurstHelper();
 
 
 // // // // // //

@@ -1,55 +1,80 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-styles/typography.html">
 <link rel="import" href="../bower_components/paper-styles/color.html">
+<link rel="import" href="/client/bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
-<style is="custom-style">
-    :root {
-        --primary-text-color: var(--paper-grey-900);
-        --primary-background-color: #ffffff;
-        --secondary-text-color: #737373;
-        --disabled-text-color: #9b9b9b;
-        --divider-color: #dbdbdb;
-        --primary-color: var(--paper-cyan-500);
-        --light-primary-color: var(--paper-cyan-100);
-        --dark-primary-color: var(--paper-cyan-700);
-        --accent-color: var(--paper-pink-a200);
-        --light-accent-color: var(--paper-pink-a100);
-        --dark-accent-color: var(--paper-pink-a400);
-        /* Components */
-        /* paper-drawer-panel */
-        --drawer-menu-color: #ffffff;
-        --drawer-border-color: 1px solid #ccc;
-        --drawer-toolbar-border-color: 1px solid rgba(0, 0, 0, 0.22);
-        /* paper-menu */
-        --paper-menu-background-color: #fff;
-        --menu-link-color: #111111;
-    }
-    
-    
-    paper-menu {
-        --paper-menu-selected-item: {
-            color: var(--primary-color);
-        }
-        --paper-menu-focused-item-after: {
-            background: var(--primary-color);
-        }
-    }
-    paper-menu iron-icon {
-        margin-right: 33px;
-        opacity: 0.54;
-    }
-    paper-menu a {
-        @apply(--layout-horizontal);
-        @apply(--layout-center);
-        text-decoration: none;
-        color: var(--menu-link-color);
-        font-family: 'Roboto', 'Noto', sans-serif;
-        -webkit-font-smoothing: antialiased;
-        text-rendering: optimizeLegibility;
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 24px;
-        min-height: 48px;
-        padding: 0 16px;
-    }
-</style>
+
+<dom-module id="burst-styles">
+    <template>
+        <style is="custom-style" include="iron-flex iron-flex-alignment iron-positioning iron-flex-factors">
+            :root {
+                --primary-text-color: var(--paper-grey-900);
+                --primary-background-color: #ffffff;
+                --secondary-text-color: #737373;
+                --disabled-text-color: #9b9b9b;
+                --divider-color: #dbdbdb;
+                --primary-color: var(--paper-cyan-500);
+                --light-primary-color: var(--paper-cyan-100);
+                --dark-primary-color: var(--paper-cyan-700);
+                --accent-color: var(--paper-pink-a200);
+                --light-accent-color: var(--paper-pink-a100);
+                --dark-accent-color: var(--paper-pink-a400);
+                /* Components */
+                /* paper-drawer-panel */
+                --drawer-menu-color: #ffffff;
+                --drawer-border-color: 1px solid #ccc;
+                --drawer-toolbar-border-color: 1px solid rgba(0, 0, 0, 0.22);
+                /* paper-menu */
+                --paper-menu-background-color: #fff;
+                --menu-link-color: #111111;
+            }
+
+            paper-menu {
+                --paper-menu-selected-item: {
+                    color: var(--primary-color);
+                }
+                --paper-menu-focused-item-after: {
+                    background: var(--primary-color);
+                }
+            }
+            paper-menu iron-icon {
+                margin-right: 33px;
+                opacity: 0.54;
+            }
+            paper-menu a {
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                text-decoration: none;
+                color: var(--menu-link-color);
+                font-family: 'Roboto', 'Noto', sans-serif;
+                -webkit-font-smoothing: antialiased;
+                text-rendering: optimizeLegibility;
+                font-size: 14px;
+                font-weight: 400;
+                line-height: 24px;
+                min-height: 48px;
+                padding: 0 16px;
+            }
+
+            paper-button{
+                background: var(--accent-color);
+                color: #fff;
+                font-size:14px;
+                padding: 2px 16px;
+                height: 32px;
+            }
+            
+            paper-button.red-button{
+                background: var(--paper-red-500);
+            }
+            paper-button.green-button{
+                background: var(--paper-green-500);
+            }
+            
+            paper-fab.primary {
+                --paper-fab-background: var(--primary-color);
+                --paper-fab-keyboard-focus-background: var(--light-primary-color);
+            }
+        </style>
+    </template>
+</dom-module>

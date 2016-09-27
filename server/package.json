@@ -1,5 +1,5 @@
 {
-  "name": "fractal-server",
+  "name": "burst-server",
   "version": "0.0.1",
   "description": "Serverside part",
   "main": "server.js",
@@ -9,7 +9,7 @@
   },
   "keywords": [
     "server",
-    "fractal"
+    "burst"
   ],
   "author": "irontiga",
   "license": "GPL-3.0",

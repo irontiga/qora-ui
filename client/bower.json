@@ -1,16 +1,16 @@
 {
-  "name": "Fractal-UI",
-  "description": "The awesome fractal ui",
+  "name": "BURST-UI",
+  "description": "The awesome Burst ui",
   "main": "index.html",
   "moduleType": [],
   "keywords": [
-    "fractal"
+    "Burst"
   ],
   "authors": [
     "irontiga"
   ],
   "license": "GPL",
-  "homepage": "http://fractal.global",
+  "homepage": "http://burstcoin.info",
   "ignore": [
     "**/.*",
     "node_modules",
