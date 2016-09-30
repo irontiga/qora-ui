@@ -16,6 +16,12 @@ Polymer({
 		route: {
 			type: Object
 		},
+        loginpage: {
+            type: Object,
+            value: {
+                loggedin : false,
+            }
+        },
 		data: {
 			type: Object
 		},
@@ -31,8 +37,7 @@ Polymer({
         },
         passphrase: {
             type: String,
-            value: "123abc",
-            observer: "_accountInfo"
+            value: ""
         },
         account: {
             type: Object,
@@ -66,7 +71,7 @@ Polymer({
 		}
 		return noPage;
 	},
-	
+
 	_joinPluginUrl : function(url, hash){
 		return "/plugins/" + url + "#" + hash;
 	},
@@ -99,22 +104,33 @@ Polymer({
         console.log(activePlugin);
         return activePlugin;
     },
-    _accountInfo : function(passphrase){
-        this.account = {};
+    _accountInfo : function(callback){
         if(typeof(this.account.account) == 'undefined'){
-            this.account.publicKey = converters.byteArrayToHexString(localSign.getPublicKey(passphrase));
+            this.account.publicKey = converters.byteArrayToHexString(localSign.getPublicKey(this.passphrase));
             this.account.account = localSign.getAccountIdFromPublicKey(this.account.publicKey, false);
         }
-        
         BurstCall.apiCall({
             requestType: "getAccount",
             account: this.account.account
         }, function(response){
-            console.log(response.data);
-            if(typeof(response.data.account) != "undefined"){
-                this.account = response.data;
+            if(response.errorCode == 5){
+                this.account.accountRS = localSign.getAccountIdFromPublicKey(this.account.publicKey, true);
+                this.account.balanceNQT = 0;
             }
-        });
+            else{
+                this.account = response;
+            }
+            
+            this.account.balance = this.account.balanceNQT / 100000000;
+            this.account.balance = this.account.balance.toLocaleString('en-US');
+            
+            var account = this.account;
+            this.account = {};
+            this.account = account;
+            
+            callback();
+            
+        }.bind(this));
     },
 	
     _acceptSendMoney : function(e){
@@ -134,5 +150,23 @@ Polymer({
 	ready: function(){
 		console.log(this);
 		window.addEventListener("message", this._messageHandler.bind(this), false);
+        
+        this.loginpage.login = function(passphrase){
+            this.loginpage.loggedin = true;
+            this.passphrase = passphrase;
+
+            function loop(){
+                setTimeout(function(){
+                    this._accountInfo(loop.bind(this));
+                }.bind(this), 10000);
+            }
+            this._accountInfo(loop.bind(this));
+            
+            var loginpage = this.loginpage;
+            this.loginpage = {};
+            this.loginpage = loginpage;
+            
+        }.bind(this);
 	}
 });
+

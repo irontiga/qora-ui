@@ -1,4 +1,5 @@
 var http = require("http");
+var https = require("https");
 var config = require("./config.js");
 
 var routes = [
@@ -65,15 +66,22 @@ var routes = [
                 path: '/burst?' + urlParams,
                 method: 'POST'
             };
-
-            http.request(options, function(res){
+            
+            function burstRequest(res){
                 //console.log(res);   
                 res.setEncoding('utf8');
                 res.on('data', function (chunk) {
                     console.log(chunk);
                     reply(chunk);
                 });
-            }).end();
+            }
+            http.request(options, burstRequest).end();
+            /*if(config.wallet.protocol == "https"){
+                https.request(options, burstRequest).end();
+            }
+            else{
+                http.request(options, burstRequest).end();
+            }*/
         }
     }
 ];

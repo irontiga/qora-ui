@@ -6,6 +6,9 @@
         "C:/Users/HP/Documents/GitHub/Local-UI-builder/client/bower_components/pouchdb-find/lib/massageCreateIndexRequest.js",
         "C:/Users/HP/Documents/GitHub/Local-UI-builder/client/bower_components/prism/components/prism-actionscript.js",
         "C:/Users/HP/Documents/GitHub/Local-UI-builder/client/bower_components/prism/components/prism-apacheconf.js",
-        "C:/Users/HP/Documents/GitHub/Local-UI-builder/client/bower_components/prism/components/prism-apacheconf.min.js"
+        "C:/Users/HP/Documents/GitHub/Local-UI-builder/client/bower_components/prism/components/prism-apacheconf.min.js",
+        "C:/Users/HP/Documents/GitHub/Local-UI-builder/client/js/plugin-loader.js",
+        "C:/Users/HP/Documents/GitHub/Local-UI-builder/client/js/messageHandler.js",
+        "C:/Users/HP/Documents/GitHub/Local-UI-builder/client/js/localSigningDeps.js"
     ]
 }

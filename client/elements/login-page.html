@@ -37,7 +37,7 @@
     </style>
     
     <template>
-        <template is="dom-if" if="{{!loggedIn}}">
+        <template is="dom-if" if="{{!loginpage.loggedin}}">
             <div id="login-container" class="layout vertical center-justified">
                 <!--<div class="layout horizontal center-justified">
                     <paper-spinner active></paper-spinner>
@@ -46,7 +46,7 @@
                     <paper-card heading="Login">
                         <!--<paper-progress indeterminate></paper-progress>-->
                         <div class="card-content">
-                            <paper-input value="{{passphrase::input}}" char-counter label="Passphrase" type="password"></paper-input>
+                            <paper-input char-counter label="Passphrase" type="password" id="passphrase"></paper-input>
                         </div>
                         <div class="card-actions">
                             <paper-button>New Account</paper-button>
@@ -58,22 +58,21 @@
         </template>
     </template>
     
+    <script src="/client/js/helpers.js"></script>
     <script>
+        Burst = new BurstHelper();
+        
         Polymer({
             is: "login-page",
             properties: {
-                loggedIn: {
-                    type: Boolean,
-                    value: false
-                },
-                passphrase: {
-                    type: String,
-                    notify: true,
-                    reflectToAttribute: true
+                loginpage: {
+                    type: Object
                 }
             },
             _loginClick : function(){
-                this.loggedIn = true;
+                var passphrase = this.$$("#passphrase").value;
+                console.log(passphrase);
+                this.loginpage.login(passphrase);
                 //this.passphrase = this.$$("#passphrase").value
             }
         });

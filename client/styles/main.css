@@ -13,10 +13,10 @@ iframe{
 	padding:0;
 	margin:0;
 }
+
 iframe.pluginJSFrame{
 	display:none;
 }
-
 
 #login-screen{
 	position:absolute;

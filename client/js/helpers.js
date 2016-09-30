@@ -19,7 +19,7 @@ function BurstHelper(){
 		if(pendingRequests[id]){
 
             // call callback
-			pendingRequests[id](data);
+			pendingRequests[id](data.data);
 
 			//console.log(pendingRequests);
 

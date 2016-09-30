@@ -1,0 +1,27 @@
+<script src="/client/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+
+<link rel="import" href="/client/bower_components/polymer/polymer.html">
+
+<link rel="stylesheet" href="/client/fonts/roboto.css">
+<link rel="stylesheet" href="/client/styles/main.css">
+
+<link rel="import" href="/client/styles/app-theme.html">
+
+<dom-module id="transactions-app">
+    <style is="custom-style"  include="burst-styles">
+        
+    </style>
+    <template>
+        <h1>Transctions!</h1>
+        
+        {{account.accountRS}}
+        
+        <template is="dom-repeat" items="transactions">
+            {{item.transactionId}}
+        </template>
+    </template>
+
+
+    <script src="/client/js/helpers.js"></script>
+    <script src="transactions.js"></script>
+</dom-module>

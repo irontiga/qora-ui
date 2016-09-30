@@ -54,8 +54,12 @@ function pluginMessageHandler(event){
 		case "addMenuItem":
 			finish();
 			break;
+        case "getAccountInfo":
+            finish(this.account);
+            break;
         case "burstApiCall":
             BurstCall.apiCall(data, finish);
+            break;
         case "sendMoney":
             this.sendMoneyPrompt = {
                 open: true,
@@ -73,6 +77,7 @@ function pluginMessageHandler(event){
                     });
                 }
             };
+            this.$.sendMoneyPrompt.open();
             break;
         case "createAT":
             console.log("Created...not");
