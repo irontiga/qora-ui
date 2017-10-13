@@ -14,7 +14,7 @@ function pluginLoader(plugins){
 
         /*var helperActivatorScript = document.createElement("script");
                 helperActivatorScript.setAttribute("type", "text/javascript");
-                helperActivatorScript.text = "var Burst = new BurstHelper();";*/
+                helperActivatorScript.text = "var Burst = new parentHelper();";*/
 
         var pluginScript = insertedFrame.contentWindow.document.createElement("script");
         pluginScript.type = "text/javascript";
@@ -30,7 +30,6 @@ function pluginLoader(plugins){
             script.innerHTML = "Burst.request({request:'pluginsLoaded')";
             document.body.appendChild(script);*/
 }
-
 
 // Fetch plugin list
 var xhttp = new XMLHttpRequest();
