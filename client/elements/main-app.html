@@ -93,7 +93,7 @@
             <app-localstorage-document key="addressCount" data="{{addressCount}}"></app-localstorage-document>
 
             <!-- LOGIN PAGE -->
-            <login-page loginpage="{{loginpage}}" node="{{qoraNode}}" address-count="{{addressCount}}"></login-page>
+            <login-page loginpage="{{loginpage}}" node="{{qoraNode}}" passphrase="{{passphrase}}" address-count="{{addressCount}}"></login-page>
 
 
             <app-header-layout>
@@ -103,10 +103,14 @@
                         <paper-icon-button icon="menu" drawer-toggle on-click="_toggleDrawer" class="show-only-mobile"></paper-icon-button>
                         <div main-title><span class="qora-title">QORA | </span> {{activeUrl.title}}</div>
                         <paper-icon-button icon="settings"></paper-icon-button>
+                        <paper-icon-button icon="power-settings-new" on-tap="_logout"></paper-icon-button>
                     </app-toolbar>
                 </app-header>
 
                 <app-drawer-layout>
+                    
+                    <!-- Make it nice n easy to make toasts -->
+                    <!--<paper-toast id="toast0" text="This toast auto-closes after 3 seconds"></paper-toast>-->
 
                     <app-drawer swipe-open slot="drawer" id="appdrawer">
                         <app-header-layout has-scrolling-region>
@@ -142,7 +146,7 @@
 
                     <!-- PLUGIN IFRAMEEEE -->
                     <!---------------------->
-                    <template is="dom-if" if="{{loginpage.loggedin}}">
+                    <template is="dom-if" if="{{loginpage.loggedin}}" restamp>
                         <show-plugin route="{{route}}" data="{{routeData}}" subroute="{{subroute}}" url="{{activeUrl}}"></show-plugin>
                     </template>
 

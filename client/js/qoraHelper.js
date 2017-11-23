@@ -8,19 +8,19 @@ function QoraCalls(){
     // method = "GET", "POST", "PUT", "DELETE"
     // data = Object, eg {name: "james"}
     // callback....well duh...function(JSONresponse)
-    
+
     //this.apiCall = function(url, data, method, callback){
-    
+
     /*
-    
+
     options = {
         path: "blah",
         method: "GET/POST",
         data: Obj
     }
-    
+
     */
-    
+
     /*
     options = 
     method(GET/POST), 
@@ -32,13 +32,15 @@ function QoraCalls(){
         if(!("method" in options)){
             options.method = "GET";
         }
-        
+
         function doApiCall(cb, errcb){
             //console.log(qoraNode);
-            
+            if(options.url == undefined){
+                options.url = "";
+            }
             const url = "/proxy/" + qoraNode[options.type].url + qoraNode[options.type].tail + options.url;
-            
-            
+
+
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function(){
                 // Check the request is complete:
@@ -48,24 +50,23 @@ function QoraCalls(){
                         let response = xhttp.responseText;
                         if(options.type == "explorer"){
                             response = JSON.parse(response);
+                            response.success = true;
                         }
                         //console.log(response);
                         cb(response);
                     }
                     // Otherwise...
                     else{
-                        // Callback
-                        if(errcb == undefined){
-                            cb(xhttp.statusText);
+                        const errorResponse = {
+                            success: false,
+                            errorMessage: xhttp.statusText
                         }
-                        // Promise
-                        else{
-                            errcb(xhttp.statusText);
-                        }
+                        console.error(errorResponse);
+                        cb(errorResponse);
                     }
-                }
-                
-            };
+
+                };
+            }
 
             // If it's get then convert data into a query string...
             if(options.method == "GET"){
@@ -73,22 +74,21 @@ function QoraCalls(){
                 // Let's not make errors if there is no data
                 if(options.data == undefined){options.data={}}
                 if(!_isEmptyObject(options.data)){params += "?"}
-                
+
                 params += Object.keys(options.data).map(key => {
                     return encodeURIComponent(key) + "=" + encodeURIComponent(options.data[key]);
                 }).join('&')
-                
                 xhttp.open(options.method, url + params, true);
                 xhttp.send();
             }
             // Otherwise send it as data. Doesn't even have to be an object
             else{
                 xhttp.open(options.method, url, true);
+                xhttp.setRequestHeader("Accept", "application/json")
                 xhttp.send(options.data);
             }
-            
         }
-        
+
         // If no callback then return a promise.
         if(callback == undefined){
             return new Promise((resolve, reject) => {
@@ -97,35 +97,37 @@ function QoraCalls(){
         }
         // Otherwise just do the usual callback stuff
         else{
-            doApiCall(callback);
+            doApiCall(callback, callback);
         }
-        
-        //console.log(qoraNode);
-        
-        /*options.protocol = qoraNode.protocol + ":";
+
+            //console.log(qoraNode);
+
+            /*options.protocol = qoraNode.protocol + ":";
         options.host = qoraNode.url;
         options.port = qoraNode.port;
-        
+
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function(){
             if (xhttp.readyState == 4 && xhttp.status == 200) {
 
                 var parsedResponse = JSON.parse(xhttp.responseText);
-                
+
                 callback(parsedResponse);
             }
         };
-        
+
         xhttp.open("GET", "/proxy/" + JSON.stringify(options), true);
         xhttp.send();*/
     }
+
+
     /*
     this.apiCall = function(options, callback){
         return;
     }
     */
     this.sendMoney = function(options, qoraNode, callback){
-        
+
         // IN case of errorrrsss
         function returnError(err){
             if(callback == undefined){
@@ -136,9 +138,9 @@ function QoraCalls(){
                 callback(err)
             }
         }
-        
+
         // Convert this to promises as well...
-        
+
         //var base58SenderAccountSeed = $('#selected-name option:selected').val();
         // data.sender.address.base58addressSeed
 
@@ -164,14 +166,14 @@ function QoraCalls(){
             type: "api"
         }, qoraNode)
             .then(lastReference => {
-            
+
             if(lastReference == "false"){
                 console.log("ERROR: ADDRESS IS NEW");
                 return returnError("ERROR: ADDRESS IS NEW");
             }
-            
+
             const base58LastReferenceOfAccount =  Base58.decode(lastReference)
-            
+
             const recipientAccountAddress = Base58.decode(options.recipient);
 
             if(base58LastReferenceOfAccount == null || base58LastReferenceOfAccount.length != 64) {
@@ -199,10 +201,14 @@ function QoraCalls(){
 
             if(callback == undefined){
                 // Promise...
-                return this.apiCall(finalData, qoraNode)
+                return this.apiCall(finalData, qoraNode).then(response => {
+                    return Promise.resolve(JSON.parse(response))
+                })
             }
             else{
-                this.apiCall(finalData, qoraNode, callback)
+                this.apiCall(finalData, qoraNode, function(response){
+                    callback(JSON.parse(response));
+                })
             }
         })
         /*let i = 1;
@@ -214,8 +220,7 @@ function QoraCalls(){
 
 
 
-function doProcess(txRaw)
-{
+function doProcess(txRaw){
     if(!txRaw) {
         return;
     }
@@ -299,8 +304,7 @@ function doProcess(txRaw)
         fail:  function(xhr, textStatus, errorThrown) {
             document.getElementById('result').innerHTML = '<div class=\"alert alert-danger\" role=\"alert\">ERROR<br>'+xhr.responseText+'<br></div>';
         }
-    })
-
+    });
 }
 /*function doPaymentTransaction(recipient, amount) {
 

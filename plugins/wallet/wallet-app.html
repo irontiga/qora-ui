@@ -1,6 +1,7 @@
 <link rel="import" href="/client/bower_components/polymer/polymer.html">
 
 <link rel="stylesheet" href="/client/fonts/roboto.css">
+<link rel="stylesheet" href="/client/fonts/roboto-mono.css">
 
 <link rel="import" href="/client/styles/app-theme.html">
 
@@ -19,9 +20,10 @@
 <link rel="import" href="/client/bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="/client/bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="/client/bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="/client/bower_components/paper-progress/paper-progress.html">
 
 <!-- Vaandin -->
-<link rel="import" href="/client/bower_components/vaadin-material-theme/vaadin-grid.html">
+<link rel="import" href="grid-styles.html">
 <link rel="import" href="/client/bower_components/vaadin-grid/vaadin-grid.html">
 
 
@@ -30,15 +32,18 @@
     
 	<template>
         <custom-style>
-            <style is="custom-style"  include="burst-styles">
+            <style is="custom-style" include="burst-styles grid-styles">
                 html, body, p, h1{
                     font-family: "Roboto", sans-serif;
+                }
+                .mono{
+                    font-family: 'Roboto Mono', monspace;
                 }
                 #addresses{
                     padding:10px;
                     font-size:14px;
                     font-weight: 300;
-                    max-width: 800px;
+                    max-width: 1200px;
                     margin: 0 auto;
                 }
                 .address-titles{
@@ -77,6 +82,10 @@
                         opacity: 0;
                     };
                 }
+                .address-balance{
+                    font-size:42px;
+                    font-weight: 100;
+                }
                 .show-transactions{
                     cursor: pointer;
                 }
@@ -102,6 +111,8 @@
                     font-size: 24px;
                     font-weight: 100;
                 }
+                
+                
             </style>
         </custom-style>
         
@@ -122,35 +133,48 @@
                                     <div>{{item.address}}</div>
                                     <div secondary><a class="show-transactions" ident$="subitem[[index]]" on-tap="toggle">Toggle recent transactions <!--<iron-icon icon="arrow-drop-down"></iron-icon>--></a></div>
                                 </paper-item-body>
-                                <div style="font-size:42px; font-weight: 100;">{{item.balance}}</div>
+                                <div class="address-balance mono"><span>{{_floor(item.balance)}}</span><i style="font-size:16px;">.{{_decimals(item.balance)}}</i></div>
                                 <!--<paper-icon-button title="Send money" icon="redo" on-click="_sendMoneyDialog"></paper-icon-button>-->
                             </paper-icon-item>
 
                             <iron-collapse class="recent-transactions" ident$="subitem[[index]]">
+                                <vaadin-grid aria-label="Transactions" items="[[_getTransactions(item.info)]]">
 
-                                <table class="paper-table">
-                                    <thead>
-                                        <tr>
-                                            <th>From</th>
-                                            <th>Amount</th>
-                                            <th>To</th>
-                                            <th>Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Qiusbsfieubsice4wrfw4fqed3w33</td>
-                                            <td>12.00</td>
-                                            <td>Qsefw4f9w84ehn98w4hcw98q3dq3d</td>
-                                            <td>12/05/17</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                    <vaadin-grid-column width="160px" flex-grow="0">
+                                        <template class="header">Date</template>
+                                        <template>[[item.transaction.dateTime]]</template>
+                                    </vaadin-grid-column>
+
+                                    <vaadin-grid-column width="64px" flex-grow="0">
+                                        <template class="header">TX Type</template>
+                                        <template>[[item.transaction.type]]</template>
+                                    </vaadin-grid-column>
+
+                                    <vaadin-grid-column width="100px" flex-grow="0">
+                                        <template class="header">Amount</template>
+                                        <template><span class="mono"><span>[[_floor(item.transaction.amount)]]</span><span style="font-size:9px;"><i>.[[_decimals(item.transaction.amount)]]</i></span></span></template>
+                                    </vaadin-grid-column>
+
+                                    <vaadin-grid-column>
+                                        <template class="header">From</template>
+                                        <template>
+                                            <p style="white-space: normal">[[item.transaction.sender]]</p>
+                                        </template>
+                                    </vaadin-grid-column>
+
+                                    <vaadin-grid-column>
+                                        <template class="header">To</template>
+                                        <template>
+                                            <p style="white-space: normal">[[item.transaction.recipient]]</p>
+                                        </template>
+                                    </vaadin-grid-column>
+                                    <!--{{_log(item)}}-->
+                                </vaadin-grid>
+
                             </iron-collapse>
                             <br>
                         </template>
                     </div>
-
                 </paper-card>
 
 
@@ -163,7 +187,7 @@
                     <paper-dropdown-menu label="From" style$="width:500px; border-left: 5px solid {{selectedAddress.color}}">
                         <paper-listbox style="width: 500px;" slot="dropdown-content" class="dropdown-content" attr-for-selected="address" selected="{{selectedAddress}}">
                             <template is="dom-repeat" items="{{addresses}}">
-                                <paper-item address="{{item}}">{{_round(item.balance)}} || {{item.address}}</paper-item>
+                                <paper-item address="{{item}}">{{_floor(item.balance)}} || {{item.address}}</paper-item>
                             </template>
                         </paper-listbox>
                     </paper-dropdown-menu>
@@ -172,11 +196,16 @@
                     <paper-input label="To" type="text" value="{{recipient}}"></paper-input>
                     <paper-input label="Fee" type="text" value="{{fee}}"></paper-input>
 
+                    <p>{{sendMoneyError}}</p>
+                    
                     <div class="buttons">
                         <paper-button dialog-dismiss>Cancel</paper-button>
                         <!-- dialog-confirm....nah-->
                         <paper-button autofocus on-tap="_sendMoney">Send</paper-button>
                     </div>
+                    <template is="dom-if" if="{{sendMoneyLoading}}">
+                        <paper-progress auto></paper-progress>
+                    </template>
                 </paper-dialog>
 
                 <paper-fab icon="send" title="heart" id="sendMoneyFab" on-click="_sendMoneyDialog"></paper-fab>

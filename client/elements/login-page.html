@@ -69,7 +69,7 @@
                         <div class="card-content">
                             
                             <span class="error-message">{{loginpage.errorMessage}}</span>
-                            <paper-input char-counter label="Passphrase" type="password" id="passphrase" autofocus on-keydown="_keyDown"></paper-input>
+                            <paper-input char-counter label="Passphrase" type="password" id="passphrase" value="{{passphrase}}" autofocus on-keydown="_keyDown"></paper-input>
                             
                             <template is="dom-if" if="{{!loginpage.loading}}">
                                 <div class="show-advanced">
@@ -125,6 +125,10 @@
                 addressCount: {
                     type: Number,
                     notify: true
+                },
+                override: {
+                    type: String,
+                    value: ""
                 }
             },
             _showAdvanced: function(){
@@ -142,15 +146,19 @@
                 }
             },
             _loginClick : function(){
-                var passphrase = this.$$("#passphrase").value;
                 //console.log(passphrase);
-                console.log(this.node);
-                if(passphrase == undefined){return;}
-                if(passphrase.length == 0){return;}
-                if(passphrase.length < 12){
+                //console.log(this.node);
+                if(this.passphrase == undefined){return;}
+                if(this.passphrase.length == 0){return;}
+                if(this.passphrase.length < 15){
                     //...no no no, bad idea bro
+                    if (this.override != this.passphrase){
+                        this.set("loginpage.errorMessage", "Passphrase too short. Should be at least 15 characters. Press enter/login again to override this.");
+                        this.override = this.passphrase;
+                        return;
+                    }
                 }
-                this.loginpage.login(passphrase, this.shadowRoot.querySelector('#passphrase'));
+                this.loginpage.login(this.passphrase, this.shadowRoot.querySelector('#passphrase'));
                 //this.passphrase = this.$$("#passphrase").value
             }
         });

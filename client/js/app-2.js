@@ -78,11 +78,11 @@ class MainApp extends Polymer.Element {
             },
             addressColors: {
                 type:Array,
-                value: ["#f44336",
+                value: ["#4caf50",
                         "#3f51b5",
                         "#e91e63",
                         "#2196f3",
-                        "#4caf50",
+                        "#f44336",
                         "#ff9800",
                         "#795548",
                         "#9c27b0",
@@ -91,7 +91,7 @@ class MainApp extends Polymer.Element {
             },
             addressCount: {
                 type: Number,
-                value: 10
+                value: 1
             }
         }
     }
@@ -220,6 +220,7 @@ class MainApp extends Polymer.Element {
         // LOGIN FUNCTION
         // -----------------------
         this.loginpage.login = login.bind(this);
+        this._logout = logout.bind(this);
     }
         
 }

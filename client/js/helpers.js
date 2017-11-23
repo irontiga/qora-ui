@@ -46,8 +46,36 @@ class ParentHelper{
     }
     
     changeUrl(url){
-        // Update the url, and therefor the active plugin
+        // Update the url, and therefore the active plugin
         window.location.replace(url);
+    }
+    
+    // Create a stream
+    // identifier - required for other clients to connect
+    // options....object...fun
+    // returns an "class"? idk, but u can then use stream.send(data) to... send...data. Funny that. // Stream.getClients, could be a nice one to have
+    createStream(identifier, options){
+        return new Stream(identifier, this);
+    }
+    
+    // Connect to another plugin's stream
+    openStream(){}
+    
+    // Special polymer only function to connect to a stream and sync a var with all responses
+    syncStream(){}
+}
+
+class Stream{
+    constructor(identifier, parentThis){
+        this.identifier = identifier;
+        this.parent = parentThis;
+        
+    }
+    // Optional callback...for success/error i guess...we'll assume it doesn't fail for now
+    send(data, callback){
+        this.parent.request("stream", {
+            
+        }, callback)
     }
 }
 

@@ -7,11 +7,13 @@ class QoraHandler extends messageHandler {
         console.log("Hi");
     }
 
+    // OLD MUST DIE
+    /*
     getAccountInfo(data, finish){
         const account = this.app.account;
         account.success = true;
         finish(account);
-    }
+    }*/
 
     // THIS QORA STUFF NEEDS TO COME IN HEREEEE
     qoraApiCall(data, finish){
@@ -23,14 +25,7 @@ class QoraHandler extends messageHandler {
             let response = {
                 address: address.address.address,
                 color: address.color,
-                index: index,
-                info: address.info
-            }
-            if(address.info.error){
-                response.balance = 0
-            }
-            else{
-                response.balance = address.info.balance.total["0"]
+                index: index
             }
             return response;
         })

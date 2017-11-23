@@ -2,15 +2,26 @@ class messageHandler {
     constructor(){
         // Reference to this from the polymer function in app.js
         this.app = App;
+        this.streams = [];
         //console.log("YEEEEEAAATTT");
-        window.addEventListener("message", this._message.bind(this), false);
+        window.addEventListener("message", this._listener.bind(this), false);
     }
     
-    _message(event){
-        console.log(event);
-        
+    _listener(event){
         const message = JSON.parse(event.data);
+        const source = event.source;
         console.log(message);
+        
+        switch(message.request){
+            case "stream" :
+                this._stream(message, source)
+            default:
+                this._message(message, source)
+        }
+    }
+    
+    _message(message, source){
+        
         const data = message.data;
         
         const response = {
@@ -24,16 +35,21 @@ class messageHandler {
                 };
             }
             response.data = responseData;
-            event.source.postMessage(JSON.stringify(response), "*");
+            source.postMessage(JSON.stringify(response), "*");
         }
-        console.log(this);
-        console.log(this.app);
+        //console.log(this);
+        //console.log(this.app);
         if(this[message.request] == undefined){
             console.log("UNDIES");
             return finish({
                 success: false,
                 errorMessage : "Unrecognized request '" + message.request + "'"
             });
+        }
+        
+        // The special case of it being a stream...
+        if(message.request == "stream"){
+            this.stream(event, data, finish)
         }
         
         this[message.request](data, finish);
@@ -69,8 +85,26 @@ class messageHandler {
     addMenuItem(data, finish){
         finish();
     }
+    
+    // Nice n simple toast
+    toast(data, finish){
+        // We'll get there...
+        // Needs to handle storage as per md spec... if two toasts are triggered a split second apart...the later toast will have to wait for the first to be dismissed/auto dismiss itself before being displayed
+        // Ahh, it needs a queue
+    }
+    
+    _stream(message, source){
+        // Switch for create vs send
+        //message.type: "create" or "send"
+    }
+    // "Websocket" for frame to frame communication
+    createStream(data, finish){
+        
+    }
 }
 
+
+/* that old stuff... yuck
 function pluginMessageHandler(event){
     
     //console.log(this.urls);
@@ -210,3 +244,5 @@ function pluginMessageHandler(event){
 			});
 	}
 };
+
+*/

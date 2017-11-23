@@ -1,5 +1,7 @@
+let addressUpdateTimeout;
+
 function login(passphrase, passInput){
-    
+    this.passInput = passInput;
     // Show loading...and disable the input
     // console.log(passInput)
     passInput.disabled = true;
@@ -22,79 +24,26 @@ function login(passphrase, passInput){
         }
     }.bind(this));
     
-    
-    // Address INFOOSSSS    
-    Promise.all(this.addresses.map((address) => {
-        return Qora.apiCall({
-            type: "explorer",
-            url: "",
-            data: {
-                addr: address.address.address
-            },
-            method: "GET"
-        }, this.qoraNode)
-            .then((response, error) => {
-            address.info = response;
-            //console.log(response);
-            return address;
-        })
-    })).then(function(addresses, err){
-        // Sort em real nice
-        addresses.sort(function(a, b){
-            return a.index - b.index
-        });
-        
-        // And spread the love to the wor....app
-        this.addresses = [];
-        this.addresses = addresses;
-        console.log(this.addresses);
-        
-        // Log her in....Now that the addresses are loaded.
-        this.loginpage.loggedin = true;
-        this.passphrase = passphrase;
-        
-        const loginpage = this.loginpage;
-        this.loginpage = {};
-        this.loginpage = loginpage;
-    }.bind(this))
-        .catch(function(err){
-        passInput.disabled = false;
-        this.set('loginpage.loading', false);
-        this.set('loginpage.errorMessage', err);
-        //console.log("ERRRRROR");
-    }.bind(this))
-    
-    
-    /*for(let i=0;i<addresses.length; i++){
-        
-        Qora.apiCall({
-            type: "explorer",
-            path: "/index/blockexplorer.json",
-            data: {
-                addr: addresses[i].address
-            },
-            method: "GET"
-        }, this.qoraNode)
-            .then((response) => {
-            const address = addresses[i];
-            address.info = response;
-            storeAddresses.push(address);
-            console.log(response);
-        })
-            .catch((err) => {
-            storeAddresses.push(addresses[i]);
-            console.log(err);
-        })
-    }*/
-    
-    
-    
-    // Polling to refresh acc info
-    /*function loop(){
-                setTimeout(function(){
-                    this._accountInfo(loop.bind(this));
-                }.bind(this), 10000);
-            }
-            this._accountInfo(loop.bind(this));*/
+    this.loginpage.loggedin = true;
+    this.passphrase = passphrase;
 
+    const loginpage = this.loginpage;
+    this.loginpage = {};
+    this.loginpage = loginpage;
+}
+
+
+function logout(){
+    this.addresses = [];
+    clearTimeout(addressUpdateTimeout);
+    this.loginpage.loggedin = false;
+    this.loginpage.loading = false;
+    this.loginpage.errorMessage = "";
+    this.passphrase = "";
+    this.passInput.disabled = false;
+    this.addresse = [];
+
+    const loginpage = this.loginpage;
+    this.loginpage = {};
+    this.loginpage = loginpage;
 }
