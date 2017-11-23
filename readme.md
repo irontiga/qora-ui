@@ -1,12 +1,12 @@
 ## Qora UI
 
-# Installation
+### Installation
 `npm install`
 
 `cd client`
 
 `bower install`
-# Run
+### Run
 Just hit `run.bat` in windows, or from commandline use
 `npm start`
 and access it at [http://127.0.0.1:3000/qora](127.0.0.1:3000/qora)
