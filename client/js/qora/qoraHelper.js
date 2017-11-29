@@ -218,7 +218,7 @@ function QoraCalls(){
 }
 
 
-
+/*
 
 function doProcess(txRaw){
     if(!txRaw) {
@@ -306,6 +306,8 @@ function doProcess(txRaw){
         }
     });
 }
+*/
+
 /*function doPaymentTransaction(recipient, amount) {
 
     var base58SenderAccountSeed = $('#selected-name option:selected').val();

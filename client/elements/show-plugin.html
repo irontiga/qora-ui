@@ -16,7 +16,7 @@
             }
         </style>
         
-        <iframe src="{{_frameUrl(route, data, subroute, url)}}"></iframe>
+        <iframe security="restricted" src="{{_frameUrl(route, data, subroute, url)}}"></iframe>
     </template>
 
     <script>
@@ -31,7 +31,7 @@
             
             _frameUrl: function(route, data, subroute, url){
                 //console.log(url);
-                return "/plugins/" + url.page
+                return window.location.protocol + "//" + window.location.hostname + ":" + (parseInt(window.location.port)+1) + "/plugins/" + url.page
             },
             
             toJSON: function(object){

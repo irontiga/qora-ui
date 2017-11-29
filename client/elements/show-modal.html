@@ -1,0 +1,46 @@
+<script src="/client/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+
+<link rel="import" href="/client/bower_components/polymer/polymer.html">
+
+<dom-module id="show-modal" style="padding:0;">
+
+    <template>
+
+        <style>
+            :host{
+                padding:0!important;
+                margin:0;
+            }
+            iframe{
+                width:100vw;
+                max-width:calc(100vw - 120px);
+                height:100vh;
+                max-height: calc(100vh - 110px);
+                border:0;
+                padding:0;
+                margin:0;
+            }
+        </style>
+
+        <iframe security="restricted" src="{{_frameUrl(item)}}"></iframe>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'show-modal',
+            properties: {
+                item: Object
+            },
+
+            _frameUrl: function(item){
+                //console.log(url);
+                return window.location.protocol + "//" + window.location.hostname + ":" + (parseInt(window.location.port) + 1) + "/plugins/" + item.page;
+            },
+
+            ready: function(){
+                //console.log(this.url);
+            }
+        });
+    </script>
+
+</dom-module>

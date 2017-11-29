@@ -21,16 +21,22 @@ class QoraHandler extends messageHandler {
     }
 
     getQoraAddresses(data, finish){
-        const addressIDS = this.app.addresses.map(function(address, index){
+        const addressIDS = this.app.addresses.map(function(address){
             let response = {
-                address: address.address.address,
+                address: address.address,
                 color: address.color,
-                index: index
+                nonce: address.nonce
             }
             return response;
         })
         finish(addressIDS);
     }
+    
+    getQoraAddress(data, finish){
+        return this.wallet.genAddress(data.nonce)
+    }
+    
+    // Use nonces instead of addresses
     sendMoney(data, finish){
         if(this.app.sendMoneyPrompt.open){
             finish({
@@ -41,11 +47,14 @@ class QoraHandler extends messageHandler {
         console.log(data);
 
         // Find the address info
+        /*
         let i = 0;
-        while(data.address != this.app.addresses[i].address.address){
+        while(data.address != this.app.addresses[i].address){
             i++;
         }
         data.sender = this.app.addresses[i];
+        */
+        data.sender = this.app.addresses[data.nonce];
         // Last referene at senderAddress[highest tx number].reference;
 
         this.app.sendMoneyPrompt = {};

@@ -3,12 +3,12 @@ function pluginLoader(plugins){
 
     for(var i=0; i<plugins.length;i++){
 
-        var frame = document.createElement("iframe");
+        const frame = document.createElement("iframe");
         frame.className += "pluginJSFrame";
 
-        var insertedFrame = document.body.appendChild(frame);
+        const insertedFrame = document.body.appendChild(frame);
 
-        var helperScript = insertedFrame.contentWindow.document.createElement("script");
+        const helperScript = insertedFrame.contentWindow.document.createElement("script");
         helperScript.type = "text/javascript";
         helperScript.src = "/client/js/helpers.js";
 
@@ -16,9 +16,10 @@ function pluginLoader(plugins){
                 helperActivatorScript.setAttribute("type", "text/javascript");
                 helperActivatorScript.text = "var Burst = new parentHelper();";*/
 
-        var pluginScript = insertedFrame.contentWindow.document.createElement("script");
+        const pluginScript = insertedFrame.contentWindow.document.createElement("script");
         pluginScript.type = "text/javascript";
-        pluginScript.src = "/plugins/" + plugins[i] + "/main.js";
+        console.log( window.location.protocol + "//" + window.location.hostname + ":" + (parseInt(window.location.port) + 1) + "/plugins/");
+        pluginScript.src = window.location.protocol + "//" + window.location.hostname + ":" + (parseInt(window.location.port) +1) + "/plugins/" + plugins[i] + "/main.js";
 
         insertedFrame.contentWindow.document.body.appendChild(helperScript);
         /*insertedFrame.contentWindow.document.body.appendChild(helperActivatorScript);*/
@@ -37,7 +38,7 @@ xhttp.onreadystatechange = function(){
 
     if (xhttp.readyState == 4 && xhttp.status == 200) {
 
-        var response = JSON.parse(xhttp.responseText);
+        const response = JSON.parse(xhttp.responseText);
 
         pluginLoader(response);
     }

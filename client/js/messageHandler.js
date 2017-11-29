@@ -11,6 +11,7 @@ class messageHandler {
         const message = JSON.parse(event.data);
         const source = event.source;
         console.log(message);
+        console.log(event);
         
         switch(message.request){
             case "stream" :
@@ -84,6 +85,18 @@ class messageHandler {
     }
     addMenuItem(data, finish){
         finish();
+    }
+    
+    /*
+    {
+        icon: "",
+        frameUrl: "/frame/url",
+        text: ""
+    }
+    */
+    
+    registerTopMenuModal(data, finish){
+        this.app.push("topMenuItems", data)
     }
     
     // Nice n simple toast

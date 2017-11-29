@@ -1,7 +1,7 @@
 const parentWindow = new ParentHelper();
 
 class WalletApp extends Polymer.Element {
-    static get is(){ return 'wallet-app' }
+    static get is(){ return 'multi-wallet' }
 
     static get properties() {
         return {
@@ -63,9 +63,10 @@ class WalletApp extends Polymer.Element {
         // Check for valid...^
         
         this.sendMoneyLoading = true;
-        
         parentWindow.request("sendMoney", {
-            address: address.address,
+            // Why is it index not nonce?
+            nonce: address.nonce,
+            //address: address.address,
             amount: amount,
             recipient: recipient,
             fee: fee
@@ -160,7 +161,7 @@ class WalletApp extends Polymer.Element {
             // Sort em real nice
             //console.log(addresses);
             addresses.sort(function(a, b){
-                return a.index - b.index
+                return a.nonce - b.nonce
             });
 
             // And spread the love to the wor....app
@@ -179,7 +180,8 @@ class WalletApp extends Polymer.Element {
         // Fetch the addresssses
         parentWindow.request("getQoraAddresses", {}, function(addresses){
             //console.log("================ HEYY ============");
-            console.log(addresses);
+            //console.log(JSON.stringify(addresses));
+            //console.log(addresses);
 
             this.addressStore = addresses;
             // Nope, need to wait till balances are loaded
@@ -194,92 +196,3 @@ class WalletApp extends Polymer.Element {
 }
 
 window.customElements.define(WalletApp.is, WalletApp);
-
-/*window.addEventListener('WebComponentsReady', function(){
-
-});*/
-
-/*
-"help":{
-    "Unconfirmed Transactions":"blockexplorer.json?unconfirmed",
-        "Block":"blockexplorer.json?block={block}",
-            "Blocks List":"blockexplorer.json?blocks[&start={height}]",
-                "Assets List":"blockexplorer.json?assets",
-                    "Assets List Lite":"blockexplorer.json?assetsLite",
-                        "Asset":"blockexplorer.json?asset={asset}",
-                            "Asset Trade":"blockexplorer.json?asset={assetHave}&asset={assetWant}",
-                                "Polls List":"blockexplorer.json?polls",
-                                    "Poll":"blockexplorer.json?poll={poll}",
-                                        "AT TX":"blockexplorer.json?atTx={atTx}",
-                                            "Trade":"blockexplorer.json?trade={initiatorSignature}/{targetSignature}",
-                                                "Transaction":"blockexplorer.json?tx={txSignature}",
-                                                    "Name":"blockexplorer.json?name={name}",
-                                                        "Name (additional)":"blockexplorer.json?name={name}&start={offset}&allOnOnePage",
-                                                            "Address":"blockexplorer.json?addr={address}",
-                                                                "Address (additional)":"blockexplorer.json?addr={address}&start={offset}&allOnOnePage&withoutBlocks&showWithout={1,2,blocks}&showOnly={type}",
-                                                                    "Top Richest":"blockexplorer.json?top={limit}&asset={asset}",
-                                                                        "Address All Not Zero":"blockexplorer.json?top=allnotzero",
-                                                                            "Address All Addresses":"blockexplorer.json?top=all",
-                                                                                "AT List":"blockexplorer.json?aTs",
-                                                                                    "Names List":"blockexplorer.json?names",
-                                                                                        "BlogPosts of Address":"blockexplorer.json?blogposts={addr}",
-                                                                                            "Search":"blockexplorer.json?q={text}",
-                                                                                                "Balance":"blockexplorer.json?balance={address}[&balance=address2...]"
-}
-*/
-
-/*
-const addressUpdate = function(firstCall, interval){
-
-    Promise.all(this.addresses.map((address) => {
-        return Qora.apiCall({
-            type: "explorer",
-            url: "",
-            data: {
-                addr: address.address.address
-            },
-            method: "GET"
-        }, this.qoraNode)
-            .then((response, error) => {
-            address.info = response;
-            //console.log(response);
-            return address;
-        })
-    })).then(function(addresses, err){
-        // Sort em real nice
-        addresses.sort(function(a, b){
-            return a.index - b.index
-        });
-
-        // And spread the love to the wor....app
-        this.addresses = [];
-        this.addresses = addresses;
-        //console.log(this.addresses);
-
-        // Log her in....Now that the addresses are loaded.
-        if(firstCall){
-            this.loginpage.loggedin = true;
-            this.passphrase = passphrase;
-
-            const loginpage = this.loginpage;
-            this.loginpage = {};
-            this.loginpage = loginpage;
-        }
-    }.bind(this))
-        .then(function(){
-        addressUpdateTimeout = setTimeout(function(){ return addressUpdate(false, interval);}, interval)
-    })
-        .catch(function(err){
-        if(firstCall){
-            passInput.disabled = false;
-            this.set('loginpage.loading', false);
-            this.set('loginpage.errorMessage', err);
-            //console.log("ERRRRROR");
-        }
-        else{
-            addressUpdateTimeout = setTimeout(function(){ return addressUpdate(false, interval);}, interval)
-        }
-    }.bind(this))
-}.bind(this)
-
-addressUpdateTimeout = setTimeout(function(){addressUpdate(true, 10000)}.bind(this), 0);*/

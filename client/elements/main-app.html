@@ -38,6 +38,7 @@
 <!-- Custom elements -->
 <link rel="import" href="/client/styles/app-theme.html">
 <link rel="import" href="/client/elements/show-plugin.html">
+<link rel="import" href="/client/elements/show-modal.html">
 <link rel="import" href="/client/elements/login-page.html">
 
 <dom-module id="main-app">
@@ -93,7 +94,7 @@
             <app-localstorage-document key="addressCount" data="{{addressCount}}"></app-localstorage-document>
 
             <!-- LOGIN PAGE -->
-            <login-page loginpage="{{loginpage}}" node="{{qoraNode}}" passphrase="{{passphrase}}" address-count="{{addressCount}}"></login-page>
+            <login-page loginpage="{{loginpage}}" node="{{qoraNode}}" passphrase="{{passphrase}}" pin="{{pin}}" address-count="{{addressCount}}"></login-page>
 
 
             <app-header-layout>
@@ -102,6 +103,11 @@
                     <app-toolbar>
                         <paper-icon-button icon="menu" drawer-toggle on-click="_toggleDrawer" class="show-only-mobile"></paper-icon-button>
                         <div main-title><span class="qora-title">QORA | </span> {{activeUrl.title}}</div>
+                        
+                        <template is="dom-repeat" items="{{topMenuItems}}">
+                            <paper-button style="font-size:16px; height:40px;" on-tap="_openTopMenuModal">{{item.text}}&nbsp;<iron-icon icon="{{item.icon}}"></iron-icon></paper-button>
+                        </template>
+                        
                         <paper-icon-button icon="settings"></paper-icon-button>
                         <paper-icon-button icon="power-settings-new" on-tap="_logout"></paper-icon-button>
                     </app-toolbar>
@@ -157,6 +163,14 @@
 
 
             </app-header-layout>
+            
+            
+            
+            <!-- TOP MENU DIALOG -->
+            <paper-dialog with-backdrop id="topMenuDialog" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+                <show-modal item="{{selectedModal}}"></show-modal>
+            </paper-dialog>
+            <!-- -->
 
 
             <!-- SEND MONEY CONFIRM DIALOG -->
@@ -190,35 +204,34 @@
     
     
     <!-- Won't be needing these for Qora.... -->
-    <script src="/client/js/localSigningDeps.js"></script>
-    <script src="/client/js/localSigning.js"></script>
-    <script src="/client/js/burstCalls.js"></script>
+    <!--<script src="/client/js/localSigningDeps.js"></script>
+    <script src="/client/js/localSigning.js"></script>-->
     <!-- QORA *down arrow* -->
-    <script src="/client/js/qora-proto/nacl-fast.js"></script>
-    <script src="/client/js/qora-proto/Base58.js"></script>
-    <script src="/client/js/qora-proto/sha256.js"></script>
-    <script src="/client/js/qora-proto/ripemd160.js"></script>
-    <script src="/client/js/qora-proto/qora.js"></script>
+    <script src="/client/js/qora/deps/nacl-fast.js"></script>
+    <script src="/client/js/qora/deps/Base58.js"></script>
+    <script src="/client/js/qora/deps/sha256.js"></script>
+    <script src="/client/js/qora/deps/ripemd160.js"></script>
+    <script src="/client/js/qora/deps/qora.js"></script>
+    <!--<script src="/client/js/qora/deps/brainwallet.js"></script>-->
+    <script src="/client/js/qora/PhraseWallet.js"></script>
     <!-- Me Qora -->
-    <script src="/client/js/qoraHelper.js"></script>
+    <script src="/client/js/qora/qoraHelper.js"></script>
     <script>
         // From qoraHelper.js....has API interactions
         Qora = new QoraCalls();
     </script>
     
-    <script src="/client/js/sendMoneyQora.js"></script>
+    <script src="/client/js/qora/sendMoneyQora.js"></script>
     <!-- Wants jQuery...-->
     <!-- <script src="/client/js/qora-proto/common.js"></script> -->
-    <script src="/client/js/qora-proto/nacl-fast.js"></script>
-    <script src="/client/js/qora-proto/brainwallet.js"></script>
     
-    <script>
+    <!--<script>
         var localSign = new localSigning();
         var BurstCall = new BurstCalls();
-    </script>
+    </script>-->
     <script src="/client/js/login.js"></script>
-	<script src="/client/js/app-2.js"></script>
+	<script src="/client/js/app.js"></script>
 	<script src="/client/js/messageHandler.js"></script>
-    <script src="/client/js/qoraMessageHandler.js"></script>
+    <script src="/client/js/qora/qoraMessageHandler.js"></script>
     <script src="/client/js/plugin-loader.js"></script>
 </dom-module>

@@ -59,7 +59,7 @@ class ParentHelper{
     }
     
     // Connect to another plugin's stream
-    openStream(){}
+    openStream(identifier, listener){}
     
     // Special polymer only function to connect to a stream and sync a var with all responses
     syncStream(){}
@@ -69,12 +69,17 @@ class Stream{
     constructor(identifier, parentThis){
         this.identifier = identifier;
         this.parent = parentThis;
-        
+        this.parent.request("stream", {
+            type: "create",
+            identifier: identifier
+        })
     }
     // Optional callback...for success/error i guess...we'll assume it doesn't fail for now
     send(data, callback){
         this.parent.request("stream", {
-            
+            type: "send",
+            identifier: this.identifier,
+            data: data
         }, callback)
     }
 }

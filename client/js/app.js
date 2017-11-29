@@ -16,6 +16,14 @@ class MainApp extends Polymer.Element {
                 type: Array,
                 value: []
             },
+            topMenuItems: {
+                type: Array,
+                value: []
+            },
+            selectedModal:{
+                type: Object,
+                value:{}
+            },
             routeData: {
                 type: Object,
                 value:{}
@@ -207,6 +215,12 @@ class MainApp extends Polymer.Element {
     connectedCallback() {
         super.connectedCallback();
         //console.log('main-app element created!');
+    }
+    
+    _openTopMenuModal(e){
+        console.log(e.model.item);
+        this.selectedModal = e.model.item;
+        this.$.topMenuDialog.toggle();
     }
 
     ready(){

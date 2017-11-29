@@ -69,7 +69,8 @@
                         <div class="card-content">
                             
                             <span class="error-message">{{loginpage.errorMessage}}</span>
-                            <paper-input char-counter label="Passphrase" type="password" id="passphrase" value="{{passphrase}}" autofocus on-keydown="_keyDown"></paper-input>
+                            <paper-input char-counter label="Passphrase" type="password" id="passphrase" value="{{passphrase}}" autofocus on-keydown="_loginKeyDown"></paper-input>
+                            <paper-input pattern="[0-9]*" auto-validate="true" maxlength="4" minlength="4" label="Pin" type="password" id="pin" value="{{pin}}" autofocus on-keydown="_loginKeyDown"></paper-input>
                             
                             <template is="dom-if" if="{{!loginpage.loading}}">
                                 <div class="show-advanced">
@@ -81,12 +82,13 @@
                                     <div>
                                         <h4>Node options</h4>
                                         
-                                        <paper-input label="Explorer URL" type="text" value="{{node.explorer.url}}"></paper-input>
-                                        <paper-input label="API URL" type="text" value="{{node.api.url}}"></paper-input>
+                                        <paper-input label="Explorer URL" type="text" value="{{node.explorer.url}}" on-keydown="_loginKeyDown"></paper-input>
+                                        <paper-input label="API URL" type="text" value="{{node.api.url}}" on-keydown="_loginKeyDown"></paper-input>
                                     </div>
                                     <div>
                                         <h4>Wallet options</h4>
-                                        <paper-input label="Number of addresses" type="number" value="{{addressCount}}"></paper-input>
+                                        <!-- GET RID OF IT -->
+                                        <paper-input label="Number of addresses" type="number" value="{{addressCount}}" on-keydown="_loginKeyDown"></paper-input>
                                     </div>
                                 </iron-collapse>
                             </template>
@@ -140,7 +142,7 @@
                 moreInfo.toggle();
                 */
             },
-            _keyDown: function(e){
+            _loginKeyDown: function(e){
                 if (e.keyCode === 13) {
                     this._loginClick();
                 }
@@ -148,6 +150,8 @@
             _loginClick : function(){
                 //console.log(passphrase);
                 //console.log(this.node);
+                if(this.pin == undefined){return;}
+                if(this.pin.length != 4){return;}
                 if(this.passphrase == undefined){return;}
                 if(this.passphrase.length == 0){return;}
                 if(this.passphrase.length < 15){
@@ -158,7 +162,7 @@
                         return;
                     }
                 }
-                this.loginpage.login(this.passphrase, this.shadowRoot.querySelector('#passphrase'));
+                this.loginpage.login(this.passphrase, this.pin, this.shadowRoot.querySelector('#passphrase'));
                 //this.passphrase = this.$$("#passphrase").value
             }
         });
