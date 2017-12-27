@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
-var pluginPath = path.join(__dirname, "../plugins/");
+const pluginPath = path.join(__dirname, "../plugins/");
 
-var getPlugins = function(){
+const getPlugins = function(){
 	
 	this.readPluginDir = function(){
 		try{
@@ -31,9 +31,9 @@ var getPlugins = function(){
 	
 };
 
-var plugins = new getPlugins();
+const plugins = new getPlugins();
 plugins.getPlugins();
 
-console.log(plugins);
+console.log(plugins.plugins);
 
 module.exports = plugins;

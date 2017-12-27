@@ -12,6 +12,10 @@
 <link rel="import" href="/client/bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="/client/bower_components/neon-animation/web-animations.html">
 <link rel="import" href="/client/bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="/client/bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="/client/bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="/client/bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="/client/bower_components/neon-animation/neon-animated-pages.html">
 
 <link rel="import" href="/client/styles/app-theme.html">
 
@@ -27,7 +31,7 @@
                 background: var(--primary-color);
                 z-index:3;
             }
-            :root{
+            :host > *{
                 --paper-button-ink-color: var(--dark-accent-color)
             }
             paper-progress{
@@ -63,14 +67,42 @@
                 </div>-->
                 <div class="layout horizontal center-justified">
                     <paper-card heading="Qora login" style="min-width:350px;">
+                        
                         <template is="dom-if" if="{{loginpage.loading}}">
                             <paper-progress indeterminate></paper-progress>
                         </template>
+                        
+                        <paper-tabs autoselect id="loginTabs" selected="{{loginType}}">
+                            <paper-tab>Passphrase</paper-tab>
+                            <paper-tab>Seed</paper-tab>
+                            <paper-tab>Address</paper-tab>
+                        </paper-tabs>
+                        
+                        
                         <div class="card-content">
                             
+                            <neon-animated-pages style="height:120px" selected="{{loginType}}" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+                                
+                                <neon-animatable>
+                                    <!--Passphrase -->
+                                    <paper-input char-counter label="Passphrase" type="password" id="passphrase" value="{{passphrase}}" autofocus on-keydown="_loginKeyDown"></paper-input>
+                                    <paper-input pattern="[0-9]*" auto-validate="true" maxlength="4" minlength="4" label="Pin" type="password" id="pin" value="{{pin}}" autofocus on-keydown="_loginKeyDown"></paper-input>
+                                </neon-animatable>
+                                <neon-animatable>
+                                    <!-- Generation seed -->
+                                    <paper-input label="Qora generation seed" type="password" id="generationSeed" value="{{generationSeed}}" on-keydown="_loginKeyDown"></paper-input>
+                                    <paper-input pattern="[0-9]*" auto-validate="true" maxlength="4" minlength="4" label="Pin" type="password" id="pin" value="{{pin}}" autofocus on-keydown="_loginKeyDown"></paper-input>
+                                </neon-animatable>
+                                <neon-animatable>
+                                    <!-- Blockexplorer style, just for viewing an address -->
+                                    <paper-input disabled label="Coming soon..." type="text" id="qoraAddress" value="{{qoraAddress}}" on-keydown="_loginKeyDown"></paper-input>
+                                </neon-animatable>
+                            </neon-animated-pages>
+                            
+                            
+                            
                             <span class="error-message">{{loginpage.errorMessage}}</span>
-                            <paper-input char-counter label="Passphrase" type="password" id="passphrase" value="{{passphrase}}" autofocus on-keydown="_loginKeyDown"></paper-input>
-                            <paper-input pattern="[0-9]*" auto-validate="true" maxlength="4" minlength="4" label="Pin" type="password" id="pin" value="{{pin}}" autofocus on-keydown="_loginKeyDown"></paper-input>
+                            
                             
                             <template is="dom-if" if="{{!loginpage.loading}}">
                                 <div class="show-advanced">
@@ -101,12 +133,36 @@
 -->
                         </div>
                         <div class="card-actions">
-                            <paper-button disabled>New Account</paper-button>
+                            <paper-button on-tap="_newAccountClick">New Account</paper-button>
                             <paper-button style="float:right" on-tap="_loginClick">Login</paper-button>
                         </div>
                     </paper-card>
                 </div>
             </div>
+            
+            <!-- NEW ACCOUNT DIALOG -->
+            <paper-dialog with-backdrop id="newAccountDialog" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+                <h2>Creating a new Qora account</h2>
+                <h3>Passphrase</h3>
+                <p>
+                    With this wallet there is no need to "create" an account. Simply enter a passphrase (a long password) and a pin of your choice. This combination will point to a Qora address, and whenever you login with the same passphrase and pin, you will see the same account. It is recommended that you choose a very strong passphrase which meets the following criteria, as it is all that stands between you and a hacker. You can NOT use your qora generation seed as your passphrase(at least not if you want to see the same addresses as in your qora wallet), as it is processed differently.
+                    
+                    <ul>
+                        <li>Is at least 15 characters long</li>
+                        <li>Contains a capital letter</li>
+                        <li>Contains a lowercase letter</li>
+                        <li>Contains a number</li>
+                        <li>Contains a symbol</li>
+                    </ul>
+                
+                </p>
+                
+                <h3>Pin</h3>
+                <p>
+                    You can choose any 4 digit pin.
+                </p>
+            </paper-dialog>
+            <!-- -->
         </template>
     </template>
     
@@ -114,26 +170,53 @@
     <script>
         parentWindow = new ParentHelper();
         
-        Polymer({
-            is: "login-page",
-            properties: {
-                loginpage: {
-                    type: Object
-                },
-                node:{
-                    type: Object,
-                    notify: true
-                },
-                addressCount: {
-                    type: Number,
-                    notify: true
-                },
-                override: {
-                    type: String,
-                    value: ""
+        class LoginPage extends Polymer.Element{
+            static get is(){
+                return "login-page";
+            }
+            
+            static get properties(){
+                return {
+                    loginpage: {
+                        type: Object
+                    },
+                    node:{
+                        type: Object,
+                        notify: true
+                    },
+                    addressCount: {
+                        type: Number,
+                        notify: true
+                    },
+                    override: {
+                        type: String,
+                        value: ""
+                    },
+                    loginType: {
+                        /*
+                    0 = Passphrase
+                    1 = Generation seed
+                    2 = Address viewing mode
+                    */
+                        type: Number,
+                        value: 0
+                    }
                 }
-            },
-            _showAdvanced: function(){
+            }
+            
+            constructor() {
+                super()
+            }
+            
+            
+            _loggedin(loading){
+                console.log(loading);
+                console.log(this.shadowRoot.querySelector("#loginTabs"));
+                //this.shadowRoot.querySelector("#loginTabs").select(0);
+                console.log(this.loginType);
+                this.loginType = 0;
+            }
+            _showAdvanced(){
                 this.$$("#advanced").toggle();
                 /*
                 var moreInfo = document.getElementById('more-info');
@@ -141,30 +224,167 @@
                 iconButton.icon = moreInfo.opened ? 'hardware:keyboard-arrow-down' : 'hardware:keyboard-arrow-up';
                 moreInfo.toggle();
                 */
-            },
-            _loginKeyDown: function(e){
+            }
+        
+            _loginKeyDown(e){
                 if (e.keyCode === 13) {
                     this._loginClick();
                 }
-            },
-            _loginClick : function(){
+            }
+            _loginClick(){
                 //console.log(passphrase);
                 //console.log(this.node);
+                
+                // Pin
                 if(this.pin == undefined){return;}
                 if(this.pin.length != 4){return;}
-                if(this.passphrase == undefined){return;}
-                if(this.passphrase.length == 0){return;}
-                if(this.passphrase.length < 15){
-                    //...no no no, bad idea bro
-                    if (this.override != this.passphrase){
-                        this.set("loginpage.errorMessage", "Passphrase too short. Should be at least 15 characters. Press enter/login again to override this.");
-                        this.override = this.passphrase;
-                        return;
+                
+                // Passphrase
+                if(this.loginType === 0){
+                    if(this.passphrase == undefined){return;}
+                    if(this.passphrase.length == 0){return;}
+                    if(this.passphrase.length < 15){
+                        //...no no no, bad idea bro
+                        if (this.override != this.passphrase){
+                            this.set("loginpage.errorMessage", "Passphrase too short. Should be at least 15 characters. Press enter/login again to override this.");
+                            this.override = this.passphrase;
+                            return;
+                        }
                     }
+                    this.loginpage.login(this.passphrase, this.pin, this.loginType, this.shadowRoot.querySelector('#passphrase'));
                 }
-                this.loginpage.login(this.passphrase, this.pin, this.shadowRoot.querySelector('#passphrase'));
+                
+                // Generation seed...
+                if(this.loginType === 1){
+                    // Add error handling
+                    this.loginpage.login(this.generationSeed, this.pin, this.loginType, this.shadowRoot.querySelector('#generationSeed'));
+                }
+                
+                
+                // Which way are we logging in?
+                //this.loginpage.login(this.passphrase, this.pin, this.shadowRoot.querySelector('#passphrase'));
                 //this.passphrase = this.$$("#passphrase").value
             }
-        });
+            _newAccountClick(e){
+                this.$$("#newAccountDialog").open();
+            }
+            ready(){
+                super.ready();
+                console.log(this.shadowRoot.querySelector("#loginTabs"));
+                //this.shadowRoot.querySelector("#loginTabs").select(0);
+                this.loginType = 0;
+                console.log(this.loginType);
+                console.log(typeof(this.loginType));
+            }
+            
+        }
+        
+        customElements.define(LoginPage.is, LoginPage);
     </script>
 </dom-module>
+
+<!--
+
+<script>
+
+Polymer({
+is: "login-page",
+observers: [
+"_loggedin(loginpage.loading)"
+],
+properties: {
+loginpage: {
+type: Object
+},
+node:{
+type: Object,
+notify: true
+},
+addressCount: {
+type: Number,
+notify: true
+},
+override: {
+type: String,
+value: ""
+},
+loginType: {
+/*
+0 = Passphrase
+1 = Generation seed
+2 = Address viewing mode
+*/
+type: Number,
+value: 0
+}
+},
+_loggedin(loading){
+console.log(loading);
+console.log(this.shadowRoot.querySelector("#loginTabs"));
+//this.shadowRoot.querySelector("#loginTabs").select(0);
+console.log(this.loginType);
+this.loginType = 0;
+},
+_showAdvanced: function(){
+this.$$("#advanced").toggle();
+/*
+var moreInfo = document.getElementById('more-info');
+var iconButton = Polymer.dom(event).localTarget;
+iconButton.icon = moreInfo.opened ? 'hardware:keyboard-arrow-down' : 'hardware:keyboard-arrow-up';
+moreInfo.toggle();
+*/
+},
+_loginKeyDown: function(e){
+if (e.keyCode === 13) {
+this._loginClick();
+}
+},
+_loginClick : function(){
+//console.log(passphrase);
+//console.log(this.node);
+
+// Pin
+if(this.pin == undefined){return;}
+if(this.pin.length != 4){return;}
+
+// Passphrase
+if(this.loginType === 0){
+if(this.passphrase == undefined){return;}
+if(this.passphrase.length == 0){return;}
+if(this.passphrase.length < 15){
+//...no no no, bad idea bro
+if (this.override != this.passphrase){
+this.set("loginpage.errorMessage", "Passphrase too short. Should be at least 15 characters. Press enter/login again to override this.");
+this.override = this.passphrase;
+return;
+}
+}
+this.loginpage.login(this.passphrase, this.pin, this.loginType, this.shadowRoot.querySelector('#passphrase'));
+}
+
+// Generation seed...
+if(this.loginType === 1){
+// Add error handling
+this.loginpage.login(this.generationSeed, this.pin, this.loginType, this.shadowRoot.querySelector('#generationSeed'));
+}
+
+
+// Which way are we logging in?
+//this.loginpage.login(this.passphrase, this.pin, this.shadowRoot.querySelector('#passphrase'));
+//this.passphrase = this.$$("#passphrase").value
+},
+
+_newAccountClick: function(e){
+this.$$("#newAccountDialog").open();
+},
+ready: function(){
+/*console.log(this.shadowRoot.querySelector("#loginTabs"));
+this.shadowRoot.querySelector("#loginTabs").select(0);
+this.loginType = 0;
+console.log(this.loginType);
+console.log(typeof(this.loginType));*/
+}
+});
+
+</script>
+-->

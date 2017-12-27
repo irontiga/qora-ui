@@ -67,7 +67,7 @@ class ParentHelper{
 
 class Stream{
     constructor(identifier, parentThis){
-        this.identifier = identifier;
+        this._identifier = identifier;
         this.parent = parentThis;
         this.parent.request("stream", {
             type: "create",
@@ -78,7 +78,7 @@ class Stream{
     send(data, callback){
         this.parent.request("stream", {
             type: "send",
-            identifier: this.identifier,
+            identifier: this._identifier,
             data: data
         }, callback)
     }

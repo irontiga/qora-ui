@@ -46,9 +46,15 @@ class PhraseWalletUtils{
 }
 // The real Qora stuff
 class PhraseWallet extends PhraseWalletUtils {
-    constructor(passphrase) {
+    // By default will create itself based on a passphrase. Can be changed to being based off a seed
+    constructor(type, phraseOrSeed) {
         super();
-        this.passphrase = passphrase;
+        if(type == "passphrase"){
+            this.passphrase = phraseOrSeed;
+        }
+        else{
+            this.generationSeed = phraseOrSeed;
+        }
     }
     
     set passphrase(passphrase){
@@ -58,10 +64,19 @@ class PhraseWallet extends PhraseWalletUtils {
         // Convert the phrase to a seed...maybe here...maybe elsewhere
         this._byteSeed = new Uint8Array(SHA256.digest(SHA256.digest(this._passphrase)));
         // Is this needed?
-        this._base58BaseSeed = Base58.encode(this.byteSeed);
+        this._base58BaseSeed = Base58.encode(this._byteSeed);
         
         this._addresses = [];
         
+        this.genAddress(0);
+    }
+    
+    set generationSeed(seed){
+        this._byteSeed = Base58.decode(seed);;
+        this._base58BaseSeed = seed;
+        
+        this._addresses = [];
+
         this.genAddress(0);
     }
     
@@ -80,6 +95,9 @@ class PhraseWallet extends PhraseWalletUtils {
     
     get addressIDs(){
         // only return IDs
+        return this._addresses.map(addr => {
+            return addr.address;
+        })
     }
     
     addressExists(nonce){
@@ -139,6 +157,7 @@ class PhraseWallet extends PhraseWalletUtils {
             address: address,
             privateKey: addrKeyPair.secretKey,
             publicKey: addrKeyPair.publicKey,
+            seed: addrSeed,
             nonce: nonce
         }
         return this._addresses[nonce];

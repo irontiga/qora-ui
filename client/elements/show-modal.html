@@ -12,9 +12,9 @@
                 margin:0;
             }
             iframe{
-                width:100vw;
+                width:auto;
                 max-width:calc(100vw - 120px);
-                height:100vh;
+                height:auto;
                 max-height: calc(100vh - 110px);
                 border:0;
                 padding:0;
@@ -22,7 +22,7 @@
             }
         </style>
 
-        <iframe security="restricted" src="{{_frameUrl(item)}}"></iframe>
+        <iframe security="restricted" sandbox="allow-scripts allow-same-origin" src="{{_frameUrl(item)}}"></iframe>
     </template>
 
     <script>

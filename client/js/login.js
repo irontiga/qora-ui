@@ -1,6 +1,6 @@
 let addressUpdateTimeout;
 
-function login(passphrase, pin, passInput){
+function login(phraseOrSeed, pin, loginType, passInput){
     this.passInput = passInput;
     // Show loading...and disable the input
     // console.log(passInput)
@@ -9,7 +9,27 @@ function login(passphrase, pin, passInput){
     // Clear any error messages...don't want to be confusing anyone
     this.set('loginpage.errorMessage', "");
     
-    this.wallet = new PhraseWallet(passphrase + pin);
+    console.log(loginType);
+    
+    this.loginType = loginType;
+    
+    // Passphrase
+    if(loginType === 0){
+        this.wallet = new PhraseWallet("passphrase", phraseOrSeed + pin);
+        this.passphrase = phraseOrSeed;
+    }
+    // Qora seed
+    if(loginType === 1){
+        this.wallet = new PhraseWallet("seed", phraseOrSeed);
+        this.generationSeed = phraseOrSeed;
+    }
+    // Something weird...
+    if(loginType > 1){
+        this.set('loginpage.errorMessage', "Not implemented");
+        return;
+    }
+    
+    
     
     // And for now...we'll generate the first n addresses
     for(let i=0;i<this.addressCount;i++){
@@ -36,7 +56,6 @@ function login(passphrase, pin, passInput){
     }.bind(this));
     
     this.loginpage.loggedin = true;
-    this.passphrase = passphrase;
 
     const loginpage = this.loginpage;
     this.loginpage = {};
@@ -50,6 +69,7 @@ function logout(){
     this.loginpage.loading = false;
     this.loginpage.errorMessage = "";
     this.passphrase = "";
+    this.generationSeed = "";
     this.pin = "";
     this.passInput.disabled = false;
     this.addresse = [];

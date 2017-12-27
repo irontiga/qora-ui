@@ -22,7 +22,10 @@ class MainApp extends Polymer.Element {
             },
             selectedModal:{
                 type: Object,
-                value:{}
+                value:{
+                    // This way browser won't throw an error at the default url
+                    page: "404"
+                }
             },
             routeData: {
                 type: Object,

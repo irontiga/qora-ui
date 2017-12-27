@@ -16,7 +16,7 @@
             }
         </style>
         
-        <iframe security="restricted" src="{{_frameUrl(route, data, subroute, url)}}"></iframe>
+        <iframe security="restricted" sandbox="allow-scripts allow-same-origin" src="{{_frameUrl(route, data, subroute, url)}}"></iframe>
     </template>
 
     <script>

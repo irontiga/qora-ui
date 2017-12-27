@@ -10,8 +10,8 @@ class messageHandler {
     _listener(event){
         const message = JSON.parse(event.data);
         const source = event.source;
-        console.log(message);
-        console.log(event);
+        //console.log(message);
+        //console.log(event.source.location);
         
         switch(message.request){
             case "stream" :
@@ -41,7 +41,7 @@ class messageHandler {
         //console.log(this);
         //console.log(this.app);
         if(this[message.request] == undefined){
-            console.log("UNDIES");
+            //console.log("UNDIES");
             return finish({
                 success: false,
                 errorMessage : "Unrecognized request '" + message.request + "'"
@@ -76,11 +76,21 @@ class messageHandler {
         
         // Dirty updating url array https://www.polymer-project.org/1.0/docs/devguide/model-data#array-mutation
         let allUrls = this.app.urls;
+        allUrls.sort((a, b) => {
+            if(a.title > b.title){
+                return 1;
+            }
+            if(a.title < b.title){
+                return -1;
+            }
+            return 0;
+            // Throw some sort of error if they're the same...can't have two menus with the same name, too confusing.
+        })
         this.app.urls = [];
         this.app.urls = allUrls;
         
-        console.log(this.app);
-        console.log(this.app.urls);
+        //console.log(this.app);
+        //console.log(this.app.urls);
         finish();
     }
     addMenuItem(data, finish){
@@ -109,6 +119,9 @@ class messageHandler {
     _stream(message, source){
         // Switch for create vs send
         //message.type: "create" or "send"
+        if(message.type == "create"){
+            this.streams.push(message.identifier);
+        }
     }
     // "Websocket" for frame to frame communication
     createStream(data, finish){

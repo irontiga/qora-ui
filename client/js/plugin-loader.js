@@ -5,6 +5,7 @@ function pluginLoader(plugins){
 
         const frame = document.createElement("iframe");
         frame.className += "pluginJSFrame";
+        frame.sandbox = "allow-scripts allow-same-origin";
 
         const insertedFrame = document.body.appendChild(frame);
 

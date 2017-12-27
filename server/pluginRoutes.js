@@ -39,41 +39,28 @@ const routes = [
         }
     },
     {
-		method: 'GET',
-		path: '/plugins/{param*}',
-		handler: {
-			directory: {
-				path: './plugins',
-				redirectToSlash: true,
-				index: true
-			}
-		}
+        method: 'GET',
+        path: '/plugins/{path*}',
+        handler: function (request, reply) {
+            return reply.file("./plugins/" + request.params.path).header('Access-Control-Allow-Origin', '*');
+        }
     },
+    /*{
+        method: 'GET',
+        path: '/plugins/{param*}',
+        handler: {
+            directory: {
+                path: './plugins',
+                redirectToSlash: true,
+                index: true
+            }
+        }
+    },*/
     {
         method: 'GET',
         path: '/plugins/404',
         handler: function(request, reply){
-            return reply.file('./client/404.html');
-        }
-    },
-    {
-        method: '*',
-        path: "/proxy/{url*}",
-        handler: {
-            proxy: {
-                mapUri: function(request, callback) {
-                    // http://127.0.0.1:3000/qoraProxy/explorer/addr=Qewuihwefuiehwfiuwe
-                    // protocol :// path:port / blockexplorer.json?addr=Qwqfdweqfdwefwef
-                    //console.log(request.url);
-                    // 7...that's the length of '/proxy/'
-                    console.log(request.url.href.slice(7))
-                    //let url = remote.url + "/" + request.url.href.replace('/' + remote.path + '/', '');
-                    //callback(null, url);
-                    callback(null, request.url.href.slice(7));
-                },
-                passThrough: true,
-                xforward: true
-            }
+            return reply.file('./client/404.html').code(404);
         }
     }
 ];

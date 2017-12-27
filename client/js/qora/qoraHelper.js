@@ -145,8 +145,8 @@ function QoraCalls(){
         // data.sender.address.base58addressSeed
 
         //var senderAccountSeed = Base58.decode(base58SenderAccountSeed);
-        const senderSeed = Base58.decode(options.sender.address.base58addressSeed);
-
+        const senderSeed = options.sender.seed;
+        console.log(senderSeed);
         if(senderSeed.length != 32) {
             console.log("Invalid seeeeed");
             return returnError("Invalid seeeeed");
@@ -155,14 +155,14 @@ function QoraCalls(){
         //keyPair = getKeyPairFromSeed(senderAccountSeed);
         // data.sender.address.kePpair
 
-        const base58SenderAddress = getAccountAddressFromPublicKey(options.sender.address.keyPair.publicKey);
+        const base58SenderAddress = getAccountAddressFromPublicKey(options.sender.publicKey);
 
         //const base58LastReferenceOfAccount =  Base58.decode(senderAddress[highest tx number].reference);
         // Find the last reference
         // MIGHT NOT WORK, MAY NEED TO BE LAST REF OF ACCOUNT, NOT ADDRESS, I REALLY DON'T KNOW
         // WHAT IF 0 TRANSACTIONS...
         return this.apiCall({
-            url: "addresses/lastreference/" + options.sender.address.address + "/unconfirmed",
+            url: "addresses/lastreference/" + options.sender.address + "/unconfirmed",
             type: "api"
         }, qoraNode)
             .then(lastReference => {
@@ -186,8 +186,14 @@ function QoraCalls(){
             var timestamp = new Date().getTime();
 
             // SIGN 'EM BABY
-            const signature = generateSignaturePaymentTransaction(options.sender.address.keyPair, base58LastReferenceOfAccount, recipientAccountAddress, options.amount, options.fee, timestamp);
-            const paymentTransactionRaw = generatePaymentTransaction(options.sender.address.keyPair, base58LastReferenceOfAccount, recipientAccountAddress, options.amount, options.fee, timestamp, signature);
+            const signature = generateSignaturePaymentTransaction({
+                publicKey: options.sender.publicKey,
+                privateKey: options.sender.privateKey
+            }, base58LastReferenceOfAccount, recipientAccountAddress, options.amount, options.fee, timestamp);
+            const paymentTransactionRaw = generatePaymentTransaction({
+                publicKey: options.sender.publicKey,
+                privateKey: options.sender.privateKey
+            }, base58LastReferenceOfAccount, recipientAccountAddress, options.amount, options.fee, timestamp, signature);
 
             // And rewrite this one :/
             // doProcess(Base58.encode(paymentTransactionRaw));

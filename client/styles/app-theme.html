@@ -94,6 +94,7 @@
                 }
                 paper-tabs{
                     --paper-tabs-selection-bar-color: var(--accent-color);
+                    --paper-tab-ink: var(--accent-color);
                 }
 
                 h1,h3{
@@ -103,7 +104,19 @@
                     text-decoration: none;
                 }
                 
-                
+                ul{
+                    list-style: none;
+                    margin-left: 7px;
+                }
+                ul li{
+                    padding: 6px;
+                }
+                ul li::before{
+                    font-style: italic;
+                    content: " # ";
+                    font-weight: 100;
+                    font-family: "Reboto Mono", monospace;
+                }
                 
                 
                 

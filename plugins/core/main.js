@@ -17,3 +17,10 @@ parentWindow.request("registerTopMenuModal", {
 }, function(response){
     //console.log(response);
 });
+
+// Now for the balance stream...
+const WalletStream = parentWindow.createStream("core-wallet", {
+    // empty options...
+})
+
+WalletStream.send("Testing 123 this is from the wallet stream");

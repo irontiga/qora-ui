@@ -48,14 +48,14 @@ const routes = [
 				index: true
 			}
 		}
-    },
+    },*/
     {
         method: 'GET',
         path: '/plugins/404',
         handler: function(request, reply){
             return reply.file('./client/404.html');
         }
-    },*/
+    },
     {
         method: '*',
         path: "/proxy/{url*}",
