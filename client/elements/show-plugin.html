@@ -16,32 +16,54 @@
             }
         </style>
         
-        <iframe security="restricted" sandbox="allow-scripts allow-same-origin" src="{{_frameUrl(route, data, subroute, url)}}"></iframe>
+        <iframe id="currentFrame" security="restricted" sandbox="allow-scripts allow-same-origin" src="{{_frameUrl(route, data, subroute, url)}}"></iframe>
     </template>
 
     <script>
-        Polymer({
-            is: 'show-plugin',
-            properties: {
-                route: Object,
-                data: Object,
-                subroute: Object,
-                url: Object
-            },
-            
-            _frameUrl: function(route, data, subroute, url){
-                //console.log(url);
-                return window.location.protocol + "//" + window.location.hostname + ":" + (parseInt(window.location.port)+1) + "/plugins/" + url.page
-            },
-            
-            toJSON: function(object){
-                return JSON.stringify(object);
-            },
-            
-            ready: function(){
-                //console.log(this.url);
+        class ShowPlugin extends Polymer.Element{
+            static get is(){
+                return "show-plugin";
             }
-        });
+
+            static get properties(){
+                return {
+                    route: Object,
+                    data: Object,
+                    subroute: Object,
+                    url: Object,
+                    currentPluginFrame: {
+                        notify: true
+                    }
+                }
+            }
+            
+            constructor(){
+                super();
+            }
+            
+            connectedCallback() {
+                super.connectedCallback();
+                this.currentPluginFrame = this.shadowRoot.querySelector("#currentFrame");
+            }
+            
+            _frameUrl(route, data, subroute, url){
+                //console.log(url);
+                return window.location.protocol + "//" + window.location.hostname + ":" + (parseInt(window.location.port)+1) + "/plugins/" + url.page;
+            }
+            
+            toJSON(object){
+                return JSON.stringify(object);
+            }
+            
+            ready(){
+                super.ready();
+                //console.log(this.url);
+                //this.firstFrame = this.shadowRoot.querySelector("#currentFrame");
+                
+            }
+        }
+        
+        customElements.define(ShowPlugin.is, ShowPlugin);
     </script>
 
 </dom-module>

@@ -1,18 +1,19 @@
-class QoraHandler extends MessageHandler {
+class QoraRequestHandler extends RequestHandler {
     constructor(){
         super()
     }
 
-    hello(){
+    _hello(data, send){
         console.log("Hi");
+        send("Hello");
     }
 
     // THIS QORA STUFF NEEDS TO COME IN HEREEEE
-    qoraApiCall(data, send){
+    _qoraApiCall(data, send){
         Qora.apiCall(data, this.app.qoraNode, send);
     }
 
-    getQoraAddresses(data, send){
+    _getQoraAddresses(data, send){
         const addressIDS = this.app.addresses.map(function(address){
             let response = {
                 address: address.address,
@@ -25,14 +26,14 @@ class QoraHandler extends MessageHandler {
             data: addressIDS
         });
     }
-    
-    getQoraAddress(data, send){
+
+    _getQoraAddress(data, send){
         return this.wallet.genAddress(data.nonce);
         send();
     }
-    
+
     // Use nonces instead of addresses
-    sendMoney(data, send){
+    _sendMoney(data, send){
         if(this.app.sendMoneyPrompt.open){
             send({
                 success: false,
@@ -41,7 +42,7 @@ class QoraHandler extends MessageHandler {
                 }
             })
         }
-        
+
         data.sender = this.app.addresses[data.nonce];
         // Last referene at senderAddress[highest tx number].reference;
 
@@ -69,16 +70,8 @@ class QoraHandler extends MessageHandler {
         this.app.$.sendMoneyConfirmDialog.open();
     }
 
-    createAT(data, send){
+    _createAT(data, send){
         console.log("Created...not");
         send();
     }
 }
-
-window.addEventListener('WebComponentsReady', function(){
-    //window.customElements.define(MainApp.is, MainApp);
-});
-const handler = new QoraHandler();
-
-
-//App._registerMessageHandler(QoraHandler);

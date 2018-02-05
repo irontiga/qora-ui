@@ -29,8 +29,17 @@ function QoraCalls(){
     data(Object....to convert to query string in get request, or to post in a post request. No support for put/delete yet)
     */
     this.apiCall = function(options, qoraNode, callback){
-        if(!("method" in options)){
-            options.method = "GET";
+        options.method = options.method || "GET";
+        
+        // If no callback then return a promise.
+        if(callback == undefined){
+            return new Promise((resolve, reject) => {
+                doApiCall(resolve, reject);
+            })
+        }
+        // Otherwise just do the usual callback stuff
+        else{
+            doApiCall(callback, callback);
         }
 
         function doApiCall(cb, errcb){
@@ -50,16 +59,27 @@ function QoraCalls(){
                         let response = xhttp.responseText;
                         if(options.type == "explorer"){
                             response = JSON.parse(response);
+                            if(response.error){
+                                return cb({
+                                    success: false,
+                                    error: {
+                                        message: response.error
+                                    }
+                                })
+                            }
                             response.success = true;
                         }
-                        //console.log(response);
-                        cb(response);
+                        cb({
+                            data: response
+                        });
                     }
                     // Otherwise...
                     else{
                         const errorResponse = {
                             success: false,
-                            errorMessage: xhttp.statusText
+                            error: {
+                                message: xhttp.statusText
+                            }
                         }
                         console.error(errorResponse);
                         cb(errorResponse);
@@ -89,16 +109,7 @@ function QoraCalls(){
             }
         }
 
-        // If no callback then return a promise.
-        if(callback == undefined){
-            return new Promise((resolve, reject) => {
-                doApiCall(resolve, reject);
-            })
-        }
-        // Otherwise just do the usual callback stuff
-        else{
-            doApiCall(callback, callback);
-        }
+
 
             //console.log(qoraNode);
 

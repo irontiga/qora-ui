@@ -1,7 +1,8 @@
+//console.log(App.loaderIframes);
 // Fetched plugins function
 function pluginLoader(plugins){
 
-    for(var i=0; i<plugins.length;i++){
+    for(let i=0; i<plugins.length;i++){
 
         const frame = document.createElement("iframe");
         frame.className += "pluginJSFrame";
@@ -11,20 +12,22 @@ function pluginLoader(plugins){
 
         const helperScript = insertedFrame.contentWindow.document.createElement("script");
         helperScript.type = "text/javascript";
+        helperScript.async = false; // Defaults to true, can cause the next script to execute before the helpers have loaded
         helperScript.src = "/client/js/helpers.js";
-
-        /*var helperActivatorScript = document.createElement("script");
-                helperActivatorScript.setAttribute("type", "text/javascript");
-                helperActivatorScript.text = "var Burst = new parentHelper();";*/
-
+        
+        
+        
         const pluginScript = insertedFrame.contentWindow.document.createElement("script");
         pluginScript.type = "text/javascript";
-        console.log( window.location.protocol + "//" + window.location.hostname + ":" + (parseInt(window.location.port) + 1) + "/plugins/");
+        pluginScript.async = false; // Same as helperScript.saync = false;
+        //console.log( window.location.protocol + "//" + window.location.hostname + ":" + (parseInt(window.location.port) + 1) + "/plugins/");
         pluginScript.src = window.location.protocol + "//" + window.location.hostname + ":" + (parseInt(window.location.port) +1) + "/plugins/" + plugins[i] + "/main.js";
 
         insertedFrame.contentWindow.document.body.appendChild(helperScript);
-        /*insertedFrame.contentWindow.document.body.appendChild(helperActivatorScript);*/
         insertedFrame.contentWindow.document.body.appendChild(pluginScript);
+        
+        App.push("loaderIframes", insertedFrame);
+        
     }
 
     // Send all plugins loaded message

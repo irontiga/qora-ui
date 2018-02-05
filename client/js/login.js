@@ -32,7 +32,7 @@ function login(phraseOrSeed, pin, loginType, passInput){
     
     
     // And for now...we'll generate the first n addresses
-    for(let i=0;i<this.addressCount;i++){
+    for(let i=0;i<this.addressCount.cnt;i++){
         this.wallet.genAddress(i);
     }
     

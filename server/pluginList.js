@@ -9,7 +9,8 @@ const getPlugins = function(){
 			return fs.readdirSync(pluginPath);
 		}
 		catch(e){
-			throw(e);
+			//throw(e);
+            console.error("" + e);
 		}
 	};
 	this.getPlugins = function(){
@@ -24,7 +25,8 @@ const getPlugins = function(){
 				}
 			}
 			catch(e){
-				throw(e);
+				//throw(e);
+                console.error("" + e);
 			}
 		}
 	};

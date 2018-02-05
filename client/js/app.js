@@ -58,6 +58,9 @@ class MainApp extends Polymer.Element {
                 type: String,
                 value: ""
             },
+            pin:{
+                type: Number
+            },
             qoraNode: {
                 type: Object,
                 value: {
@@ -71,10 +74,12 @@ class MainApp extends Polymer.Element {
                     }
                 }
             },
-            // Burst
-            account: {
+            // addressCount.cnt because for some reason electron won't play nice with a number....*shrug*
+            addressCount: {
                 type: Object,
-                value: {}
+                value: {
+                    cnt: 1
+                }
             },
             // Qora
             addresses: {
@@ -100,9 +105,12 @@ class MainApp extends Polymer.Element {
                         "#18ffff",
                         "#ffeb3b"]
             },
-            addressCount: {
-                type: Number,
-                value: 1
+            currentPluginFrame: {
+                type: Object
+            },
+            loaderIframes: {
+                type: Array,
+                value: []
             }
         }
     }
@@ -160,36 +168,6 @@ class MainApp extends Polymer.Element {
         
         //console.log(activePlugin);
         return activePlugin;
-    }
-
-    // CONVERTING TO QORA BABY
-    _accountInfo(callback){
-        if(typeof(this.account.account) == 'undefined'){
-            this.account.publicKey = converters.byteArrayToHexString(localSign.getPublicKey(this.passphrase));
-            this.account.account = localSign.getAccountIdFromPublicKey(this.account.publicKey, false);
-        }
-        BurstCall.apiCall({
-            requestType: "getAccount",
-            account: this.account.account
-        }, function(response){
-            if(response.errorCode == 5){
-                this.account.accountRS = localSign.getAccountIdFromPublicKey(this.account.publicKey, true);
-                this.account.balanceNQT = 0;
-            }
-            else{
-                this.account = response;
-            }
-            
-            this.account.balance = this.account.balanceNQT / 100000000;
-            this.account.balance = this.account.balance.toLocaleString('en-US');
-            
-            var account = this.account;
-            this.account = {};
-            this.account = account;
-            
-            callback();
-                
-        }.bind(this));
     }
     
     _acceptSendMoney(e){

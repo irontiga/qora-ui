@@ -28,7 +28,8 @@
                 position:absolute;
                 width:100%;
                 height:100%;
-                background: var(--primary-color);
+                background: url("/client/img/purple_white_bg.jpg") no-repeat center center fixed;
+                background-size: cover;
                 z-index:3;
             }
             :host > *{
@@ -59,6 +60,17 @@
             paper-button[disabled]{
                 background: transparent;
             }
+            paper-card {
+                --paper-card-header-color: #333;
+                
+                --paper-card-header	: {
+                    text-align: center;
+                    padding-top:10px;
+                    padding-bottom:10px;
+                    border-bottom: 2px solid #ccc;
+                    font-family: "Roboto Mono", monospace;
+                }
+            }
         </style>
         <template is="dom-if" if="{{!loginpage.loggedin}}">
             <div id="login-container" class="layout vertical center-justified">
@@ -66,16 +78,15 @@
                     <paper-spinner active></paper-spinner>
                 </div>-->
                 <div class="layout horizontal center-justified">
-                    <paper-card heading="Qora login" style="min-width:350px;">
-                        
+                    <paper-card heading="Login" style="min-width:350px;">
                         <template is="dom-if" if="{{loginpage.loading}}">
                             <paper-progress indeterminate></paper-progress>
                         </template>
                         
-                        <paper-tabs autoselect id="loginTabs" selected="{{loginType}}">
+                        <paper-tabs id="loginTabs" selected="{{loginType}}">
                             <paper-tab>Passphrase</paper-tab>
                             <paper-tab>Seed</paper-tab>
-                            <paper-tab>Address</paper-tab>
+                            <!--<paper-tab>Address</paper-tab>-->
                         </paper-tabs>
                         
                         
@@ -85,19 +96,29 @@
                                 
                                 <neon-animatable>
                                     <!--Passphrase -->
-                                    <paper-input char-counter label="Passphrase" type="password" id="passphrase" value="{{passphrase}}" autofocus on-keydown="_loginKeyDown"></paper-input>
-                                    <paper-input pattern="[0-9]*" auto-validate="true" maxlength="4" minlength="4" label="Pin" type="password" id="pin" value="{{pin}}" autofocus on-keydown="_loginKeyDown"></paper-input>
+                                    
+                                    <paper-input char-counter label="Passphrase" type="password" id="passphrase" value="{{passphrase}}" autofocus on-keydown="_loginKeyDown">
+                                        <iron-icon icon="icons:lock" slot="prefix" style="color:#333; padding-right: 6px;"></iron-icon>
+                                    </paper-input>
+                                    <paper-input pattern="[0-9]*" auto-validate="true" maxlength="4" minlength="4" label="Pin" type="password" id="pin" value="{{pin}}" autofocus on-keydown="_loginKeyDown">
+                                        <iron-icon icon="av:fiber-pin" slot="prefix" style="color:#333; padding-right: 6px;"></iron-icon>
+                                    </paper-input>
+                                    
                                 </neon-animatable>
                                 <neon-animatable>
                                     <!-- Generation seed -->
-                                    <paper-input label="Qora generation seed" type="password" id="generationSeed" value="{{generationSeed}}" on-keydown="_loginKeyDown"></paper-input>
-                                    <paper-input pattern="[0-9]*" auto-validate="true" maxlength="4" minlength="4" label="Pin" type="password" id="pin" value="{{pin}}" autofocus on-keydown="_loginKeyDown"></paper-input>
+                                    <paper-input char-counter label="Qora generation seed" type="password" id="generationSeed" value="{{generationSeed}}" on-keydown="_loginKeyDown">
+                                        <iron-icon icon="communication:vpn-key" slot="prefix" style="color:#333; padding-right: 6px;"></iron-icon>
+                                    </paper-input>
+                                    <paper-input pattern="[0-9]*" auto-validate="true" maxlength="4" minlength="4" label="Pin" type="password" id="pin2" value="{{pin}}" autofocus on-keydown="_loginKeyDown">
+                                        <iron-icon icon="av:fiber-pin" slot="prefix" style="color:#333; padding-right: 6px;"></iron-icon>
+                                    </paper-input>
                                 </neon-animatable>
-                                <neon-animatable>
-                                    <!-- Blockexplorer style, just for viewing an address -->
+                                <!--<neon-animatable>
                                     <paper-input disabled label="Coming soon..." type="text" id="qoraAddress" value="{{qoraAddress}}" on-keydown="_loginKeyDown"></paper-input>
-                                </neon-animatable>
+                                </neon-animatable>-->
                             </neon-animated-pages>
+                            
                             
                             
                             
@@ -120,7 +141,7 @@
                                     <div>
                                         <h4>Wallet options</h4>
                                         <!-- GET RID OF IT -->
-                                        <paper-input label="Number of addresses" type="number" value="{{addressCount}}" on-keydown="_loginKeyDown"></paper-input>
+                                        <paper-input label="Number of addresses" type="number" value="{{addressCount.cnt}}" on-keydown="_loginKeyDown"></paper-input>
                                     </div>
                                 </iron-collapse>
                             </template>
@@ -217,7 +238,7 @@
                 this.loginType = 0;
             }
             _showAdvanced(){
-                this.$$("#advanced").toggle();
+                this.shadowRoot.querySelector("#advanced").toggle();
                 /*
                 var moreInfo = document.getElementById('more-info');
                 var iconButton = Polymer.dom(event).localTarget;
@@ -266,15 +287,19 @@
                 //this.passphrase = this.$$("#passphrase").value
             }
             _newAccountClick(e){
-                this.$$("#newAccountDialog").open();
+                this.shadowRoot.querySelector("#newAccountDialog").open();
             }
             ready(){
                 super.ready();
-                console.log(this.shadowRoot.querySelector("#loginTabs"));
-                //this.shadowRoot.querySelector("#loginTabs").select(0);
-                this.loginType = 0;
-                console.log(this.loginType);
-                console.log(typeof(this.loginType));
+                
+                setTimeout(function(){
+                    //this.loginType = 0;
+                    const tabs = this.shadowRoot.querySelector("#loginTabs");
+                    tabs.select(0);
+                    tabs.notifyResize();
+                }.bind(this), 1)
+                
+                
             }
             
         }
@@ -282,109 +307,3 @@
         customElements.define(LoginPage.is, LoginPage);
     </script>
 </dom-module>
-
-<!--
-
-<script>
-
-Polymer({
-is: "login-page",
-observers: [
-"_loggedin(loginpage.loading)"
-],
-properties: {
-loginpage: {
-type: Object
-},
-node:{
-type: Object,
-notify: true
-},
-addressCount: {
-type: Number,
-notify: true
-},
-override: {
-type: String,
-value: ""
-},
-loginType: {
-/*
-0 = Passphrase
-1 = Generation seed
-2 = Address viewing mode
-*/
-type: Number,
-value: 0
-}
-},
-_loggedin(loading){
-console.log(loading);
-console.log(this.shadowRoot.querySelector("#loginTabs"));
-//this.shadowRoot.querySelector("#loginTabs").select(0);
-console.log(this.loginType);
-this.loginType = 0;
-},
-_showAdvanced: function(){
-this.$$("#advanced").toggle();
-/*
-var moreInfo = document.getElementById('more-info');
-var iconButton = Polymer.dom(event).localTarget;
-iconButton.icon = moreInfo.opened ? 'hardware:keyboard-arrow-down' : 'hardware:keyboard-arrow-up';
-moreInfo.toggle();
-*/
-},
-_loginKeyDown: function(e){
-if (e.keyCode === 13) {
-this._loginClick();
-}
-},
-_loginClick : function(){
-//console.log(passphrase);
-//console.log(this.node);
-
-// Pin
-if(this.pin == undefined){return;}
-if(this.pin.length != 4){return;}
-
-// Passphrase
-if(this.loginType === 0){
-if(this.passphrase == undefined){return;}
-if(this.passphrase.length == 0){return;}
-if(this.passphrase.length < 15){
-//...no no no, bad idea bro
-if (this.override != this.passphrase){
-this.set("loginpage.errorMessage", "Passphrase too short. Should be at least 15 characters. Press enter/login again to override this.");
-this.override = this.passphrase;
-return;
-}
-}
-this.loginpage.login(this.passphrase, this.pin, this.loginType, this.shadowRoot.querySelector('#passphrase'));
-}
-
-// Generation seed...
-if(this.loginType === 1){
-// Add error handling
-this.loginpage.login(this.generationSeed, this.pin, this.loginType, this.shadowRoot.querySelector('#generationSeed'));
-}
-
-
-// Which way are we logging in?
-//this.loginpage.login(this.passphrase, this.pin, this.shadowRoot.querySelector('#passphrase'));
-//this.passphrase = this.$$("#passphrase").value
-},
-
-_newAccountClick: function(e){
-this.$$("#newAccountDialog").open();
-},
-ready: function(){
-/*console.log(this.shadowRoot.querySelector("#loginTabs"));
-this.shadowRoot.querySelector("#loginTabs").select(0);
-this.loginType = 0;
-console.log(this.loginType);
-console.log(typeof(this.loginType));*/
-}
-});
-
-</script>
--->

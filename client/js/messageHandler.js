@@ -1,23 +1,63 @@
-class messageHandler {
+class MessageHandler {
     constructor(){
         // Reference to this from the polymer function in app.js
         this.app = App;
-        this.streams = [];
-        //console.log("YEEEEEAAATTT");
+        
+        // Could be moved to left up to QoraMessageHandler, which would allow it's extension
+        this.startStream(StreamHandler);
+        
         window.addEventListener("message", this._listener.bind(this), false);
     }
     
     _listener(event){
         const message = JSON.parse(event.data);
         const source = event.source;
-        //console.log(message);
-        //console.log(event.source.location);
         
         switch(message.request){
-            case "stream" :
-                this._stream(message, source)
+            case "stream":
+                // The special case of it being a stream...ie replicate a  websocket instead of a http request
+                this.Stream[message.data.type](message, source);
+                break;
+            // Things like iframe resize, hash urls, etc.
+            case "builtin":
+                break;
+            case "message"
             default:
                 this._message(message, source)
+        }
+    }
+    
+    startStream(StreamClass){
+        this.Stream = new StreamClass(this.send);
+    }
+    
+    sendGenerator(message, source){
+        /*
+        -------------
+        DOCUMENTATION
+        -------------
+        response = {
+            data: { blah blah data },
+            success: true/false
+            error: {
+                message: "If success is false include a message"
+            }
+            type: "message/stream"
+        }
+        */
+        return function(response){
+            // If no response supplied assume success
+            response = response || { success: true };
+            // No type means message
+            response.type = response.type || "message";
+            // If success is not defined, also assume success
+            if(!("success" in response)){
+                response.success = true;
+            }
+            //
+            response.requestID = message.requestID;
+            
+            source.postMessage(JSON.stringify(response), "*");
         }
     }
     
@@ -25,44 +65,28 @@ class messageHandler {
         
         const data = message.data;
         
-        const response = {
-            requestID: message.requestID
-        };
+        const send = this.sendGenerator(message, source);
         
-        function finish(responseData){
-            if(typeof(responseData) == "undefined"){
-                responseData = {
-                    success : true
-                };
-            }
-            response.data = responseData;
-            source.postMessage(JSON.stringify(response), "*");
-        }
-        //console.log(this);
-        //console.log(this.app);
         if(this[message.request] == undefined){
-            //console.log("UNDIES");
-            return finish({
+            
+            return send({
                 success: false,
-                errorMessage : "Unrecognized request '" + message.request + "'"
+                error: {
+                    message : "Unrecognized request '" + message.request + "'"
+                }
             });
         }
         
-        // The special case of it being a stream...
-        if(message.request == "stream"){
-            this.stream(event, data, finish)
-        }
-        
-        this[message.request](data, finish);
+        this[message.request](data, send);
     }
     
     // Default UI Builder functions/messages whatever
-    pluginsLoaded(data, finish){
+    pluginsLoaded(data, send){
         this.app.pluginsLoaded = true;
-        finish();
+        send();
     }
     
-    registerUrl(data, finish){
+    registerUrl(data, send){
         let parent = false;
         if(data.parent){parent = true;}
         
@@ -91,184 +115,103 @@ class messageHandler {
         
         //console.log(this.app);
         //console.log(this.app.urls);
-        finish();
-    }
-    addMenuItem(data, finish){
-        finish();
+        send();
     }
     
-    /*
-    {
-        icon: "",
-        frameUrl: "/frame/url",
-        text: ""
+    addMenuItem(data, send){
+        send();
     }
-    */
     
-    registerTopMenuModal(data, finish){
-        this.app.push("topMenuItems", data)
+    
+    
+    registerTopMenuModal(data, send){
+        /* 
+        -----------------
+        DOCUMENTAION
+        -----------------
+        data = {
+            icon: "",
+            frameUrl: "/frame/url",
+            text: ""
+        }
+        */
+        this.app.push("topMenuItems", data);
+        send();
     }
     
     // Nice n simple toast
-    toast(data, finish){
+    toast(data, send){
         // We'll get there...
         // Needs to handle storage as per md spec... if two toasts are triggered a split second apart...the later toast will have to wait for the first to be dismissed/auto dismiss itself before being displayed
         // Ahh, it needs a queue
     }
-    
-    _stream(message, source){
-        // Switch for create vs send
-        //message.type: "create" or "send"
-        if(message.type == "create"){
-            this.streams.push(message.identifier);
-        }
+}
+
+// Is called by messageHandler
+class StreamHandler{
+    constructor(){
+        this._streams = {};
     }
-    // "Websocket" for frame to frame communication
-    createStream(data, finish){
+    
+    create(message, source){
+        const id = message.data.identifier;
+        this._streams[id] = {
+            identifier: id,
+            source: source,
+            options: {
+                // Defaults to being a private stream (no other iframes can send data on it's behalf)
+                private: message.data.private !== undefined ? message.data.private : true
+            },
+            clients: {}
+        };
         
+        console.log("Stream '" + id + "' created :)")
+        
+        return this._send(source);
+    }
+    
+    // Hidden send method
+    _send(source, response){
+        // If no response supplied assume success
+        response = response || { success: true };
+        // No type means message
+        response.type = response.type || "stream";
+        // If success is not defined, also assume success
+        response.success = response.success || true;
+
+        source.postMessage(JSON.stringify(response), "*");
+    }
+    
+    send(message, source){
+        const id = message.data.identifier;
+        const stream = this._streams[id];
+        
+        if(!(id in this._streams)){ 
+            return this._send
+            return source.postMessage(JSON.stringify({
+                type: "stream",
+                succes: false,
+                error: {
+                    message: "Stream does not exist"
+                }
+            }), "*");
+        }
+        
+        if(source !== stream.source && stream.private){
+            return source.postMessage(JSON.stringify({
+                type: "stream",
+                succes: false,
+                error: {
+                    message: "Stream is private. Only it's creator can send through it."
+                }
+            }), "*");
+        }
+        
+        
+    }
+    
+    open(){
+        // Stream connection from new client...WHOOP
     }
 }
 
-
-/* that old stuff... yuck
-function pluginMessageHandler(event){
-    
-    //console.log(this.urls);
-    
-    //console.log("event");
-    //console.log(event)
-	const message = JSON.parse(event.data);
-    const data = message.data;
-	//console.log("Message: ");
-    //console.log(message);
-    
-    //this.nodeUrl -- has access
-    
-	let response = {
-        requestID: message.requestID
-    };
-    
-    function finish(responseData){
-        // If there is no responseData...eg it's called as finish()
-        if(typeof(responseData) == "undefined"){
-            responseData = {
-                success : true
-            };
-        }
-        response.data = responseData;
-        event.source.postMessage(JSON.stringify(response), "*");
-    }
-    
-	switch(message.request){
-        case "pluginsLoaded":
-            this.pluginsLoaded = true;
-            finish();
-            break;
-		case "registerUrl":
-			let parent = false;
-            if(data.parent){
-				parent = true;
-			}
-			
-			this.push("urls",{
-                url :  data.url,
-                title : data.title,
-                menus : data.menus,
-                page : data.page,
-				parent: parent
-			});
-            
-            // ----
-            // Dirty updating url array https://www.polymer-project.org/1.0/docs/devguide/model-data#array-mutation
-            let allUrls = this.urls;
-            this.urls = [];
-            this.urls = allUrls;
-            // ----
-            
-            //console.log(this.urls);
-			
-			finish();
-			break;
-		case "addMenuItem":
-			finish();
-			break;
-        case "getAccountInfo":
-            let account = this.account;
-            account.success = true;
-            finish(account);
-            break;
-        case "burstApiCall":
-            BurstCall.apiCall(data, finish);
-            break;
-        case "qoraApiCall":
-            Qora.apiCall(data, this.qoraNode, finish);
-            break;
-        case "getQoraAddresses":
-            //console.log("getting addresses ready...");
-            const addressIDS = this.addresses.map(function(address, index){
-                let response = {
-                    address: address.address.address,
-                    color: address.color,
-                    index: index,
-                    info: address.info
-                }
-                if(address.info.error){
-                    response.balance = 0
-                }
-                else{
-                    response.balance = address.info.balance.total["0"]
-                }
-                return response;
-            })
-            finish(addressIDS);
-            break;
-        case "sendMoney":
-            if(this.sendMoneyPrompt.open){
-                finish({
-                    success: false,
-                    errorMessage: "Send money request already pending."
-                })
-            }
-            console.log(data);
-            
-            // Find the address info
-            let i = 0;
-            while(data.address != this.addresses[i].address.address){
-                i++;
-            }
-            data.sender = this.addresses[i];
-            // Last referene at senderAddress[highest tx number].reference;
-            
-            this.sendMoneyPrompt = {};
-            this.sendMoneyPrompt = {
-                open: true,
-                address: data.address,
-                recipient : data.recipient,
-                amount: data.amount,
-                fee: data.fee,
-                accept : function(){
-                    this.sendMoneyPrompt = {open:false};
-                    Qora.sendMoney(data, this.qoraNode, finish);
-                }.bind(this),
-                reject: function(){
-                    this.sendMoneyPrompt = {open:false};
-                    finish({
-                        success: false,
-                        errorMessage : "User rejected transaction"
-                    });
-                }
-            };
-            this.$.sendMoneyConfirmDialog.open();
-            break;
-        case "createAT":
-            console.log("Created...not");
-            break;
-		default:
-			finish({
-				success: false,
-                errorMessage : "Unrecognized request '" + message.request + "'"
-			});
-	}
-};
-
-*/

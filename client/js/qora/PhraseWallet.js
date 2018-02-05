@@ -72,7 +72,7 @@ class PhraseWallet extends PhraseWalletUtils {
     }
     
     set generationSeed(seed){
-        this._byteSeed = Base58.decode(seed);;
+        this._byteSeed = Base58.decode(seed);
         this._base58BaseSeed = seed;
         
         this._addresses = [];

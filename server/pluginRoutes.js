@@ -60,7 +60,9 @@ const routes = [
         method: 'GET',
         path: '/plugins/404',
         handler: function(request, reply){
-            return reply.file('./client/404.html').code(404);
+            return reply.file('./client/404.html');
+            // Error code isn't needed...unecessary error to handle
+            //return reply.file('./client/404.html').code(404);
         }
     }
 ];

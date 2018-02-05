@@ -144,14 +144,13 @@ class WalletApp extends Polymer.Element {
                 })
             }).then((response, error) => {
                 // Check for errors...probably an unused account
-                //console.log(response);
-                if(response.error){
+                if(!response.success){
                     address.balance = 0;
                     address.info = {};
                 }
                 else{
-                    address.balance = response.balance.total[0];
-                    address.info = response;
+                    address.balance = response.data.balance.total[0];
+                    address.info = response.data;
                 }
                 return address;
             })
@@ -159,7 +158,6 @@ class WalletApp extends Polymer.Element {
             
             .then(function(addresses, err){
             // Sort em real nice
-            //console.log(addresses);
             addresses.sort(function(a, b){
                 return a.nonce - b.nonce
             });
@@ -183,7 +181,7 @@ class WalletApp extends Polymer.Element {
             //console.log(JSON.stringify(addresses));
             //console.log(addresses);
 
-            this.addressStore = addresses;
+            this.addressStore = addresses.data;
             // Nope, need to wait till balances are loaded
             //this.selectedAddress = this.addresses[0];
             

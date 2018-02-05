@@ -36,6 +36,10 @@
                 html, body, p, h1{
                     font-family: "Roboto", sans-serif;
                 }
+                :host > *,html,body{
+                    background: #eee !important;
+                    min-height: 100vh;
+                }
                 .mono{
                     font-family: 'Roboto Mono', monspace;
                 }
@@ -112,17 +116,27 @@
                     font-weight: 100;
                 }
                 
-                
+                paper-card {
+                    --paper-card-header-color: #333;
+
+                    --paper-card-header	: {
+                        padding-top:10px;
+                        padding-bottom:10px;
+                        margin-bottom:10px;
+                        border-bottom: 1px solid #666;
+                        font-family: "Roboto Mono", monospace;
+                    }
+                }
             </style>
         </custom-style>
         
         <div>
             <div class="layout vertical wrap" id="addresses">
 
-                <paper-card style="width:100%;">
+                <paper-card heading="&nbsp;Addresses" style="width:100%;">
 
                     <div class="card-content">
-                        <h1>&nbsp;&nbsp;Addresses</h1>
+                        <!--<h1>&nbsp;&nbsp;Addresses</h1>-->
 
                         <template is="dom-repeat" items="{{addresses}}" indexAs="index">
 

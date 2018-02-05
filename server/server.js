@@ -1,3 +1,4 @@
+const url = require('url');
 const Path = require('path');
 const Hapi = require('hapi');
 const Inert = require('inert');
@@ -5,6 +6,10 @@ const Nes = require('nes');
 const routes = require('./routes');
 const pluginRoutes = require('./pluginRoutes');
 const h2o2 = require('h2o2')
+
+// ELECTRONNN
+// Being used purely as a browser window - none of it's node integrations are used
+const {app, BrowserWindow} = require('electron');
 
 const server = new Hapi.Server({
 	connections: {
@@ -60,3 +65,4 @@ pluginServer.start((err) => {
 
     console.log('Plugin server running at:', pluginServer.info.uri);
 });
+

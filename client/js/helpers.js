@@ -2,38 +2,39 @@
 // Author: irontiga
 // License: GPL-V3.0
 
-
 // REWRITE ES6 CLASS WHOOOOP
 class ParentHelper{
     constructor(){
         // Handler for responses
         this._pendingRequests = {};
-        window.addEventListener("message", function(event){
+        window.addEventListener("message", this._listener.bind(this));
+        this.streams = {};
+    }
+    
+    _listener(event){
+        //console.log(event);
 
-            //console.log(event);
+        var data = JSON.parse(event.data);
 
-            var data = JSON.parse(event.data);
+        var id = data.requestID;
 
-            var id = data.requestID;
+        //console.log(data)
 
-            //console.log(data)
+        if(this._pendingRequests[id]){
 
-            if(this._pendingRequests[id]){
+            // call callback
+            this._pendingRequests[id](data);
 
-                // call callback
-                this._pendingRequests[id](data.data);
+            //console.log(pendingRequests);
 
-                //console.log(pendingRequests);
-
-                delete this._pendingRequests[id];	
-            }
-
-        }.bind(this));
+            delete this._pendingRequests[id];
+        }
     }
     
     request(request, data, callback){
         var requestID = Math.random().toString(36).substr(2, 10);
         var messageRequest = JSON.stringify({
+            requestType: "request",
             request: request,
             requestID : requestID,
             data: data
@@ -50,6 +51,18 @@ class ParentHelper{
         window.location.replace(url);
     }
     
+    
+    // ----------------
+    // Hash URLs
+    // ----------------
+    // Object to interact with parent window's location.hash
+    activateHashUrl(){
+        this.request("hashListener", {}, function(){
+            
+        })
+    }
+    
+    
     // Create a stream
     // identifier - required for other clients to connect
     // options....object...fun
@@ -61,22 +74,24 @@ class ParentHelper{
     // Connect to another plugin's stream
     openStream(identifier, listener){}
     
-    // Special polymer only function to connect to a stream and sync a var with all responses
+    // Special - polymer only - function to connect to a stream and sync a var with all responses
     syncStream(){}
 }
 
 class Stream{
     constructor(identifier, parentThis){
         this._identifier = identifier;
-        this.parent = parentThis;
-        this.parent.request("stream", {
+        this._parent = parentThis;
+        this._parent.request("stream", {
             type: "create",
             identifier: identifier
+        }, function(response){
+            //console.log(response);
         })
     }
-    // Optional callback...for success/error i guess...we'll assume it doesn't fail for now
+    // Optional callback...for success/error I guess...we'll assume it doesn't fail for now
     send(data, callback){
-        this.parent.request("stream", {
+        this._parent.request("stream", {
             type: "send",
             identifier: this._identifier,
             data: data
