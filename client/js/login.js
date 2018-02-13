@@ -9,7 +9,7 @@ function login(phraseOrSeed, pin, loginType, passInput){
     // Clear any error messages...don't want to be confusing anyone
     this.set('loginpage.errorMessage', "");
     
-    console.log(loginType);
+    //console.log(loginType);
     
     this.loginType = loginType;
     

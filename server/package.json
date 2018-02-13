@@ -2,7 +2,7 @@
   "name": "Qora-lite",
   "version": "0.0.1",
   "description": "Qora lite wallet server",
-    repository: "https://github.com/irontiga/qora-ui",
+  "repository": "https://github.com/irontiga/qora-ui",
   "main": "electron.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

@@ -1,4 +1,5 @@
 var parentWindow = new ParentHelper();
+parentWindow.install(StreamHelper);
 
 parentWindow.request("registerUrl", {
     url: "wallet",

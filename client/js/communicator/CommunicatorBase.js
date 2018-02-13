@@ -1,7 +1,7 @@
 class CommunicatorBase{
-    constructor(){
+    constructor(app){
         // Reference to polymer in main-app.html
-        this.app = App;
+        this.app = app;
     }
     
     _sendGenerator(source, requestID){

@@ -1,7 +1,7 @@
-const appStreamHandler = new StreamHandler();
-const appRequestHandler = new QoraRequestHandler();
-const appBuiltInRequestHandler= new BuiltInRequestHandler();
-
+//const App = document.querySelector("main-app"); (in app.js)
+const appStreamHandler = new StreamHandler(App);
+const appRequestHandler = new QoraRequestHandler(App);
+const appBuiltInRequestHandler= new BuiltInRequestHandler(App);
 
 
 window.addEventListener("message", (event) => {
