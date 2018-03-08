@@ -1,15 +1,15 @@
 //const App = document.querySelector("main-app"); (in app.js)
 const appStreamHandler = new StreamHandler(App);
 const appRequestHandler = new QoraRequestHandler(App);
-const appBuiltInRequestHandler= new BuiltInRequestHandler(App);
+const appBuiltInRequestHandler = new BuiltInRequestHandler(App);
 
 
 window.addEventListener("message", (event) => {
     const data = JSON.parse(event.data);
 
     const source = event.source;
-
-    switch(data.requestType){
+    //console.log(data);
+    switch (data.requestType) {
         case "stream":
             // Websocket connections and related calls
             appStream.message(source, data);

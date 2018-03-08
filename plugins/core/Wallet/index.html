@@ -1,1 +1,79 @@
-hi
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/client/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+
+    <link rel="import" href="/client/bower_components/polymer/polymer.html">
+
+    <!-- <link rel="stylesheet" href="/client/fonts/roboto.css">
+    <link rel="stylesheet" href="/client/fonts/roboto-mono.css"> -->
+
+    <link rel="import" href="/client/styles/app-theme.html">
+
+    <style>
+        html,
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>HIIIIIIIIIIIIIIIIIIIIIIIII</h1>
+
+
+    <dom-module id="send-money">
+
+        <template>
+            Hey hey Hey hey Hey hey
+        </template>
+
+        <script>
+            //console.log(window.top);
+
+            class SendMoney extends Polymer.Element {
+                static get is() {
+                    return "send-money";
+                }
+                constructor() {
+                    super();
+                }
+            }
+
+            window.customElements.define(SendMoney.is, SendMoney);
+        </script>
+    </dom-module>
+
+    <send-money></send-money>
+
+    <script src="/client/js/ParentCommunicator.js"></script>
+    <script>
+        const parentApi = new ParentCommunicator();
+
+        window.addEventListener("message", parentApi.listener.bind(parentApi));
+
+        /*  -----------
+            == Tests ==
+            ----------- */
+        parentApi.modal = {
+            height: "12px",
+            width: "18px"
+        }
+
+        parentApi.request("Test", { g: "c" }, response => {
+            console.log(response);
+        });
+
+        parentApi.request("Test", { g: "c" }).then(response => {
+            console.log("Promise: " + response);
+        });
+
+        const gangStream = parentApi.createStream("gang-gang", {
+            private: true
+        })
+    </script>
+</body>
+
+</html>

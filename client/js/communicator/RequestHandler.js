@@ -1,55 +1,56 @@
 class RequestHandler extends CommunicatorBase {
-    constructor(){
-        super()
+    constructor(app) {
+        super(app);
     }
-    
-    message(source, message){
+
+    message(source, message) {
 
         const data = message.data;
-        
+
         const request = "_" + message.request;
 
         //console.log(this._sendGenerator, source, message.requestID);
-        const send = this._sendGenerator(source, message.requestID);
-
-        if(this[request] == undefined){
+        const send = this._sendGenerator(source, message.requestID, "request");
+        // console.log(source);
+        if (this[request] == undefined) {
 
             return send({
                 success: false,
+                requestType: "request",
                 error: {
-                    message : "Unrecognized request '" + message.request + "'"
+                    message: "Unrecognized request '" + message.request + "'"
                 }
             });
         }
-        
+
         this[request](data, send);
     }
 
     // Default UI Builder functions/messages whatever
-    _pluginsLoaded(data, send){
+    _pluginsLoaded(data, send) {
         this.app.pluginsLoaded = true;
         send();
     }
 
-    _registerUrl(data, send){
+    _registerUrl(data, send) {
         let parent = false;
-        if(data.parent){parent = true;}
+        if (data.parent) { parent = true; }
 
-        this.app.push("urls",{
-            url :  data.url,
-            title : data.title,
-            menus : data.menus,
-            page : data.page,
+        this.app.push("urls", {
+            url: data.url,
+            title: data.title,
+            menus: data.menus,
+            page: data.page,
             parent: parent
         });
 
         // Dirty updating url array https://www.polymer-project.org/1.0/docs/devguide/model-data#array-mutation
         let allUrls = this.app.urls;
         allUrls.sort((a, b) => {
-            if(a.title > b.title){
+            if (a.title > b.title) {
                 return 1;
             }
-            if(a.title < b.title){
+            if (a.title < b.title) {
                 return -1;
             }
             return 0;
@@ -63,11 +64,11 @@ class RequestHandler extends CommunicatorBase {
         send();
     }
 
-    _addMenuItem(data, send){
+    _addMenuItem(data, send) {
         send();
     }
-    
-    _registerTopMenuModal(data, send){
+
+    _registerTopMenuModal(data, send) {
         /* 
         -----------------
         DOCUMENTAION
@@ -83,7 +84,7 @@ class RequestHandler extends CommunicatorBase {
     }
 
     // Nice n simple toast
-    _toast(data, send){
+    _toast(data, send) {
         // We'll get there...
         // Needs to handle storage as per md spec... if two toasts are triggered a split second apart...the later toast will have to wait for the first to be dismissed/auto dismiss itself before being displayed
         // Ahh, it needs a queue

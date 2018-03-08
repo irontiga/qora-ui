@@ -5,6 +5,10 @@
 
 <link rel="import" href="/client/styles/app-theme.html">
 
+<!-- Polyfill...idkkk...paper-dropdown-menu relies on a deprecated dependency :/-->
+<link rel="import" href="/client/bower_components/web-animations-js/web-animations-next.min.js">
+<link rel="import" href="/client/bower_components/neon-animation/web-animations.html">
+
 <!-- Polymer components -->
 <link rel="import" href="/client/bower_components/paper-card/paper-card.html">
 <link rel="import" href="/client/bower_components/iron-icons/iron-icons.html">
@@ -14,7 +18,6 @@
 <link rel="import" href="/client/bower_components/paper-item/paper-item-body.html">
 <link rel="import" href="/client/bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="/client/bower_components/paper-tooltip/paper-tooltip.html">
-<link rel="import" href="/client/bower_components/neon-animation/web-animations.html">
 <link rel="import" href="/client/bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="/client/bower_components/paper-button/paper-button.html">
 <link rel="import" href="/client/bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
@@ -29,41 +32,53 @@
 
 
 <dom-module id="multi-wallet">
-    
-	<template>
+
+    <template>
         <custom-style>
             <style is="custom-style" include="burst-styles grid-styles">
-                html, body, p, h1{
+                html,
+                body,
+                p,
+                h1 {
                     font-family: "Roboto", sans-serif;
                 }
-                :host > *,html,body{
+
+                :host>*,
+                html,
+                body {
                     background: #eee !important;
                     min-height: 100vh;
                 }
-                .mono{
+
+                .mono {
                     font-family: 'Roboto Mono', monspace;
                 }
-                #addresses{
-                    padding:10px;
-                    font-size:14px;
+
+                #addresses {
+                    padding: 10px;
+                    font-size: 14px;
                     font-weight: 300;
                     max-width: 1200px;
                     margin: 0 auto;
                 }
-                .address-titles{
+
+                .address-titles {
                     line-height: 64px;
                 }
-                .address-balance{
+
+                .address-balance {
                     font-size: 64px;
                     font-weight: 100;
                     float: right;
                     text-align: right;
                 }
-                .confirmed-balance{
-                    font-size:14px;
+
+                .confirmed-balance {
+                    font-size: 14px;
                     line-height: 14px;
                 }
-                .avatar{
+
+                .avatar {
                     display: inline-block;
                     box-sizing: border-box;
                     width: 40px;
@@ -71,65 +86,76 @@
                     border-radius: 50%;
                     background: #eee;
                 }
-                .paper-table{
-                    width:100%;
+
+                .paper-table {
+                    width: 100%;
                 }
-                .recent-transactions{
+
+                .recent-transactions {
                     padding: 0 12px;
                 }
 
-                .address-item{
+                .address-item {
                     --paper-item-focused: {
                         background: transparent;
-                    };
+                    }
+                    ;
                     --paper-item-focused-before: {
                         opacity: 0;
-                    };
+                    }
+                    ;
                 }
-                .address-balance{
-                    font-size:42px;
+
+                .address-balance {
+                    font-size: 42px;
                     font-weight: 100;
                 }
-                .show-transactions{
+
+                .show-transactions {
                     cursor: pointer;
                 }
-                .address-icon{
+
+                .address-icon {
                     border-radius: 50%;
                     border: 5px solid;
                     /*border-left: 4px solid;*/
-                    padding:8px;
+                    padding: 8px;
                 }
-                #sendMoneyFab{
+
+                #sendMoneyFab {
                     position: fixed;
-                    right:32px;
+                    right: 32px;
                     bottom: 32px;
                 }
-                paper-input{
-                    margin:0;
+
+                paper-input {
+                    margin: 0;
                 }
-                .selectedBalance{
-                    font-size:14px;
+
+                .selectedBalance {
+                    font-size: 14px;
                     display: block;
                 }
-                .selectedBalance .balance{
+
+                .selectedBalance .balance {
                     font-size: 24px;
                     font-weight: 100;
                 }
-                
+
                 paper-card {
                     --paper-card-header-color: #333;
 
-                    --paper-card-header	: {
-                        padding-top:10px;
-                        padding-bottom:10px;
-                        margin-bottom:10px;
+                    --paper-card-header: {
+                        padding-top: 10px;
+                        padding-bottom: 10px;
+                        margin-bottom: 10px;
                         border-bottom: 1px solid #666;
                         font-family: "Roboto Mono", monospace;
                     }
                 }
             </style>
         </custom-style>
-        
+
         <div>
             <div class="layout vertical wrap" id="addresses">
 
@@ -143,11 +169,19 @@
 
                             <paper-icon-item class="address-item">
                                 <iron-icon class="address-icon" icon="account-balance-wallet" slot="item-icon" style$="border-color:{{item.color}}"></iron-icon>
-                                <paper-item-body two-line><!-- Make a random icon based on address id or whatever -->
+                                <paper-item-body two-line>
+                                    <!-- Make a random icon based on address id or whatever -->
                                     <div>{{item.address}}</div>
-                                    <div secondary><a class="show-transactions" ident$="subitem[[index]]" on-tap="toggle">Toggle recent transactions <!--<iron-icon icon="arrow-drop-down"></iron-icon>--></a></div>
+                                    <div secondary>
+                                        <a class="show-transactions" ident$="subitem[[index]]" on-tap="toggle">Toggle recent transactions
+                                            <!--<iron-icon icon="arrow-drop-down"></iron-icon>-->
+                                        </a>
+                                    </div>
                                 </paper-item-body>
-                                <div class="address-balance mono"><span>{{_floor(item.balance)}}</span><i style="font-size:16px;">.{{_decimals(item.balance)}}</i></div>
+                                <div class="address-balance mono">
+                                    <span>{{_floor(item.balance)}}</span>
+                                    <i style="font-size:16px;">.{{_decimals(item.balance)}}</i>
+                                </div>
                                 <!--<paper-icon-button title="Send money" icon="redo" on-click="_sendMoneyDialog"></paper-icon-button>-->
                             </paper-icon-item>
 
@@ -166,7 +200,14 @@
 
                                     <vaadin-grid-column width="100px" flex-grow="0">
                                         <template class="header">Amount</template>
-                                        <template><span class="mono"><span>[[_floor(item.transaction.amount)]]</span><span style="font-size:9px;"><i>.[[_decimals(item.transaction.amount)]]</i></span></span></template>
+                                        <template>
+                                            <span class="mono">
+                                                <span>[[_floor(item.transaction.amount)]]</span>
+                                                <span style="font-size:9px;">
+                                                    <i>.[[_decimals(item.transaction.amount)]]</i>
+                                                </span>
+                                            </span>
+                                        </template>
                                     </vaadin-grid-column>
 
                                     <vaadin-grid-column>
@@ -195,7 +236,7 @@
 
                 <!-- SEND MONEYYY -->
 
-                <paper-dialog id="sendMoneyDialog" entry-animation="fade-in-animation" exit-animation="fade-out-animation" with-backdrop>
+                <paper-dialog id="sendMoneyDialog" with-backdrop>
                     <h2>Send money</h2>
 
                     <paper-dropdown-menu label="From" style$="width:500px; border-left: 5px solid {{selectedAddress.color}}">
@@ -205,13 +246,15 @@
                             </template>
                         </paper-listbox>
                     </paper-dropdown-menu>
-                    <div class="selectedBalance"><span class="balance">{{selectedAddress.balance}} </span>Qora available for transfer from {{selectedAddress.address}}</div>
-                    <paper-input id="amountInput" required label="Amount" type="number" invalid={{validAmount}} value="{{amount}}" error-message="Invalid amount" on-keyup="_checkAmount"></paper-input>
+                    <div class="selectedBalance">
+                        <span class="balance">{{selectedAddress.balance}} </span>Qora available for transfer from {{selectedAddress.address}}</div>
+                    <paper-input id="amountInput" required label="Amount" type="number" invalid={{validAmount}} value="{{amount}}" error-message="Invalid amount"
+                        on-keyup="_checkAmount"></paper-input>
                     <paper-input label="To" type="text" value="{{recipient}}"></paper-input>
                     <paper-input label="Fee" type="text" value="{{fee}}"></paper-input>
 
                     <p>{{sendMoneyError}}</p>
-                    
+
                     <div class="buttons">
                         <paper-button dialog-dismiss>Cancel</paper-button>
                         <!-- dialog-confirm....nah-->
@@ -226,12 +269,13 @@
 
             </div>
         </div>
-        
-	</template>
 
-    <script src="/client/js/resources/helpers.js"></script>
+    </template>
+
+    <!-- <script src="/client/js/resources/helpers.js"></script> -->
+    <script src="/client/js/ParentCommunicator.js"></script>
     <script src="multi-wallet.js"></script>
-	
+
 </dom-module>
 
 <!--

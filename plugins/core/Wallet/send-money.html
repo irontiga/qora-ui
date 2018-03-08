@@ -1,60 +1,88 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="/client/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
 
-        <link rel="import" href="/client/bower_components/polymer/polymer.html">
-        
-        <link rel="stylesheet" href="/client/fonts/roboto.css">
-        <link rel="stylesheet" href="/client/fonts/roboto-mono.css">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/client/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
 
-        <link rel="import" href="/client/styles/app-theme.html">
-        
-        <style>
-            html,body{
-                margin:0;	
-            }
-        </style>
-    </head>
-    <body>
-        <h1>HIIIIIIIIIIIIIIIIIIIIIIIII</h1>
-        <h1>HIIII</h1>
-        <h1>HIIII</h1>
-        <h1>HIIII</h1>
-        <h1>HIIII</h1>
-        <h1>HIIII</h1>
-        <h1>HIIII</h1>
-        <h1>HIIII</h1>
-        <h1>HIIII</h1>
-        <h1>HIIII</h1>
-        <h1>HIIII</h1>
-        <h1>HIIII</h1>
-        <h1>HIIII</h1>
+    <link rel="import" href="/client/bower_components/polymer/polymer.html">
 
-        
-        <dom-module id="send-money">
+    <link rel="stylesheet" href="/client/fonts/roboto.css">
+    <link rel="stylesheet" href="/client/fonts/roboto-mono.css">
 
-            <template>
-                Hey hey Hey hey Hey hey 
-            </template>
-            
-            <script>
-                console.log(window.top);
-                
-                class SendMoney extends Polymer.Element {
-                    static get is() {
-                        return "send-money";
-                    }
-                    constructor() {
-                        super();
-                    }
+    <link rel="import" href="/client/styles/app-theme.html">
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            font-family: "Roboto", sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>HIIIIIIIIIIIIIIIIIIIIIIIII</h1>
+    <h1>HIIII</h1>
+    <h1>HIIII</h1>
+    <h1>HIIII</h1>
+    <h1>HIIII</h1>
+    <h1>HIIII</h1>
+    <h1>HIIII</h1>
+    <h1>HIIII</h1>
+    <h1>HIIII</h1>
+    <h1>HIIII</h1>
+    <h1>HIIII</h1>
+    <h1>HIIII</h1>
+    <h1>HIIII</h1>
+
+
+    <dom-module id="wallet-app">
+
+        <template>
+            Hey hey Hey hey Hey hey
+        </template>
+
+        <script>
+            //console.log(window.top);
+
+            class WalletApp extends Polymer.Element {
+                static get is() {
+                    return "wallet-app";
                 }
-                
-                window.customElements.define(SendMoney.is, SendMoney);
-            </script>
-        </dom-module>
-        
-        <send-money></send-money>
-    </body>
+                constructor() {
+                    super();
+                }
+            }
+
+            window.customElements.define(WalletApp.is, WalletApp);
+        </script>
+    </dom-module>
+
+    <wallet-app></wallet-app>
+
+    <script src="/client/js/ParentCommunicator.js"></script>
+    <script>
+        const parentApi = new ParentCommunicator();
+
+        window.addEventListener("message", parentApi.listener.bind(parentApi));
+
+        /*  -----------
+            == Tests ==
+            ----------- */
+
+        parentApi.request("Test", { g: "c" }, response => {
+            console.log(response);
+        });
+
+        parentApi.request("Test", { g: "c" }).then(response => {
+            console.log("Promise: " + response);
+        });
+
+        const gangStream = parentApi.createStream("gang-gang", {
+            private: true
+        })
+    </script>
+</body>
+
 </html>

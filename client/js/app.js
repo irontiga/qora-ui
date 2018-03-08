@@ -12,7 +12,7 @@ class MainApp extends Polymer.Element {
                 value: [],
                 notify: true
             },
-            urls : {
+            urls: {
                 type: Array,
                 value: []
             },
@@ -20,16 +20,16 @@ class MainApp extends Polymer.Element {
                 type: Array,
                 value: []
             },
-            selectedModal:{
+            selectedModal: {
                 type: Object,
-                value:{
+                value: {
                     // This way browser won't throw an error at the default url
                     page: "404"
                 }
             },
             routeData: {
                 type: Object,
-                value:{}
+                value: {}
             },
             route: {
                 type: Object
@@ -37,7 +37,7 @@ class MainApp extends Polymer.Element {
             loginpage: {
                 type: Object,
                 value: {
-                    loggedin : false,
+                    loggedin: false,
                     loading: false
                 }
             },
@@ -52,13 +52,13 @@ class MainApp extends Polymer.Element {
             pluginsLoaded: {
                 type: Boolean,
                 value: false,
-                notify:true
+                notify: true
             },
             passphrase: {
                 type: String,
                 value: ""
             },
-            pin:{
+            pin: {
                 type: Number
             },
             qoraNode: {
@@ -93,17 +93,17 @@ class MainApp extends Polymer.Element {
                 }
             },
             addressColors: {
-                type:Array,
+                type: Array,
                 value: ["#4caf50",
-                        "#3f51b5",
-                        "#e91e63",
-                        "#2196f3",
-                        "#f44336",
-                        "#ff9800",
-                        "#795548",
-                        "#9c27b0",
-                        "#18ffff",
-                        "#ffeb3b"]
+                    "#3f51b5",
+                    "#e91e63",
+                    "#2196f3",
+                    "#f44336",
+                    "#ff9800",
+                    "#795548",
+                    "#9c27b0",
+                    "#18ffff",
+                    "#ffeb3b"]
             },
             currentPluginFrame: {
                 type: Object
@@ -114,42 +114,42 @@ class MainApp extends Polymer.Element {
             }
         }
     }
-        
+
     // All my beautiful functions now
-    _checkActiveRoute(item, route){
-        if(route.path == "/qora" + item.url){
+    _checkActiveRoute(item, route) {
+        if (route.path == "/qora" + item.url) {
             return false;
         }
-        else{
+        else {
             return true;
         }
     }
-    
-    _checkPageNotFound(urls, route){
+
+    _checkPageNotFound(urls, route) {
         var noPage = false;
-        for(var i=0; i < urls.length; i++){
-            if("/qora" + urls[i].url == route.path){
-                noPage=true;
+        for (var i = 0; i < urls.length; i++) {
+            if ("/qora" + urls[i].url == route.path) {
+                noPage = true;
             }
         }
         return noPage;
     }
 
-    _joinPluginUrl(url, hash){
+    _joinPluginUrl(url, hash) {
         return "/plugins/" + url + "#" + hash;
     }
 
-    _genIframeUrl(url){
+    _genIframeUrl(url) {
         return "/qora/" + url;
     }
-    
-    _getActiveUrl(routeData, urls){
+
+    _getActiveUrl(routeData, urls) {
         //console.log(routeData);
         var activeUrl = routeData.currentPluginUrl;
         var activePlugin = {
             url: "404",
             title: "404",
-            menus:[],
+            menus: [],
             page: "404",
             parent: false
         };
@@ -157,67 +157,67 @@ class MainApp extends Polymer.Element {
         //console.log("Get active urls...");
         //console.log(urls);
         //console.log(routeData);
-        
-        for(var i=0;i<urls.length;i++){
+
+        for (var i = 0; i < urls.length; i++) {
             //console.log(urls[i]);
             //console.log(activeUrl);
-            if(activeUrl == urls[i].url){
+            if (activeUrl == urls[i].url) {
                 activePlugin = urls[i];
             }
         }
-        
+
         //console.log(activePlugin);
         return activePlugin;
     }
-    
-    _acceptSendMoney(e){
+
+    _acceptSendMoney(e) {
         var data = this.sendMoneyPrompt;
         //console.log(data);
         //console.log(this.passphrase);
         data.accept(data);
     }
-    _rejectSendMoney(e){
+    _rejectSendMoney(e) {
         var data = this.sendMoneyPrompt;
         this.sendMoneyPrompt = {
             open: false
         };
         data.reject();
     }
-        
-    _toggleDrawer(e){
+
+    _toggleDrawer(e) {
         this.$.appdrawer.toggle();
     }
-        
-    _registerMessageHandler(handlerClass){
+
+    _registerMessageHandler(handlerClass) {
         console.log("NO WAYYYYY");
-        
+
     }
-    
+
     connectedCallback() {
         super.connectedCallback();
         //console.log('main-app element created!');
     }
-    
-    _openTopMenuModal(e){
-        console.log(e.model.item);
+
+    _openTopMenuModal(e) {
+        //console.log(e.model.item);
         this.selectedModal = e.model.item;
         this.$.topMenuDialog.toggle();
     }
 
-    ready(){
+    ready() {
         super.ready();
         //console.log("FIREEE");
         //console.log(this);
         //console.log(this.$.appdrawer);
         //window.addEventListener("message", this._messageHandler.bind(this), false);
-        
+
         // -----------------------
         // LOGIN FUNCTION
         // -----------------------
         this.loginpage.login = login.bind(this);
         this._logout = logout.bind(this);
     }
-        
+
 }
 
 window.customElements.define(MainApp.is, MainApp);

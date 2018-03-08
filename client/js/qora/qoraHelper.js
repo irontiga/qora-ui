@@ -1,9 +1,9 @@
-function _isEmptyObject(obj) { 
+function _isEmptyObject(obj) {
     for (var x in obj) { return false; }
     return true;
 }
 
-function QoraCalls(){
+function QoraCalls() {
     // url = "transactions/limit/50 "
     // method = "GET", "POST", "PUT", "DELETE"
     // data = Object, eg {name: "james"}
@@ -28,38 +28,39 @@ function QoraCalls(){
     url(addr=QiUGasyfgIYGSDuASBDYu67q3rg or qora/status etc)...INCLUDE THE QUERY STRING
     data(Object....to convert to query string in get request, or to post in a post request. No support for put/delete yet)
     */
-    this.apiCall = function(options, qoraNode, callback){
+    this.apiCall = function (options, qoraNode, callback) {
+        //console.log(options, qoraNode, callback);
         options.method = options.method || "GET";
-        
+
         // If no callback then return a promise.
-        if(callback == undefined){
+        if (callback == undefined) {
             return new Promise((resolve, reject) => {
                 doApiCall(resolve, reject);
             })
         }
         // Otherwise just do the usual callback stuff
-        else{
+        else {
             doApiCall(callback, callback);
         }
 
-        function doApiCall(cb, errcb){
+        function doApiCall(cb, errcb) {
             //console.log(qoraNode);
-            if(options.url == undefined){
+            if (options.url == undefined) {
                 options.url = "";
             }
             const url = "/proxy/" + qoraNode[options.type].url + qoraNode[options.type].tail + options.url;
 
 
             var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function(){
+            xhttp.onreadystatechange = function () {
                 // Check the request is complete:
-                if(xhttp.readyState == 4){
+                if (xhttp.readyState == 4) {
                     // If successful
                     if (xhttp.status == 200) {
                         let response = xhttp.responseText;
-                        if(options.type == "explorer"){
+                        if (options.type == "explorer") {
                             response = JSON.parse(response);
-                            if(response.error){
+                            if (response.error) {
                                 return cb({
                                     success: false,
                                     error: {
@@ -74,7 +75,7 @@ function QoraCalls(){
                         });
                     }
                     // Otherwise...
-                    else{
+                    else {
                         const errorResponse = {
                             success: false,
                             error: {
@@ -89,11 +90,11 @@ function QoraCalls(){
             }
 
             // If it's get then convert data into a query string...
-            if(options.method == "GET"){
+            if (options.method == "GET") {
                 let params = "";
                 // Let's not make errors if there is no data
-                if(options.data == undefined){options.data={}}
-                if(!_isEmptyObject(options.data)){params += "?"}
+                if (options.data == undefined) { options.data = {} }
+                if (!_isEmptyObject(options.data)) { params += "?" }
 
                 params += Object.keys(options.data).map(key => {
                     return encodeURIComponent(key) + "=" + encodeURIComponent(options.data[key]);
@@ -102,7 +103,7 @@ function QoraCalls(){
                 xhttp.send();
             }
             // Otherwise send it as data. Doesn't even have to be an object
-            else{
+            else {
                 xhttp.open(options.method, url, true);
                 xhttp.setRequestHeader("Accept", "application/json")
                 xhttp.send(options.data);
@@ -111,24 +112,24 @@ function QoraCalls(){
 
 
 
-            //console.log(qoraNode);
+        //console.log(qoraNode);
 
-            /*options.protocol = qoraNode.protocol + ":";
-        options.host = qoraNode.url;
-        options.port = qoraNode.port;
+        /*options.protocol = qoraNode.protocol + ":";
+    options.host = qoraNode.url;
+    options.port = qoraNode.port;
 
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function(){
-            if (xhttp.readyState == 4 && xhttp.status == 200) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function(){
+        if (xhttp.readyState == 4 && xhttp.status == 200) {
 
-                var parsedResponse = JSON.parse(xhttp.responseText);
+            var parsedResponse = JSON.parse(xhttp.responseText);
 
-                callback(parsedResponse);
-            }
-        };
+            callback(parsedResponse);
+        }
+    };
 
-        xhttp.open("GET", "/proxy/" + JSON.stringify(options), true);
-        xhttp.send();*/
+    xhttp.open("GET", "/proxy/" + JSON.stringify(options), true);
+    xhttp.send();*/
     }
 
 
@@ -137,15 +138,15 @@ function QoraCalls(){
         return;
     }
     */
-    this.sendMoney = function(options, qoraNode, callback){
+    this.sendMoney = function (options, qoraNode, callback) {
 
         // IN case of errorrrsss
-        function returnError(err){
-            if(callback == undefined){
+        function returnError(err) {
+            if (callback == undefined) {
                 // Promise...
                 return Promise.reject(err)
             }
-            else{
+            else {
                 callback(err)
             }
         }
@@ -158,7 +159,7 @@ function QoraCalls(){
         //var senderAccountSeed = Base58.decode(base58SenderAccountSeed);
         const senderSeed = options.sender.seed;
         console.log(senderSeed);
-        if(senderSeed.length != 32) {
+        if (senderSeed.length != 32) {
             console.log("Invalid seeeeed");
             return returnError("Invalid seeeeed");
         }
@@ -178,56 +179,56 @@ function QoraCalls(){
         }, qoraNode)
             .then(lastReference => {
 
-            if(lastReference == "false"){
-                console.log("ERROR: ADDRESS IS NEW");
-                return returnError("ERROR: ADDRESS IS NEW");
-            }
+                if (lastReference == "false") {
+                    console.log("ERROR: ADDRESS IS NEW");
+                    return returnError("ERROR: ADDRESS IS NEW");
+                }
 
-            const base58LastReferenceOfAccount =  Base58.decode(lastReference)
+                const base58LastReferenceOfAccount = Base58.decode(lastReference)
 
-            const recipientAccountAddress = Base58.decode(options.recipient);
+                const recipientAccountAddress = Base58.decode(options.recipient);
 
-            if(base58LastReferenceOfAccount == null || base58LastReferenceOfAccount.length != 64) {
-                console.log("Invalid last reference :/");
-                return returnError("Invald last reference");
-            }
+                if (base58LastReferenceOfAccount == null || base58LastReferenceOfAccount.length != 64) {
+                    console.log("Invalid last reference :/");
+                    return returnError("Invald last reference");
+                }
 
-            //var fee = 1;
-            // data.fee
-            var timestamp = new Date().getTime();
+                //var fee = 1;
+                // data.fee
+                var timestamp = new Date().getTime();
 
-            // SIGN 'EM BABY
-            const signature = generateSignaturePaymentTransaction({
-                publicKey: options.sender.publicKey,
-                privateKey: options.sender.privateKey
-            }, base58LastReferenceOfAccount, recipientAccountAddress, options.amount, options.fee, timestamp);
-            const paymentTransactionRaw = generatePaymentTransaction({
-                publicKey: options.sender.publicKey,
-                privateKey: options.sender.privateKey
-            }, base58LastReferenceOfAccount, recipientAccountAddress, options.amount, options.fee, timestamp, signature);
+                // SIGN 'EM BABY
+                const signature = generateSignaturePaymentTransaction({
+                    publicKey: options.sender.publicKey,
+                    privateKey: options.sender.privateKey
+                }, base58LastReferenceOfAccount, recipientAccountAddress, options.amount, options.fee, timestamp);
+                const paymentTransactionRaw = generatePaymentTransaction({
+                    publicKey: options.sender.publicKey,
+                    privateKey: options.sender.privateKey
+                }, base58LastReferenceOfAccount, recipientAccountAddress, options.amount, options.fee, timestamp, signature);
 
-            // And rewrite this one :/
-            // doProcess(Base58.encode(paymentTransactionRaw));
-            // Base58.encode(paymentTransactionRaw)4
-            const finalData = {
-                type: "api",
-                url: "transactions/process",
-                data: Base58.encode(paymentTransactionRaw),
-                method: "POST"
-            }
+                // And rewrite this one :/
+                // doProcess(Base58.encode(paymentTransactionRaw));
+                // Base58.encode(paymentTransactionRaw)4
+                const finalData = {
+                    type: "api",
+                    url: "transactions/process",
+                    data: Base58.encode(paymentTransactionRaw),
+                    method: "POST"
+                }
 
-            if(callback == undefined){
-                // Promise...
-                return this.apiCall(finalData, qoraNode).then(response => {
-                    return Promise.resolve(JSON.parse(response))
-                })
-            }
-            else{
-                this.apiCall(finalData, qoraNode, function(response){
-                    callback(JSON.parse(response));
-                })
-            }
-        })
+                if (callback == undefined) {
+                    // Promise...
+                    return this.apiCall(finalData, qoraNode).then(response => {
+                        return Promise.resolve(JSON.parse(response))
+                    })
+                }
+                else {
+                    this.apiCall(finalData, qoraNode, function (response) {
+                        callback(JSON.parse(response));
+                    })
+                }
+            })
         /*let i = 1;
         while(options.sender.info[i] != undefined){i++;}
         let base58LastReferenceOfAccount =  Base58.decode(options.sender.info[i-1].transaction.reference);*/

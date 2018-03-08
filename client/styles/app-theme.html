@@ -3,16 +3,15 @@
 <link rel="import" href="../bower_components/paper-styles/color.html">
 <link rel="import" href="/client/bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
-
 <dom-module id="burst-styles">
     <template>
         <custom-style>
             <style include="iron-flex iron-flex-alignment iron-positioning iron-flex-factors">
-                :root {
-                    --primary-text-color: rgba(0,0,0,0.87);
+                :host>* {
+                    --primary-text-color: rgba(0, 0, 0, 0.87);
                     --primary-background-color: #ffffff;
-                    --secondary-text-color: rgba(0,0,0,0.54);
-                    --disabled-text-color: rgba(0,0,0,0.34);
+                    --secondary-text-color: rgba(0, 0, 0, 0.54);
+                    --disabled-text-color: rgba(0, 0, 0, 0.34);
                     --divider-color: #dbdbdb;
                     /* Primary */
                     --primary-color: var(--paper-indigo-300);
@@ -25,7 +24,6 @@
 
                     /* Components */
                     /* paper-drawer-panel */
-
                     --drawer-menu-color: #ffffff;
                     --drawer-border-color: 1px solid #ccc;
                     --drawer-toolbar-border-color: 1px solid rgba(0, 0, 0, 0.22);
@@ -33,6 +31,11 @@
                     /* paper-menu */
                     --paper-menu-background-color: #fff;
                     --menu-link-color: #333;
+                }
+
+                html,
+                body {
+                    font-family: "Roboto", sans-serif;
                 }
 
                 paper-listbox {
@@ -43,10 +46,12 @@
                         background: var(--primary-color);
                     }
                 }
+
                 paper-listbox iron-icon {
                     margin-right: 33px;
                     opacity: 0.54;
                 }
+
                 paper-listbox a {
                     @apply(--layout-horizontal);
                     @apply(--layout-center);
@@ -64,7 +69,7 @@
                     font-weight:bold;*/
                 }
 
-                paper-toolbar .title{
+                paper-toolbar .title {
                     font-family: 'Roboto Mono', monospace;
                     text-transform: uppercase;
                 }
@@ -77,10 +82,11 @@
                 height: 32px;
                 }*/
 
-                paper-button.red-button{
+                paper-button.red-button {
                     background: var(--paper-red-500);
                 }
-                paper-button.green-button{
+
+                paper-button.green-button {
                     background: var(--paper-green-500);
                 }
 
@@ -89,44 +95,43 @@
                     --paper-fab-keyboard-focus-background: var(--light-primary-color);
                 }
 
-                paper-card{
-                    --paper-card-header-text{
+                paper-card {
+                    --paper-card-header-text {
                         font-family: "Roboto Mono", monospace;
                     }
                 }
-                paper-tabs{
+
+                paper-tabs {
                     --paper-tabs-selection-bar-color: var(--primary-color);
                     --paper-tab-ink: var(--primary-color);
                 }
 
-                h1,h3{
-                    font-weight:400;
+                h1,
+                h3 {
+                    font-weight: 400;
                 }
-                a{
+
+                a {
                     text-decoration: none;
                 }
-                
-                ul{
+
+                ul {
                     list-style: none;
                     margin-left: 7px;
                 }
-                ul li{
+
+                ul li {
                     padding: 6px;
                 }
-                ul li::before{
+
+                ul li::before {
                     font-style: italic;
                     content: " # ";
                     font-weight: 100;
                     font-family: "Reboto Mono", monospace;
                 }
-                
-                
-                
-                
-                
-                
             </style>
         </custom-style>
-        
+
     </template>
 </dom-module>

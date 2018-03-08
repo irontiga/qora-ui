@@ -18,10 +18,7 @@
 <link rel="import" href="/client/bower_components/paper-ripple/paper-ripple.html">
 <link rel="import" href="/client/bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="/client/bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
-<link rel="import" href="/client/bower_components/neon-animation/animations/scale-up-animation.html">
-<link rel="import" href="/client/bower_components/neon-animation/animations/fade-out-animation.html">
 <link rel="import" href="/client/bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="/client/bower_components/neon-animation/web-animations.html">
 <link rel="import" href="/client/bower_components/app-storage/app-localstorage/app-localstorage-document.html">
 <link rel="import" href="/client/bower_components/paper-styles/shadow.html">
 
@@ -167,7 +164,7 @@
             
             
             <!-- TOP MENU DIALOG -->
-            <paper-dialog with-backdrop id="topMenuDialog" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+            <paper-dialog with-backdrop id="topMenuDialog">
                 <show-modal item="{{selectedModal}}"></show-modal>
             </paper-dialog>
             <!-- -->
@@ -175,7 +172,7 @@
 
             <!-- SEND MONEY CONFIRM DIALOG -->
             <!-- with-backdrop -->
-            <paper-dialog id="sendMoneyConfirmDialog" entry-animation="fade-in-animation" exit-animation="fade-out-animation" modal>
+            <paper-dialog id="sendMoneyConfirmDialog" modal>
                 <h2>Send money request</h2>
 
                 <table>
