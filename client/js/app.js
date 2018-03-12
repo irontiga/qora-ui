@@ -4,6 +4,7 @@ class MainApp extends Polymer.Element {
     }
     constructor() {
         super();
+        this.wimps = {};
     }
     static get properties() {
         return {
@@ -111,6 +112,12 @@ class MainApp extends Polymer.Element {
             loaderIframes: {
                 type: Array,
                 value: []
+            },
+            selectedModal: {
+                type: Object,
+                value: {
+                    
+                }
             }
         }
     }
@@ -206,16 +213,20 @@ class MainApp extends Polymer.Element {
 
     ready() {
         super.ready();
-        //console.log("FIREEE");
-        //console.log(this);
-        //console.log(this.$.appdrawer);
-        //window.addEventListener("message", this._messageHandler.bind(this), false);
-
         // -----------------------
         // LOGIN FUNCTION
         // -----------------------
         this.loginpage.login = login.bind(this);
         this._logout = logout.bind(this);
+        
+        Wimp.registerTarget("plugin-frame", this.currentPluginFrame.contentWindow);
+        
+        this.wimps.activePlugin = createParentWimp("plugin-frame");
+        
+        Wimp.registerTarget("modal-frame", this.modalFrame.contentWindow);
+        
+        this.wimps.modal = createParentWimp("modal-frame");
+        
     }
 
 }

@@ -12,7 +12,7 @@
             }
         </style>
         
-        <iframe id="currentFrame" security="restricted" sandbox="allow-scripts allow-same-origin" src="{{_frameUrl(route, data, subroute, url)}}"></iframe>
+        <iframe id="currentFrame" security="restricted" sandbox="allow-scripts allow-same-origin" src="{{_frameUrl(route, data, subroute, url, loggedIn)}}"></iframe>
     </template>
 
     <script>
@@ -42,7 +42,10 @@
                 this.currentPluginFrame = this.shadowRoot.querySelector("#currentFrame");
             }
             
-            _frameUrl(route, data, subroute, url){
+            _frameUrl(route, data, subroute, url, loggedIn){
+                if(!loggedIn){
+                    return "about:blank";
+                }
                 //console.log(url);
                 return window.location.protocol + "//" + window.location.hostname + ":" + (parseInt(window.location.port)+1) + "/plugins/" + url.page;
             }

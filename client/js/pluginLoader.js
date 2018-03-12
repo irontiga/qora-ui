@@ -1,7 +1,7 @@
 //console.log(App.loaderIframes);
 // Fetched plugins function
 function pluginLoader(plugins) {
-
+    // plugins = ["ats", "wallet", "transactions"] etc.
     for (let i = 0; i < plugins.length; i++) {
 
         const frame = document.createElement("iframe");
@@ -10,10 +10,15 @@ function pluginLoader(plugins) {
 
         const insertedFrame = document.body.appendChild(frame);
 
-        const parentCommunicator = insertedFrame.contentWindow.document.createElement("script");
-        parentCommunicator.type = "text/javascript";
-        parentCommunicator.async = false; // Defaults to true, can cause the next script to execute before the helpers have loaded
-        parentCommunicator.src = "/client/js/ParentCommunicator.js";
+//        const parentCommunicator = insertedFrame.contentWindow.document.createElement("script");
+//        parentCommunicator.type = "text/javascript";
+//        parentCommunicator.async = false; // Defaults to true, can cause the next script to execute before the helpers have loaded
+//        parentCommunicator.src = "/client/js/ParentCommunicator.js";
+        
+        const frameWimp = insertedFrame.contentWindow.document.createElement("script");
+        frameWimp.type = "text/javascript";
+        frameWimp.async = false; // Defaults to true, can cause the next script to execute before the helpers have loaded
+        frameWimp.src = "/client/js/wimp.min.js";
 
         // const helperScript = insertedFrame.contentWindow.document.createElement("script");
         // helperScript.type = "text/javascript";
@@ -33,12 +38,22 @@ function pluginLoader(plugins) {
 
         //insertedFrame.contentWindow.document.body.appendChild(helperScript);
         //insertedFrame.contentWindow.document.body.appendChild(streamHelperScript);
-        insertedFrame.contentWindow.document.body.appendChild(parentCommunicator);
+//        insertedFrame.contentWindow.document.body.appendChild(parentCommunicator);
+        insertedFrame.contentWindow.document.body.appendChild(frameWimp);
         insertedFrame.contentWindow.document.body.appendChild(pluginScript);
+        
+        Wimp.registerTarget(plugins[i], insertedFrame.contentWindow);
 
-        App.push("loaderIframes", insertedFrame);
+        //App.push("loaderIframes", insertedFrame);
 
     }
+    
+    Wimp.registerTarget("all-plugin-loaders", plugins);
+    
+    App.wimps.pluginLoader = createParentWimp("all-plugin-loaders");
+    // Can be called now as the plugins have been loaded, and show-plugin is not being shown yet so it does not matter
+    Wimp.init();
+    
 
     // Send all plugins loaded message
     /*var script = document.createElement("script");

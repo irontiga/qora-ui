@@ -3,11 +3,11 @@
     <template>
 
         <style>
-            :host{
-                padding:0!important;
+            :host {
+                padding:0 !important;
                 margin:0;
             }
-            iframe{
+            iframe {
                 width:auto;
                 max-width:calc(100vw - 120px);
                 height:auto;
@@ -18,25 +18,46 @@
             }
         </style>
 
-        <iframe security="restricted" sandbox="allow-scripts allow-same-origin" src="{{_frameUrl(item)}}"></iframe>
+        <iframe id="modalFrame" security="restricted" sandbox="allow-scripts allow-same-origin" src="{{_frameUrl(item)}}"></iframe>
     </template>
 
     <script>
-        Polymer({
-            is: 'show-modal',
-            properties: {
-                item: Object
-            },
-
-            _frameUrl: function(item){
-                //console.log(url);
-                return window.location.protocol + "//" + window.location.hostname + ":" + (parseInt(window.location.port) + 1) + "/plugins/" + item.page;
-            },
-
-            ready: function(){
-                //console.log(this.url);
+        class ShowModal extends Polymer.Element{
+            static get is(){
+                return "show-modal";
             }
-        });
+            
+            static get properties(){
+                return {
+                    item: Object,
+                    modalFrame: {
+                        notify: true
+                    }
+                }
+            }
+            
+            constructor(){
+                super();
+            }
+            
+            connectedCallback() {
+                super.connectedCallback();
+                this.modalFrame = this.shadowRoot.querySelector("#modalFrame");
+            }
+
+            _frameUrl(item){
+                if(!item.page){
+                    return "about:blank";
+                }
+                return window.location.protocol + "//" + window.location.hostname + ":" + (parseInt(window.location.port) + 1) + "/plugins/" + item.page;
+            }
+            
+            ready(){
+                super.ready();
+            }
+        }
+        
+        customElements.define(ShowModal.is, ShowModal);
     </script>
 
 </dom-module>

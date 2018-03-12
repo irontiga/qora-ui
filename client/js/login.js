@@ -1,4 +1,6 @@
-let addressUpdateTimeout;
+//let addressUpdateTimeout;
+
+// this is bound to Polymer in app.js
 
 function login(phraseOrSeed, pin, loginType, passInput) {
     this.passInput = passInput;

@@ -1,6 +1,6 @@
 // const parentWindow = new ParentHelper();
-const parentWindow = new ParentCommunicator();
-window.addEventListener("message", parentWindow.listener.bind(parentWindow));
+//const parentWindow = new ParentCommunicator();
+//window.addEventListener("message", event => parentWindow.listener(event));
 
 class WalletApp extends Polymer.Element {
     static get is() { return 'multi-wallet' }
@@ -72,7 +72,7 @@ class WalletApp extends Polymer.Element {
             amount: amount,
             recipient: recipient,
             fee: fee
-        }, function (response) {
+        }, response => {
             console.log(response);
             this.sendMoneyLoading = false;
             if (!response.success) {
@@ -82,7 +82,7 @@ class WalletApp extends Polymer.Element {
                 this.$.sendMoneyDialog.close();
                 this.addressUpdate();
             }
-        }.bind(this));
+        });
 
         //this.$.sendMoneyDialog.close();
     }
@@ -131,20 +131,19 @@ class WalletApp extends Polymer.Element {
     }
 
     addressUpdate() {
-        Promise.all(this.addressStore.map((address) => {
-            return new Promise((resolve, reject) => {
-                return parentWindow.request("qoraApiCall", {
+        Promise.all(this.addressStore.map(address => {
+            return this.parentWimp.request("qoraApiCall", {
+                data: {
                     method: "GET",
                     type: "explorer",
                     data: {
                         addr: address.address,
                         txOnPage: 20
                     }
-                }, response => {
-                    resolve(response);
-                })
-            }).then((response, error) => {
-                // Check for errors...probably an unused account
+                }
+            })
+                .then(response => {
+                console.log(response);
                 if (!response.success) {
                     address.balance = 0;
                     address.info = {};
@@ -155,40 +154,79 @@ class WalletApp extends Polymer.Element {
                 }
                 return address;
             })
-        }))
-
-            .then(function (addresses, err) {
-                // Sort em real nice
-                addresses.sort(function (a, b) {
-                    return a.nonce - b.nonce
-                });
-
-                // And spread the love to the wor....app
-                this.addresses = [];
-                this.addresses = addresses;
-                this.selectedAddress = this.addresses[0];
-            }.bind(this))
-            .catch(err => {
-                console.error(err);
+            
+            
+            return new Promise((resolve, reject) => {
+//                return parentWindow.request("qoraApiCall", {
+//                    method: "GET",
+//                    type: "explorer",
+//                    data: {
+//                        addr: address.address,
+//                        txOnPage: 20
+//                    }
+//                }, response => {
+//                    resolve(response);
+//                })
+//            }).then((response, error) => {
+//                // Check for errors...probably an unused account
+//                if (!response.success) {
+//                    address.balance = 0;
+//                    address.info = {};
+//                }
+//                else {
+//                    address.balance = response.data.balance.total[0];
+//                    address.info = response.data;
+//                }
+//                return address;
+//            })
             })
+        }))
+            .then((addresses, err) => {
+            // Sort em real nice
+            addresses.sort((a, b) => {
+                return a.nonce - b.nonce
+            });
+
+            // And spread the love to the wor....app
+            this.addresses = [];
+            this.addresses = addresses;
+            this.selectedAddress = this.addresses[0];
+        })
+            .catch(err => {
+            console.error(err);
+        })
     }
 
     ready() {
         super.ready();
+        
+        Wimp.init();
+        
+        this.parentWimp = new Wimp(window.parent);
+        
+        this.parentWimp.ready(() => {
+            this.parentWimp.request("getQoraAddresses", response => {
+                this.addressStore = response.data;
+                
+                this.addressUpdate();
+                
+                setInterval(() => this.addressUpdate(), 30000)
+            })
+        })
         //console.log("hey");
         // Fetch the addresssses
-        parentWindow.request("getQoraAddresses", {}, function (addresses) {
-            //console.log("================ HEYY ============");
-            //console.log(JSON.stringify(addresses));
-            this.addressStore = addresses.data;
-            // Nope, need to wait till balances are loaded
-            //this.selectedAddress = this.addresses[0];
-
-            // Now fetch all the addres infoooos
-            this.addressUpdate();
-            // And update every....30 seconds?
-            setInterval(this.addressUpdate.bind(this), 30000)
-        }.bind(this))
+//        parentWindow.request("getQoraAddresses", {}, function (addresses) {
+//            //console.log("================ HEYY ============");
+//            //console.log(JSON.stringify(addresses));
+//            this.addressStore = addresses.data;
+//            // Nope, need to wait till balances are loaded
+//            //this.selectedAddress = this.addresses[0];
+//
+//            // Now fetch all the addres infoooos
+//            this.addressUpdate();
+//            // And update every....30 seconds?
+//            setInterval(this.addressUpdate.bind(this), 30000)
+//        }.bind(this))
     }
 }
 

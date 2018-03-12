@@ -179,8 +179,7 @@
                                     </div>
                                 </paper-item-body>
                                 <div class="address-balance mono">
-                                    <span>{{_floor(item.balance)}}</span>
-                                    <i style="font-size:16px;">.{{_decimals(item.balance)}}</i>
+                                    <span>{{_floor(item.balance)}}</span><i style="font-size:16px;">.{{_decimals(item.balance)}}</i>
                                 </div>
                                 <!--<paper-icon-button title="Send money" icon="redo" on-click="_sendMoneyDialog"></paper-icon-button>-->
                             </paper-icon-item>
@@ -273,7 +272,8 @@
     </template>
 
     <!-- <script src="/client/js/resources/helpers.js"></script> -->
-    <script src="/client/js/ParentCommunicator.js"></script>
+<!--    <script src="/client/js/ParentCommunicator.js"></script>-->
+    <script src="/client/js/wimp.min.js"></script>
     <script src="multi-wallet.js"></script>
 
 </dom-module>

@@ -44,7 +44,9 @@ class ParentCommunicator {
         // Calls a stream listener or a normal listener etc.
         //console.log(data.requestType);
         //console.log(this._listenerTypes[data.requestType]);
-        this._listenerTypes[data.requestType](event);
+        if(this._listenerTypes[data.requestType]){
+            this._listenerTypes[data.requestType](event);
+        }
         /*
         switch (requestType) {
             case "stream":

@@ -150,9 +150,7 @@
 
                     <!-- PLUGIN IFRAMEEEE -->
                     <!---------------------->
-                    <template is="dom-if" if="{{loginpage.loggedin}}" restamp>
-                        <show-plugin current-plugin-frame="{{currentPluginFrame}}" route="{{route}}" data="{{routeData}}" subroute="{{subroute}}" url="{{activeUrl}}"></show-plugin>
-                    </template>
+                    <show-plugin logged-in="{{loginpage.loggedin}}" current-plugin-frame="{{currentPluginFrame}}" route="{{route}}" data="{{routeData}}" subroute="{{subroute}}" url="{{activeUrl}}"></show-plugin>
 
 
 
@@ -165,7 +163,7 @@
             
             <!-- TOP MENU DIALOG -->
             <paper-dialog with-backdrop id="topMenuDialog">
-                <show-modal item="{{selectedModal}}"></show-modal>
+                <show-modal modal-frame="{{modalFrame}}" item="{{selectedModal}}"></show-modal>
             </paper-dialog>
             <!-- -->
 
@@ -198,8 +196,10 @@
         
 	</template>
     
+    <script src="/client/js/wimp.min.js"></script>
+    <script src="/client/js/wimp-parent.js"></script>
     
-    
+        
     <!-- Won't be needing these for Qora.... -->
     <!--<script src="/client/js/localSigningDeps.js"></script>
     <script src="/client/js/localSigning.js"></script>-->
@@ -229,13 +229,23 @@
     <script src="/client/js/messageHandler.js"></script>
     <script src="/client/js/qora/qoraMessageHandler.js"></script>
     -->
-    <!-- New -->
+<!--
     <script src="/client/js/communicator/CommunicatorBase.js"></script>
     <script src="/client/js/communicator/RequestHandler.js"></script>
     <script src="/client/js/communicator/QoraRequestHandler.js"></script>
     <script src="/client/js/communicator/BuiltInRequestHandler.js"></script>
     <script src="/client/js/communicator/StreamHandler.js"></script>
     <script src="/client/js/communicator/listener.js"></script>
+-->
+    
+    <script>
+        //const AllPlugins = new Wimp(App.currentPluginFrame)
+    </script>
     
     <script src="/client/js/pluginLoader.js"></script>
+    
+    <script>
+        // console.log(App.loaderIframes);
+        // console.log(App.currentPluginFrame.contentWindow);
+    </script>
 </dom-module>

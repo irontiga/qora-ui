@@ -28,26 +28,16 @@ function QoraCalls() {
     url(addr=QiUGasyfgIYGSDuASBDYu67q3rg or qora/status etc)...INCLUDE THE QUERY STRING
     data(Object....to convert to query string in get request, or to post in a post request. No support for put/delete yet)
     */
-    this.apiCall = function (options, qoraNode, callback) {
+    this.apiCall = function (options, qoraNode, res) {
         //console.log(options, qoraNode, callback);
         options.method = options.method || "GET";
-
-        // If no callback then return a promise.
-        if (callback == undefined) {
-            return new Promise((resolve, reject) => {
-                doApiCall(resolve, reject);
-            })
-        }
-        // Otherwise just do the usual callback stuff
-        else {
-            doApiCall(callback, callback);
-        }
-
-        function doApiCall(cb, errcb) {
+        
+        doApiCall();
+        
+        function doApiCall() {
             //console.log(qoraNode);
-            if (options.url == undefined) {
-                options.url = "";
-            }
+            options.url = options.url || "";
+            
             const url = "/proxy/" + qoraNode[options.type].url + qoraNode[options.type].tail + options.url;
 
 
@@ -61,29 +51,16 @@ function QoraCalls() {
                         if (options.type == "explorer") {
                             response = JSON.parse(response);
                             if (response.error) {
-                                return cb({
-                                    success: false,
-                                    error: {
-                                        message: response.error
-                                    }
-                                })
+                                return res.error(response.error)
                             }
                             response.success = true;
                         }
-                        cb({
-                            data: response
-                        });
+                        res(response);
                     }
                     // Otherwise...
                     else {
-                        const errorResponse = {
-                            success: false,
-                            error: {
-                                message: xhttp.statusText
-                            }
-                        }
-                        console.error(errorResponse);
-                        cb(errorResponse);
+                        console.error(xhttp.statusText);
+                        res.error(xhttp.statusText);
                     }
 
                 };

@@ -61,27 +61,16 @@
 
     <wallet-app></wallet-app>
 
-    <script src="/client/js/ParentCommunicator.js"></script>
+    <script src="/client/js/wimp.min.js"></script>
     <script>
-        const parentApi = new ParentCommunicator();
-
-        window.addEventListener("message", parentApi.listener.bind(parentApi));
-
-        /*  -----------
-            == Tests ==
-            ----------- */
-
-        parentApi.request("Test", { g: "c" }, response => {
-            console.log(response);
-        });
-
-        parentApi.request("Test", { g: "c" }).then(response => {
-            console.log("Promise: " + response);
-        });
-
-        const gangStream = parentApi.createStream("gang-gang", {
-            private: true
+        
+        const parentWimp = new Wimp(window.parent);
+        
+        parentWimp.request("hello").then(response => {
+            console.log(response.data)
         })
+        
+        Wimp.init();
     </script>
 </body>
 
