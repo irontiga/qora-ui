@@ -45,7 +45,7 @@ class MessageHandler {
             type: "message/stream"
         }
         */
-        return function (response) {
+        return response => {
             // If no response supplied assume success
             response = response || { success: true };
             // No type means message

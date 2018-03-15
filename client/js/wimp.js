@@ -103,26 +103,40 @@
                         const pendingID = Math.random().toString(36).substr(2, 12);
                         pendingReady[pendingID] = target;
                         // Now keep on checking for the ready...and because setInterval is dumb
-                        const readyCheck = () => {
-                            if(Object.keys(pendingReady).length == 0){
-                                data.type = "targetsReady";
-                                Wimp._postMessage({window: event.source, origin: event.origin}, data);
-                                return;
-                            }
-                            Object.keys(pendingReady).forEach(pending => {
-                                Wimp._postMessage(pendingReady[pending], {
-                                    type: "readyCheck",
-                                    requestID: pending
-                                });
-                            })
-                            setTimeout(() => readyCheck(), 10);
-                        }
-
-                        readyCheck();
                     });
                     
+                    const readyCheck = () => {
+                        if(Object.keys(pendingReady).length == 0){
+                            data.type = "targetsReady";
+                            Wimp._postMessage({window: event.source, origin: event.origin}, data);
+                            return;
+                        }
+                        Object.keys(pendingReady).forEach(pending => {
+                            Wimp._postMessage(pendingReady[pending], {
+                                type: "readyCheck",
+                                requestID: pending
+                            });
+                        })
+                        setTimeout(() => readyCheck(), 10);
+                    }
+                    readyCheck();
                     
                     break;
+                case "proxyReadyCheckReset":
+                    const framesToRemove = [];
+                    
+                    data.targets.forEach((target) => {
+                        framesToRemove.push(...Wimp._getTargetWindows(target));
+                    });
+                    
+                    framesToRemove.forEach(target => {
+                        if(readyFrames.indexOf(target.window) !== -1){
+                            readyFrames.splice(readyFrames.indexOf(target.window), 1);
+                        }
+                    })
+                    
+                    break;
+                    
                 case "readyResponse":
                     if(!readyFrames.includes(event.source)){
                         readyFrames.push(event.source)
@@ -154,7 +168,8 @@
                 case "response":
                     // Response to a request
                     // Try avoid errors please
-                    data.success = data.success == "true";
+                    data.success = data.success != "false";
+                    
                     if(pendingRequests[data.requestID]){
                         pendingRequests[data.requestID](data) // , parsedEvent);
                         delete pendingRequests[data.requestID];
@@ -230,10 +245,16 @@
                     })
                     if(proxiedStreams[name]){
                         if(proxiedStreams[data.name].indexOf(event.source) == -1){
-                            proxiedStreams[data.name].push(event.source);
+                            proxiedStreams[data.name].push({
+                                window: event.source,
+                                origin: event.origin
+                            });
                         }
                     } else {
-                        proxiedStreams[data.name] = [event.source];
+                        proxiedStreams[data.name] = [{
+                            window: event.source,
+                            origin: event.origin
+                        }];
                     }
                     break;
                 case "ready":
@@ -405,7 +426,6 @@
             wimps.push(this);
             
             // Incoming
-            this.isReady = false;
             this.routes = {};
             this.streams = {};
             this.listeners = {}; // Listeners for streams
@@ -417,7 +437,7 @@
             this.targets = [];
             
             // Make it a gorgeous object if it isn't already one
-            if(proxy && !proxy.selector){
+            if(proxy && proxy.postMessage){
                 proxy = {
                     selector: proxy,
                     origin: "*"
@@ -441,6 +461,27 @@
                 // Store the target
                 this.targets.push(...Wimp._getTargetWindows(target));
             });
+            this.readyCheck(false);
+        }
+        
+        readyCheck(reset){
+            this.isReady = false;
+            
+            if(reset){
+                this.targets.forEach(target => {
+                    if(readyFrames.indexOf(target.window) !== -1){
+                        readyFrames.splice(readyFrames.indexOf(target.window), 1);
+                    }
+                })
+                
+                if(this.proxy){
+                    Wimp._postMessage(this.proxy, {
+                        type: "proxyReadyCheckReset",
+                        targets: this.selectors
+                        // No request ID, no response expected
+                    });
+                }
+            }
             
             if(this.proxy){
                 this.pendingReadyProxy = Math.random().toString(36).substr(2, 12);
@@ -598,10 +639,16 @@
             this.streams[name] = {
                 fn: (data, event) => {
                     if(this.streams[name].targets.indexOf(event.source) < 0){
-                        this.streams[name].targets.push(event.source);
+                        this.streams[name].targets.push({
+                            window: event.source,
+                            origin: event.origin
+                        });
                     }
                     joinFn(data, (response) => {
-                        Wimp._postMessage({window: event.source, origin: event.origin}, {
+                        Wimp._postMessage({
+                            window: event.source, 
+                            origin: event.origin
+                        }, {
                             type: "streamMessage",
                             name: name,
                             data: response

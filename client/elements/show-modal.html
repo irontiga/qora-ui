@@ -5,12 +5,11 @@
         <style>
             :host {
                 padding:0 !important;
-                margin:0;
+                margin:0 !important;
+                display: inherit;
             }
             iframe {
-                width:auto;
                 max-width:calc(100vw - 120px);
-                height:auto;
                 max-height: calc(100vh - 110px);
                 border:0;
                 padding:0;
@@ -18,7 +17,7 @@
             }
         </style>
 
-        <iframe id="modalFrame" security="restricted" sandbox="allow-scripts allow-same-origin" src="{{_frameUrl(item)}}"></iframe>
+        <iframe id="modalFrame" security="restricted" sandbox="allow-scripts allow-same-origin" src="{{_frameUrl(item)}}" style$="height:{{frameSize.height}}; width: {{frameSize.width}};"></iframe>
     </template>
 
     <script>
@@ -32,6 +31,13 @@
                     item: Object,
                     modalFrame: {
                         notify: true
+                    },
+                    frameSize: {
+                        type: Object,
+                        value: {
+                            height: "200px",
+                            width: "200px"
+                        }
                     }
                 }
             }

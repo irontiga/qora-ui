@@ -18,7 +18,7 @@ function pluginLoader(plugins) {
         const frameWimp = insertedFrame.contentWindow.document.createElement("script");
         frameWimp.type = "text/javascript";
         frameWimp.async = false; // Defaults to true, can cause the next script to execute before the helpers have loaded
-        frameWimp.src = "/client/js/wimp.min.js";
+        frameWimp.src = "/client/js/wimp.js";
 
         // const helperScript = insertedFrame.contentWindow.document.createElement("script");
         // helperScript.type = "text/javascript";
@@ -63,7 +63,7 @@ function pluginLoader(plugins) {
 
 // Fetch plugin list
 var xhttp = new XMLHttpRequest();
-xhttp.onreadystatechange = function () {
+xhttp.onreadystatechange = () => {
 
     if (xhttp.readyState == 4 && xhttp.status == 200) {
 

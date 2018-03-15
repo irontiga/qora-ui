@@ -9,49 +9,261 @@
 
     <link rel="stylesheet" href="/client/fonts/roboto.css">
     <link rel="stylesheet" href="/client/fonts/roboto-mono.css">
+    
+    <link rel="import" href="/client/bower_components/web-animations-js/web-animations-next.min.js">
+    <link rel="import" href="/client/bower_components/neon-animation/web-animations.html">
+    
+    <link rel="import" href="/client/bower_components/iron-icons/iron-icons.html">
+    <link rel="import" href="/client/bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+    <link rel="import" href="/client/bower_components/paper-item/paper-item.html">
+    <link rel="import" href="/client/bower_components/paper-listbox/paper-listbox.html">
+    <link rel="import" href="/client/bower_components/paper-progress/paper-progress.html">
+    <link rel="import" href="/client/bower_components/paper-button/paper-button.html">
 
     <link rel="import" href="/client/styles/app-theme.html">
+    
+    
 
     <style>
-        html,
-        body {
+        html, body {
+            padding: 0;
             margin: 0;
             font-family: "Roboto", sans-serif;
         }
+/*
+        body{
+            padding: 0 12px;
+        }
+*/
     </style>
 </head>
-
+    
 <body>
-    <h1>HIIIIIIIIIIIIIIIIIIIIIIIII</h1>
-    <h1>HIIII</h1>
-    <h1>HIIII</h1>
-    <h1>HIIII</h1>
-    <h1>HIIII</h1>
-    <h1>HIIII</h1>
-    <h1>HIIII</h1>
-    <h1>HIIII</h1>
-    <h1>HIIII</h1>
-    <h1>HIIII</h1>
-    <h1>HIIII</h1>
-    <h1>HIIII</h1>
-    <h1>HIIII</h1>
-
-
     <dom-module id="wallet-app">
-
         <template>
-            Hey hey Hey hey Hey hey
+            <custom-style>
+                <style is="custom-style" include="burst-styles">
+                    #sendMoneyWrapper{
+                        width:435px; /* Extra 3px for left border */
+                    }
+                    #sendMoneyWrapper > * {
+                        width: 400px !important;
+                        padding: 0 15px;
+                    }
+                    #sendMoneyWrapper paper-button{
+                        float:right;
+                    }
+                    #sendMoneyWrapper .buttons{
+                        --paper-button-ink-color: var(--paper-green-500);
+                        color: var(--paper-green-500);
+                    }
+                    .address-item {
+                        --paper-item-focused: {
+                            background: transparent;
+                        }
+                        ;
+                        --paper-item-focused-before: {
+                            opacity: 0;
+                        }
+                        ;
+                    }
+
+                    .address-balance {
+                        font-size: 42px;
+                        font-weight: 100;
+                    }
+
+                    .show-transactions {
+                        cursor: pointer;
+                    }
+
+                    .address-icon {
+                        border-radius: 50%;
+                        border: 5px solid;
+                        /*border-left: 4px solid;*/
+                        padding: 8px;
+                    }
+
+                    #sendMoneyFab {
+                        position: fixed;
+                        right: 32px;
+                        bottom: 32px;
+                    }
+
+                    paper-input {
+                        margin: 0;
+                    }
+
+                    .selectedBalance {
+                        font-size: 14px;
+                        display: block;
+                    }
+
+                    .selectedBalance .balance {
+                        font-size: 24px;
+                        font-weight: 100;
+                    }
+                </style>
+            </custom-style>
+            
+            <div id="sendMoneyWrapper">
+                <h3>Send money</h3>
+
+                <paper-dropdown-menu label="From" style$="width:100%; border-left: 5px solid {{selectedAddress.color}}">
+                    <paper-listbox slot="dropdown-content" class="dropdown-content" attr-for-selected="address" selected="{{selectedAddress}}">
+                        
+                        <template is="dom-repeat" items="{{addresses}}">
+                            <paper-item style$="border-left: 5px solid {{item.color}}" address="{{item}}">{{item.address}}</paper-item>
+                        </template>
+                        
+                    </paper-listbox>
+                </paper-dropdown-menu>
+
+                <div class="selectedBalance">
+                    <span class="balance">{{selectedAddress.balance}} </span>Qora available for transfer from <span style$="color: {{selectedAddress.color}}">{{selectedAddress.address}}</span>
+                </div>
+
+                <paper-input id="amountInput" required label="Amount" type="number" invalid={{validAmount}} value="{{amount}}" error-message="Insufficient funds" on-keyup="_checkAmount"></paper-input>
+
+                <paper-input label="To" type="text" value="{{recipient}}"></paper-input>
+
+                <paper-input label="Fee" type="text" value="{{fee}}"></paper-input>
+
+                <p>{{sendMoneyError}}</p>
+
+                <div class="buttons">
+                    <div>
+                        <paper-button autofocus on-tap="_sendMoney">Send &nbsp;<iron-icon icon="send"></iron-icon></paper-button>
+                    </div>
+                </div>
+
+                <template is="dom-if" if="{{sendMoneyLoading}}">
+                    <paper-progress auto></paper-progress>
+                </template>
+            </div>
+            
         </template>
-
+        
+        
+        <script src="/client/js/wimp.js"></script>
         <script>
-            //console.log(window.top);
-
+            
             class WalletApp extends Polymer.Element {
                 static get is() {
                     return "wallet-app";
                 }
+                static get properties(){
+                    return {
+                        addresses: {
+                            type: Array,
+                            value: []
+                        },
+                        fee: {
+                            type: Number,
+                            value: 1
+                        },
+                        amount: {
+                            type: Number
+                        },
+                        sendMoneyError: {
+                            type: String,
+                            value: ""
+                        },
+                        sendMoneyLoading: {
+                            type: Boolean,
+                            value: false
+                        }
+                    }
+                }
+                
                 constructor() {
                     super();
+                }
+                
+                _floor(num) {
+                    return Math.floor(num);
+                }
+                
+                _checkAmount() {
+                    if (this.amount > this.selectedAddress.balance - this.fee || this.amount <= 0) {
+                        this.validAmount = true;
+                    }
+                    else {
+                        this.validAmount = false;
+                    }
+                }
+
+                _sendMoney(e) {
+                    var address = this.selectedAddress;
+                    var amount = this.amount;
+                    var recipient = this.recipient;
+                    var fee = this.fee;
+
+                    // Check for valid...^
+
+                    this.sendMoneyLoading = true;
+                    parentWindow.request("sendMoney", {
+                        // Why is it index not nonce?
+                        nonce: address.nonce,
+                        //address: address.address,
+                        amount: amount,
+                        recipient: recipient,
+                        fee: fee
+                    }, response => {
+                        console.log(response);
+                        this.sendMoneyLoading = false;
+                        if (!response.success) {
+                            this.sendMoneyError = response.errorText;
+                        }
+                        else {
+                            this.$.sendMoneyDialog.close();
+                            this.addressUpdate();
+                        }
+                    });
+
+                    //this.$.sendMoneyDialog.close();
+                }
+                
+                resize(){
+                    this.parentWimp.request("modalFrameSize", {
+                        data: {
+                            height: (document.body.scrollHeight + 6) + "px", // Plus height of floated buttons
+                            width: document.body.scrollWidth + "px"
+                        },
+                        expectResponse: false
+                    })
+                }
+                
+                ready(){
+                    super.ready();
+                    
+                    this.coreWimp = new Wimp("core", window.parent);
+
+                    this.coreWimp.ready(() => {
+                        this.coreWimp.listen("balances", balances => {
+                            this.addresses = balances;
+                            if(!this.selectedAddress){
+                                this.selectedAddress = this.addresses[0];
+                                this.resize();
+                            }
+                        });
+                    });
+                    
+                    this.parentWimp = new Wimp(window.parent);
+
+                    this.parentWimp.ready(() => {
+                        this.parentWimp.request("hello").then(response => {
+                            console.log(response.data)
+                        })
+                        
+                        this.resize();
+                        
+                        this.parentWimp.on("opened", () => {
+                            console.log("OOPPPEEEENNNEEEDDD")
+                        })
+                    })
+
+                    Wimp.init();
                 }
             }
 
@@ -61,17 +273,32 @@
 
     <wallet-app></wallet-app>
 
-    <script src="/client/js/wimp.min.js"></script>
+<!--
+    <script src="/client/js/wimp.js"></script>
     <script>
         
         const parentWimp = new Wimp(window.parent);
         
-        parentWimp.request("hello").then(response => {
-            console.log(response.data)
+        parentWimp.ready(() => {
+            parentWimp.request("hello").then(response => {
+                console.log(response.data)
+            })
+            
+            parentWimp.request("modalFrameSize", {
+                data: {
+                    height: document.body.scrollHeight + "px",
+                    width: document.body.scrollWidth + "px"
+                },
+                expectResponse: false
+            })
+            parentWimp.on("opened", () => {
+                console.log("OOPPPEEEENNNEEEDDD")
+            })
         })
         
         Wimp.init();
     </script>
+-->
 </body>
 
 </html>

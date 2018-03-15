@@ -39,8 +39,7 @@ function QoraCalls() {
             options.url = options.url || "";
             
             const url = "/proxy/" + qoraNode[options.type].url + qoraNode[options.type].tail + options.url;
-
-
+            
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
                 // Check the request is complete:

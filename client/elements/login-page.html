@@ -303,12 +303,12 @@
             ready() {
                 super.ready();
 
-                setTimeout(function () {
+                setTimeout(() => {
                     //this.loginType = 0;
                     const tabs = this.shadowRoot.querySelector("#loginTabs");
                     tabs.select(0);
                     tabs.notifyResize();
-                }.bind(this), 1)
+                }, 1)
 
 
             }

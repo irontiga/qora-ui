@@ -206,8 +206,14 @@ class MainApp extends Polymer.Element {
     }
 
     _openTopMenuModal(e) {
-        //console.log(e.model.item);
+        const prev = this.selectedModal.page;
         this.selectedModal = e.model.item;
+        
+        console.log(prev);
+        if(prev){
+            this.wimps.modal.readyCheck(true)
+        }
+        
         this.$.topMenuDialog.toggle();
     }
 
@@ -226,6 +232,20 @@ class MainApp extends Polymer.Element {
         Wimp.registerTarget("modal-frame", this.modalFrame.contentWindow);
         
         this.wimps.modal = createParentWimp("modal-frame");
+        
+        // Doesn't really need to be defined before Wimp.init() because the modal can't be opened initially
+        this.wimps.modal.on("modalFrameSize", (req, res) => {
+            this.modalFrameSize = {
+                height: req.height,
+                width: req.width
+            }
+            this.$.topMenuDialog.center();
+        })
+        
+        // Should be called whenever the modal is opened
+        this.wimps.modal.ready(() => {
+            this.wimps.modal.request("opened", {expectResponse: false});
+        })
         
     }
 

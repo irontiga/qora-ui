@@ -5,13 +5,13 @@ function localSigning(){
         getBytes: SHA256_finalize
     };
 
-    this.simpleHash = function(message) {
+    this.simpleHash = message => {
         _hash.init();
         _hash.update(message);
         return _hash.getBytes();
     };
 
-    this.byteArrayToBigInteger = function(byteArray, startIndex) {
+    this.byteArrayToBigInteger = (byteArray, startIndex) => {
         var value = new BigInteger("0", 10);
         var temp1, temp2;
         for (var i = byteArray.length - 1; i >= 0; i--) {
@@ -23,14 +23,14 @@ function localSigning(){
         return value;
     };
 
-    this.getPublicKey = function(secretPhrase) {
+    this.getPublicKey = secretPhrase => {
 
         var secretPhraseBytes = converters.stringToByteArray(secretPhrase);
         var digest = this.simpleHash(secretPhraseBytes);
         return curve25519.keygen(digest).p;
     }
 
-    this.getAccountIdFromPublicKey = function(publicKey, RSFormat) {
+    this.getAccountIdFromPublicKey = (publicKey, RSFormat) => {
         var hex = converters.hexStringToByteArray(publicKey);
 
         _hash.init();
@@ -57,7 +57,7 @@ function localSigning(){
         }
     };
 
-    this.areByteArraysEqual = function(bytes1, bytes2) {
+    this.areByteArraysEqual = (bytes1, bytes2) => {
         if (bytes1.length !== bytes2.length){
             return false;
         }
@@ -71,7 +71,7 @@ function localSigning(){
         return true;
     };
 
-    this.verifyBytes = function(signature, message, publicKey) {
+    this.verifyBytes = (signature, message, publicKey) => {
         var signatureBytes = signature;
         var messageBytes = message;
         var publicKeyBytes = publicKey;
@@ -89,7 +89,7 @@ function localSigning(){
         return this.areByteArraysEqual(h, h2);
     };
 
-    this.signBytes = function(message, secretPhrase) {
+    this.signBytes = (message, secretPhrase) => {
         var messageBytes = message;
         var secretPhraseBytes = converters.stringToByteArray(secretPhrase);
 
@@ -115,7 +115,7 @@ function localSigning(){
         return (v.concat(h));
     };
 
-    this.toByteArray = function(e) {
+    this.toByteArray = e => {
         for (var a = [0, 0, 0, 0], t = 0; t < a.length; t++) {
             var r = 255 & e;
             a[t] = r, e = (e - r) / 256
@@ -145,7 +145,7 @@ function localSigning(){
         return i;
     };
 
-    this.parseToken = function(e, a) {
+    this.parseToken = (e, a) => {
         for (var t = converters.stringToByteArray(a), r = [], n = 0, s = 0; n < e.length; n += 8, s += 5) {
             var y = new BigInteger(e.substring(n, n + 8), 32),
                 o = converters.hexStringToByteArray(y.toRadix(16));

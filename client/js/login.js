@@ -31,7 +31,7 @@ function login(phraseOrSeed, pin, loginType, passInput) {
         return;
     }
 
-
+    
 
     // And for now...we'll generate the first n addresses
     for (let i = 0; i < this.addressCount.cnt; i++) {
@@ -63,6 +63,10 @@ function login(phraseOrSeed, pin, loginType, passInput) {
     const loginpage = this.loginpage;
     this.loginpage = {};
     this.loginpage = loginpage;
+    
+    Object.keys(this.wimps).forEach(thisWimp => {
+        this.wimps[thisWimp].request("login", {expectResponse: false});
+    })
 }
 
 

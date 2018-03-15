@@ -56,11 +56,11 @@ class QoraRequestHandler extends RequestHandler {
             recipient: data.recipient,
             amount: data.amount,
             fee: data.fee,
-            accept: function () {
+            accept: () => {
                 this.app.sendMoneyPrompt = { open: false };
                 Qora.sendMoney(data, this.app.qoraNode, send);
             }.bind(this),
-            reject: function () {
+            reject: () => {
                 this.app.sendMoneyPrompt = { open: false };
                 return send({
                     success: false,

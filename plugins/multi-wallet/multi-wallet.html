@@ -20,10 +20,11 @@
 <link rel="import" href="/client/bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="/client/bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="/client/bower_components/paper-button/paper-button.html">
-<link rel="import" href="/client/bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="/client/bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="/client/bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="/client/bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="/client/bower_components/paper-button/paper-button.html">
+
+
 
 <!-- Vaandin -->
 <link rel="import" href="grid-styles.html">
@@ -120,12 +121,6 @@
                     border: 5px solid;
                     /*border-left: 4px solid;*/
                     padding: 8px;
-                }
-
-                #sendMoneyFab {
-                    position: fixed;
-                    right: 32px;
-                    bottom: 32px;
                 }
 
                 paper-input {
@@ -264,8 +259,6 @@
                     </template>
                 </paper-dialog>
 
-                <paper-fab icon="send" title="heart" id="sendMoneyFab" on-click="_sendMoneyDialog"></paper-fab>
-
             </div>
         </div>
 
@@ -273,7 +266,7 @@
 
     <!-- <script src="/client/js/resources/helpers.js"></script> -->
 <!--    <script src="/client/js/ParentCommunicator.js"></script>-->
-    <script src="/client/js/wimp.min.js"></script>
+    <script src="/client/js/wimp.js"></script>
     <script src="multi-wallet.js"></script>
 
 </dom-module>

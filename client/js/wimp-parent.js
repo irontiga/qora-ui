@@ -80,7 +80,7 @@
         })
         
         mainWimp.on("getQoraAddresses", (req,res) => {
-            const addressIDS = App.addresses.map(function (address) {
+            const addressIDS = App.addresses.map(address => {
                 let response = {
                     address: address.address,
                     color: address.color,
@@ -127,6 +127,14 @@
         mainWimp.on("createAT", (req, res) => {
             console.log("Created...not");
             res();
+        })
+        
+        mainWimp.on("openDialog", (req, res) => {
+            App._openTopMenuModal({
+                model: {
+                    item: req
+                }
+            });
         })
         
         return mainWimp;

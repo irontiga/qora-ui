@@ -28,6 +28,66 @@ parentWimp.request("registerTopMenuModal", {
     //console.log(response);
 });
 
+let balances = [];
+
+const balanceStream = parentWimp.createStream("balances", (req, res) => {
+    res(balances);
+});
+
+
+const addressUpdate = (addresses) => {
+    Promise.all(addresses.map(address => {
+        return parentWimp.request("qoraApiCall", {
+            data: {
+                method: "GET",
+                type: "explorer",
+                data: {
+                    addr: address.address,
+                    txOnPage: 20
+                }
+            }
+        })
+            .then(response => {
+            if (!response.success) {
+                address.balance = 0;
+                address.info = {};
+            }
+            else {
+                address.balance = response.data.balance.total[0];
+                address.info = response.data;
+            }
+            return address;
+        })
+    }))
+        .then((allBalances, err) => {
+        // Sort em real nice
+        balances.sort((a, b) => {
+            return a.nonce - b.nonce
+        });
+        balances = allBalances;
+        balanceStream.emit(balances);
+    })
+        .catch(err => {
+        console.error(err);
+    })
+}
+
+let addressInterval;
+
+parentWimp.on("login", () => {
+    if(addressInterval){
+        clearInterval(addressInterval);
+    }
+    parentWimp.request("getQoraAddresses", response => {
+        addressUpdate(response.data);
+        
+        addressInterval = setInterval(() => {
+            addressUpdate(response.data);
+        }, 5000)
+        
+    })
+})
+
 //// Now for the balance stream...
 //const WalletStream = parentWindow.createStream("core-wallet", {
 //    // empty options...
