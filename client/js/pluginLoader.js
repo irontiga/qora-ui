@@ -1,6 +1,11 @@
 //console.log(App.loaderIframes);
 // Fetched plugins function
-function pluginLoader(plugins) {
+"use strict"
+
+import Wimp from "./wimp/wimp.js"
+import createParentWimp from "./wimp/createParentWimp.js"
+
+export default function pluginLoader(plugins) {
     // plugins = ["ats", "wallet", "transactions"] etc.
     for (let i = 0; i < plugins.length; i++) {
 
@@ -18,7 +23,7 @@ function pluginLoader(plugins) {
         const frameWimp = insertedFrame.contentWindow.document.createElement("script");
         frameWimp.type = "text/javascript";
         frameWimp.async = false; // Defaults to true, can cause the next script to execute before the helpers have loaded
-        frameWimp.src = "/client/js/wimp.js";
+        frameWimp.src = "/client/js/wimp/wimp.js";
 
         // const helperScript = insertedFrame.contentWindow.document.createElement("script");
         // helperScript.type = "text/javascript";
@@ -61,16 +66,3 @@ function pluginLoader(plugins) {
             document.body.appendChild(script);*/
 }
 
-// Fetch plugin list
-var xhttp = new XMLHttpRequest();
-xhttp.onreadystatechange = () => {
-
-    if (xhttp.readyState == 4 && xhttp.status == 200) {
-
-        const response = JSON.parse(xhttp.responseText);
-
-        pluginLoader(response);
-    }
-};
-xhttp.open("GET", "/getPlugins", true);
-xhttp.send();

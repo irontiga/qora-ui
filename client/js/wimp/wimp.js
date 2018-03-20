@@ -2,7 +2,7 @@
 
 // [ON] = TEST THE SELECTOR/TARGETS EVERY SINGLE CALL. If myWimp has a listener (on("blah")) and a target is added...IT SHOULD BE CARRIED ACCROSS. SYKE DON"T REQUERY
 
-(function(){
+const Wimp = (function(){
     
     const registeredTargets = {}; // "name" : elements. Quite handy for proxied requests...
     
@@ -711,6 +711,22 @@
             });
         }
         
+        hashSync(){
+            this.on("hashchange", (req, res) => {
+                window.location.hash = req.hash;
+            })
+
+            window.addEventListener("hashchange", (e) => {
+                console.log(e);
+                this.request("hashchange", {
+                    data: {
+                        hash: e.newURL.split("#", 1)[1]
+                    },
+                    expectResponse: false
+                });
+            }, false);
+        }
+        
         ready(cb){
             // Call cb when a handshake has occured (aka the target frame is loaded)...might be unnecessary....test window.parent.document.readyState or frame.contentWindow.document.readyState ...altho frame should = contentWindow
             // Check that ready has not already been fired
@@ -734,5 +750,14 @@
             wimps.splice(wimps.indexOf(this), 1)
         }
     }
-    window.Wimp = Wimp;
+    
+    return Wimp;
 }());
+
+if (typeof module === 'object' && module.exports) {
+    // CommonJS
+    module.exports = Wimp;
+} else if (this === window){
+    // Browser global
+    window.Wimp = Wimp
+}

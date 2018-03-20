@@ -108,12 +108,16 @@
             
             <div id="sendMoneyWrapper">
                 <h3>Send money</h3>
-
+                
+                <!-- CHANGE SELECTED ADDRESS TO INDEX RATHER THAN OBJECT -->
                 <paper-dropdown-menu label="From" style$="width:100%; border-left: 5px solid {{selectedAddress.color}}">
                     <paper-listbox slot="dropdown-content" class="dropdown-content" attr-for-selected="address" selected="{{selectedAddress}}">
                         
                         <template is="dom-repeat" items="{{addresses}}">
-                            <paper-item style$="border-left: 5px solid {{item.color}}" address="{{item}}">{{item.address}}</paper-item>
+                            <paper-item style$="border-left: 5px solid {{item.color}}" address="{{item}}">
+                                {{item.address}}
+                                <paper-ripple></paper-ripple>
+                            </paper-item>
                         </template>
                         
                     </paper-listbox>
@@ -145,7 +149,7 @@
         </template>
         
         
-        <script src="/client/js/wimp.js"></script>
+        <script src="/client/js/wimp/wimp.js"></script>
         <script>
             
             class WalletApp extends Polymer.Element {
@@ -172,6 +176,10 @@
                         sendMoneyLoading: {
                             type: Boolean,
                             value: false
+                        },
+                        data: {
+                            type: Object,
+                            value: {}
                         }
                     }
                 }
@@ -202,13 +210,15 @@
                     // Check for valid...^
 
                     this.sendMoneyLoading = true;
-                    parentWindow.request("sendMoney", {
-                        // Why is it index not nonce?
-                        nonce: address.nonce,
-                        //address: address.address,
-                        amount: amount,
-                        recipient: recipient,
-                        fee: fee
+                    this.parentWimp.request("sendMoney", {
+                        data: {
+                            // Why is it index not nonce?
+                            nonce: address.nonce,
+                            //address: address.address,
+                            amount: amount,
+                            recipient: recipient,
+                            fee: fee
+                        }
                     }, response => {
                         console.log(response);
                         this.sendMoneyLoading = false;
@@ -216,8 +226,7 @@
                             this.sendMoneyError = response.errorText;
                         }
                         else {
-                            this.$.sendMoneyDialog.close();
-                            this.addressUpdate();
+                            //this.$.sendMoneyDialog.close();
                         }
                     });
 
@@ -242,25 +251,30 @@
                     this.coreWimp.ready(() => {
                         this.coreWimp.listen("balances", balances => {
                             this.addresses = balances;
+                            
                             if(!this.selectedAddress){
-                                this.selectedAddress = this.addresses[0];
                                 this.resize();
                             }
+                            
+                            this.selectedAddress = this.selectedAddress || this.addresses[this.data.index ? this.data.index : 0]
+                            
                         });
                     });
                     
                     this.parentWimp = new Wimp(window.parent);
 
                     this.parentWimp.ready(() => {
-                        this.parentWimp.request("hello").then(response => {
-                            console.log(response.data)
-                        })
-                        
                         this.resize();
-                        
-                        this.parentWimp.on("opened", () => {
-                            console.log("OOPPPEEEENNNEEEDDD")
-                        })
+                    })
+                    
+                    this.parentWimp.on("opened", (req) => {
+                        req = req || {};
+                        console.log("Open with data ", req)
+                        this.data = req || this.data;
+                        this.selectedAddress = req.index ? this.addresses[req.index] : this.selectedAddress;
+                        this.amount = req.amount || this.amount;
+                        this.recipient = req.recipient || this.recipient;
+                        this.resize();
                     })
 
                     Wimp.init();

@@ -1,6 +1,9 @@
 //let addressUpdateTimeout;
 
 // this is bound to Polymer in app.js
+import PhraseWallet from "./qora/PhraseWallet.js";
+
+export { login, logout }
 
 function login(phraseOrSeed, pin, loginType, passInput) {
     this.passInput = passInput;
@@ -14,24 +17,20 @@ function login(phraseOrSeed, pin, loginType, passInput) {
     //console.log(loginType);
 
     this.loginType = loginType;
-
-    // Passphrase
-    if (loginType === 0) {
-        this.wallet = new PhraseWallet("passphrase", phraseOrSeed + pin);
-        this.passphrase = phraseOrSeed;
-    }
-    // Qora seed
-    if (loginType === 1) {
-        this.wallet = new PhraseWallet("seed", phraseOrSeed);
-        this.generationSeed = phraseOrSeed;
-    }
-    // Something weird...
-    if (loginType > 1) {
-        this.set('loginpage.errorMessage', "Not implemented");
-        return;
-    }
-
     
+    switch(loginType){
+        case 0: 
+            this.wallet = new PhraseWallet("passphrase", phraseOrSeed + pin);
+            this.passphrase = phraseOrSeed;
+            break;
+        case 1:
+            this.wallet = new PhraseWallet("seed", phraseOrSeed);
+            this.generationSeed = phraseOrSeed;
+            break;
+        default: 
+            this.set('loginpage.errorMessage', "Not implemented");
+            return;
+    }
 
     // And for now...we'll generate the first n addresses
     for (let i = 0; i < this.addressCount.cnt; i++) {

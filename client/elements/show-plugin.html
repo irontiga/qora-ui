@@ -47,7 +47,7 @@
                     return "about:blank";
                 }
                 //console.log(url);
-                return window.location.protocol + "//" + window.location.hostname + ":" + (parseInt(window.location.port)+1) + "/plugins/" + url.page;
+                return window.location.protocol + "//" + window.location.hostname + ":" + (parseInt(window.location.port)+1) + "/plugins/" + url.page + window.location.hash;
             }
             
             toJSON(object){

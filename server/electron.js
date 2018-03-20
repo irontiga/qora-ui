@@ -19,7 +19,7 @@ function createWindow () {
             nodeIntegration: false,
             partition: "persist:qora"
         },
-        icon: "../icon2.png",
+        icon: "./icon.png",
         autoHideMenuBar: true
     })
 

@@ -76,9 +76,10 @@ class WalletApp extends Polymer.Element {
     ready() {
         super.ready();
         
-        Wimp.init();
-        
         this.parentWimp = new Wimp(window.parent);
+        this.parentWimp.hashSync();
+        
+        Wimp.init();
         
         this.coreWimp = new Wimp("core", window.parent);
         
@@ -87,6 +88,19 @@ class WalletApp extends Polymer.Element {
                 this.addresses = balances
             });
         })
+        
+        setTimeout(() => {
+            this.parentWimp.request("open-dialog", {
+                data: {
+                    page: "core/wallet/send-money.html",
+                    data: {
+                        index: 2,
+                        amount: 20,
+                        recipient: "ASdFghjKL"
+                    }
+                }
+            })
+        },2000)
     }
 }
 

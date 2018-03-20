@@ -3,11 +3,13 @@
   "version": "0.0.1",
   "description": "Qora lite wallet server",
   "repository": "https://github.com/irontiga/qora-ui",
-  "main": "electron.js",
+  "main": "server/electron.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
-    "server": "node server.js"
+    "server": "node server.js",
+      "build": "webpack --config webpack.config.js --mode production",
+      "build-dev": "webpack --config webpack.config.js --mode development --watch"
   },
   "keywords": [
     "server",
@@ -17,16 +19,19 @@
   "license": "GPL-3.0",
   "dependencies": {
     "boom": "^6.0.0",
-    "electron": "^1.7.10",
+    "electron": "^1.8.4",
     "h2o2": "^6.0.1",
     "hapi": "^13.0.0",
     "inert": "^3.2.0",
     "nes": "^3.0.0",
     "node-static": "^0.7.7",
+    "npm": "^5.7.1",
     "request": "^2.83.0",
     "websocket": "^1.0.22"
   },
   "devDependencies": {
-    "electron-winstaller": "^2.6.4"
+    "electron-winstaller": "^2.6.4",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.12"
   }
 }

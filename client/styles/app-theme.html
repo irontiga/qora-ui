@@ -37,14 +37,9 @@
                 body {
                     font-family: "Roboto", sans-serif;
                 }
-
-                paper-listbox {
-                    --paper-menu-selected-item: {
-                        color: var(--primary-color);
-                    }
-                    --paper-menu-focused-item-after: {
-                        background: var(--primary-color);
-                    }
+                
+                paper-dropdown-menu paper-item{
+                    cursor: pointer;
                 }
 
                 paper-listbox iron-icon {
@@ -52,7 +47,7 @@
                     opacity: 0.54;
                 }
 
-                paper-listbox paper-item {
+                paper-listbox.sideNavMenu paper-item {
                     @apply(--layout-horizontal);
                     @apply(--layout-center);
                     text-decoration: none;
@@ -70,10 +65,10 @@
                     /*font-family: 'Roboto Mono', monospace;
                     font-weight:bold;*/
                 }
-                paper-listbox paper-item:focus::before {
+                paper-listbox.sideNavMenu paper-item:focus::before {
                     background: inherit;
                 }
-                paper-listbox paper-item.iron-selected{
+                paper-listbox.sideNavMenu paper-item.iron-selected{
                     color: var(--primary-color);
                 }
 

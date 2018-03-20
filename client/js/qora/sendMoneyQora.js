@@ -5,7 +5,8 @@ function doProcess(txRaw){
 
     console.log(txRaw);
     
-    postRequest(nodeUrl + "http://127.0.0.1:9090/index/api.html", {
+//    postRequest(nodeUrl + "http://127.0.0.1:9090/index/api.html", {
+    postRequest("http://127.0.0.1:9090/index/api.html", {
         type: 'post',
         apiurl: '/transactions/process',
         json: txRaw
@@ -133,7 +134,8 @@ function sendMoneyQora(recipient, amount, addressInfo) {
             }
 
             var fee = 1;
-            var timestamp = new Date().getTime();
+            var timestamp = Date.now();
+            //var timestamp = new Date().getTime();
 
             var signature = generateSignaturePaymentTransaction(keyPair, base58LastReferenceOfAccount, recipientAccountAddress, amount, fee, timestamp);
 

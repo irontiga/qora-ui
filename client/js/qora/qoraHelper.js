@@ -1,3 +1,4 @@
+"use strict";
 function _isEmptyObject(obj) {
     for (var x in obj) { return false; }
     return true;

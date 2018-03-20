@@ -1,6 +1,6 @@
 // SHA-256 hash function. Copyright-free.
 // Requires typed arrays.
-SHA256 = {};
+const SHA256 = {};
 
 SHA256.K = [
     0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 
@@ -135,3 +135,7 @@ SHA256.hash = function(message) {
 	}
     return hex;
 }
+
+
+// == Convert to ES6 Module == //
+export default SHA256;

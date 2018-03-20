@@ -75,6 +75,9 @@
                 .confirm{
                     color:green;
                 }
+                #sendMoneyConfirmDialog td{
+                    padding: 4px;
+                }
             </style>
         </custom-style>
         
@@ -125,7 +128,7 @@
                                 </app-toolbar>
                             </app-header>
                             
-                            <paper-listbox attr-for-selected="item-url" selected="{{route.path}}">
+                            <paper-listbox class="sideNavMenu" attr-for-selected="item-url" selected="{{route.path}}">
                                 <template is="dom-repeat" items="{{urls}}">
                                     <template is="dom-if" if="menus.length > 0">
                                         <template is="dom-repeat" items="{{menus}}">
@@ -179,7 +182,7 @@
                 <table>
                     <tbody>
                         <tr><td>From</td><td>{{sendMoneyPrompt.address}}</td></tr>
-                        <tr><td>Amount(Qora)&nbsp;</td><td>{{sendMoneyPrompt.amount}}</td></tr>
+                        <tr><td>Amount&nbsp;</td><td>{{sendMoneyPrompt.amount}} Qora</td></tr>
                         <tr><td>To</td><td>{{sendMoneyPrompt.recipient}}</td></tr>
                         <tr><td>Fee</td><td>{{sendMoneyPrompt.fee}}</td></tr>
                     </tbody>
@@ -199,37 +202,50 @@
         
 	</template>
     
-    <script src="/client/js/wimp.js"></script>
-    <script src="/client/js/wimp-parent.js"></script>
+<!--
+    <script src="/client/js/wimp/wimp.js"></script>
+    <script src="/client/js/wimp/wimp-parent.js"></script>
     <script>
         Wimp.proxy = true;
     </script>
+-->
     
         
     <!-- Won't be needing these for Qora.... -->
     <!--<script src="/client/js/localSigningDeps.js"></script>
     <script src="/client/js/localSigning.js"></script>-->
     <!-- QORA *down arrow* -->
+<!--
     <script src="/client/js/qora/deps/nacl-fast.js"></script>
     <script src="/client/js/qora/deps/Base58.js"></script>
     <script src="/client/js/qora/deps/sha256.js"></script>
     <script src="/client/js/qora/deps/ripemd160.js"></script>
-    <script src="/client/js/qora/deps/qora.js"></script>
+    <script src="/client/js/qora/Utils.js"></script>
+-->
+<!--    <script src="/client/js/qora/deps/qora.js"></script>-->
     <!--<script src="/client/js/qora/deps/brainwallet.js"></script>-->
-    <script src="/client/js/qora/PhraseWallet.js"></script>
+
     <!-- Me Qora -->
+<!--
     <script src="/client/js/qora/qoraHelper.js"></script>
     <script>
         // From qoraHelper.js....has API interactions
         Qora = new QoraCalls();
     </script>
+-->
     
-    <script src="/client/js/qora/sendMoneyQora.js"></script>
+<!--    <script src="/client/js/qora/sendMoneyQora.js"></script>-->
     <!-- Wants jQuery...-->
     <!-- <script src="/client/js/qora-proto/common.js"></script> -->
     
-    <script src="/client/js/login.js"></script>
-	<script src="/client/js/app.js"></script>
+<!--    <script src="/client/js/login.js"></script>-->
+    <script src="/client/js/bundle.js"></script>
+    
+    <!-- Below will be possible when import/export feature detection is available, otherwise Wimp won't know how to export -->
+<!--    <script nomodule src="/client/js/bundle.js"></script>-->
+<!--    <script type="module" src="/client/js/app.js"></script>-->
+    
+    
     <!-- Old -->
 	<!--
     <script src="/client/js/messageHandler.js"></script>
@@ -248,7 +264,7 @@
         //const AllPlugins = new Wimp(App.currentPluginFrame)
     </script>
     
-    <script src="/client/js/pluginLoader.js"></script>
+<!--    <script src="/client/js/pluginLoader.js"></script>-->
     
     <script>
         // console.log(App.loaderIframes);

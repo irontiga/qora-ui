@@ -1,58 +1,19 @@
-// Copyright 2017 @ irontiga and vbcs (original developer)
-// Rewrite all vbcs's code into a nice, neat class
-// Dependencies:
-// sha256.js
-// Base58.js
-// nacl-fast.js
-// rpiemd160.js
+/*
+Copyright 2017 @ irontiga and vbcs (original developer)
+Rewrite all vbcs's code into a nice, neat class
+*/
+"use strict";
+import Base58 from "./deps/Base58.js"
+import RIPEMD160 from "./deps/ripemd160.js"
+import SHA256 from "./deps/sha256.js"
+import nacl from "./deps/nacl-fast.js"
+import utils from "./deps/utils.js"
 
-
-// Utils...helper functions
-class PhraseWalletUtils {
-    constructor() {
-
-    }
-
-    _int32ToBytes(word) {
-        var byteArray = [];
-        for (var b = 0; b < 32; b += 8) {
-            byteArray.push((word >>> (24 - b % 32)) & 0xFF);
-        }
-        return byteArray;
-    }
-
-    _stringtoUTF8Array(message) {
-        if (typeof message == 'string') {
-            var s = unescape(encodeURIComponent(message)); // UTF-8
-            message = new Uint8Array(s.length);
-            for (var i = 0; i < s.length; i++) {
-                message[i] = s.charCodeAt(i) & 0xff;
-            }
-        }
-        return message;
-    }
-
-    _appendBuffer(buffer1, buffer2) {
-        buffer1 = new Uint8Array(buffer1);
-        buffer2 = new Uint8Array(buffer2);
-        let tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
-        tmp.set(buffer1, 0);
-        tmp.set(buffer2, buffer1.byteLength);
-        return tmp;
-    }
-
-    // Add networking here...instead of that silly qoraHelper.js
-
-}
-// The real Qora stuff
-class PhraseWallet extends PhraseWalletUtils {
-    // By default will create itself based on a passphrase. Can be changed to being based off a seed
+export default class PhraseWallet {
     constructor(type, phraseOrSeed) {
-        super();
         if (type == "passphrase") {
             this.passphrase = phraseOrSeed;
-        }
-        else {
+        } else {
             this.generationSeed = phraseOrSeed;
         }
     }
@@ -101,13 +62,10 @@ class PhraseWallet extends PhraseWalletUtils {
     }
 
     addressExists(nonce) {
-        if (this.addresses[nonce] != undefined) {
-            return true;
-        }
-        return false;
+        return this._addresses[nonce] != undefined;
     }
 
-    // Some string, and amount of times to sha256 on it
+    // Some string, and amount of times to sha256 it
     _repeatSHA256(passphrase, hashes) {
         let hash;
         for (let i = 0; i < hashes; i++) {
@@ -128,13 +86,13 @@ class PhraseWallet extends PhraseWalletUtils {
 
         const ADDRESS_VERSION = 58;  // Q for Qora
 
-        const nonceBytes = this._int32ToBytes(nonce);
+        const nonceBytes = utils.int32ToBytes(nonce);
 
         let addrSeed = new Uint8Array();
 
-        addrSeed = this._appendBuffer(addrSeed, nonceBytes);
-        addrSeed = this._appendBuffer(addrSeed, this._byteSeed);
-        addrSeed = this._appendBuffer(addrSeed, nonceBytes);
+        addrSeed = utils.appendBuffer(addrSeed, nonceBytes);
+        addrSeed = utils.appendBuffer(addrSeed, this._byteSeed);
+        addrSeed = utils.appendBuffer(addrSeed, nonceBytes);
 
         addrSeed = new SHA256.digest(SHA256.digest(addrSeed));
 
@@ -144,12 +102,12 @@ class PhraseWallet extends PhraseWalletUtils {
 
         let address = new Uint8Array();
 
-        address = this._appendBuffer(address, [ADDRESS_VERSION]);
-        address = this._appendBuffer(address, publicKeyHash);
+        address = utils.appendBuffer(address, [ADDRESS_VERSION]);
+        address = utils.appendBuffer(address, publicKeyHash);
 
         const checkSum = SHA256.digest(SHA256.digest(address));
 
-        address = this._appendBuffer(address, checkSum.subarray(0, 4));
+        address = utils.appendBuffer(address, checkSum.subarray(0, 4));
         // Turn it into a string
         address = Base58.encode(address);
 

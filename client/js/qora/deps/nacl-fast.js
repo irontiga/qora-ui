@@ -1,4 +1,6 @@
-(function(nacl) {
+// == CHANGE TO ES6 EXPORT == //
+const nacl = {}
+//(function(nacl) {
 'use strict';
 
 // Ported in 2014 by Dmitry Chestnykh and Devi Mandiri.
@@ -2415,4 +2417,6 @@ nacl.setPRNG = function(fn) {
   }
 })();
 
-})(typeof module !== 'undefined' && module.exports ? module.exports : (window.nacl = window.nacl || {}));
+// == CHANGE TO ES6 EXPORT == //
+//})(typeof module !== 'undefined' && module.exports ? module.exports : (window.nacl = window.nacl || {}));
+export default nacl

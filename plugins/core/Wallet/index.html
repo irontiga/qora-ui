@@ -48,31 +48,12 @@
 
     <send-money></send-money>
 
-    <script src="/client/js/ParentCommunicator.js"></script>
+    <script src="/client/js/wimp.js"></script>
     <script>
-        const parentApi = new ParentCommunicator();
-
-        window.addEventListener("message", parentApi.listener.bind(parentApi));
-
-        /*  -----------
-            == Tests ==
-            ----------- */
-        parentApi.modal = {
-            height: "12px",
-            width: "18px"
-        }
-
-        parentApi.request("Test", { g: "c" }, response => {
-            console.log(response);
-        });
-
-        parentApi.request("Test", { g: "c" }).then(response => {
-            console.log("Promise: " + response);
-        });
-
-        const gangStream = parentApi.createStream("gang-gang", {
-            private: true
-        })
+        const parentWimp = new Wimp(window.parent);
+        
+        Wimp.init();
+        
     </script>
 </body>
 
