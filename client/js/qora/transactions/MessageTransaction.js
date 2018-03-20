@@ -1,23 +1,20 @@
 "use strict";
-import TransactionBase from "./TransactionBase.js"
-import QORA_DECIMALS from "../constants.js"
+import PaymentTransaction from "./PaymentTransaction.js"
+import { QORA_DECIMALS } from "../constants.js"
 
-export default class MessageTransaction extends TransactionBase{
+/* ====================================
+EXTEND THE PAYMENT TRANSACTION YOU CLOWN
+====================================== */ 
+
+export default class MessageTransaction extends PaymentTransaction{
     constructor(){
         super();
         this.type = "MESSAGE_TRANSACTION";
         this._key = this.constructor.utils.int64ToBytes(0);
-        this._encrypted = new Uint8Array(1); // Defaults to false
-        this._text = new Uint8Array(1); // Defaults to false
+        this._isEncrypted = new Uint8Array(1); // Defaults to false
+        this._isText = new Uint8Array(1); // Defaults to false
     }
-
-    set recipient(recipient){
-        this._recipient = recipient instanceof Uint8Array ? recipient : this.constructor.Base58.decode(recipient);
-    }
-    set amount(amount){
-        this._amount = amount * QORA_DECIMALS;
-        this._amountBytes = this.constructor.utils.int64ToBytes(amount);
-    }
+    
     set message(message /* UTF8 String */){
         // ...yes? no?
         this.messageText = message;
@@ -34,8 +31,13 @@ export default class MessageTransaction extends TransactionBase{
         this._isText[0] = isText;
     }
     get _params(){
-        const params = super.params;
-        params.push(
+        // dont extend super because paymentTrasaction is different
+        //const params = super.params;
+        return [
+            this._typeBytes,
+            this._timestampBytes,
+            this._lastReference,
+            this._keyPair.publicKey,
             this._recipient,
             this._key,
             this._amountBytes,
@@ -44,19 +46,7 @@ export default class MessageTransaction extends TransactionBase{
             this._isEncrypted,
             this._isText,
             this._feeBytes
-        )
-        return params;
-    }
-    validParams(){
-        // Checks fee, timestamp, lastReferene, and type
-        super.validParams();
-        if(!(
-            this._amount >= 0 &&
-            this._recipient instanceof Uint8Array && this._recipient.length == 25
-        )){
-            return false;
-        }
-        return true;
+        ]
     }
 }
 

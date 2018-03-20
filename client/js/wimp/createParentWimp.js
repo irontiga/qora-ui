@@ -2,6 +2,7 @@
 
 import Wimp from "./wimp.js"
 import QoraAPI from "../qora/QoraAPI.js"
+import { TX_TYPES } from "../qora/constants.js"
 
 export default function createParentWimp(target){
     const mainWimp = new Wimp(target);
@@ -95,36 +96,86 @@ export default function createParentWimp(target){
     })
 
     mainWimp.on("getQoraAddress", (req, res) => {
-        this.wallet.genAddress(req.nonce);
+        App.wallet.genAddress(req.nonce);
         res();
     })
-
-    mainWimp.on("sendMoney", (req, res) => {
-        if (App.sendMoneyPrompt.open) {
-            res.error("There is already a send money request pending.");
-        }
-
-        req.sender = App.addresses[req.nonce];
-        // Last referene at senderAddress[highest tx number].reference;
-
-        App.sendMoneyPrompt = {};
-        App.sendMoneyPrompt = {
-            open: true,
-            address: App.addresses[req.nonce].address,
-            recipient: req.recipient,
-            amount: req.amount,
-            fee: req.fee,
-            accept: () => {
-                App.sendMoneyPrompt = { open: false };
-                Qora.sendMoney(req, App.qoraNode, res);
+    
+    mainWimp.on("createTransaction", (req, res) => {
+        /*
+        req = {
+            type: "PAYMENT_TRANSACTION,
+            params: {
+                recipient: "QUJIiUGHIHSDhyuiHJGFYUD",
+                amount: 100
             },
-            reject: () => {
-                App.sendMoneyPrompt = { open: false };
-                return res.error("User rejected transaction");
-            }
-        };
-        App.$.sendMoneyConfirmDialog.open();
+            nonce: 2 // Nonce
+        }
+        */
+        if(App.transactionRequest.open){
+            return res.error("Transaction request already pending");
+        }
+        
+        req.accept = () => {
+            console.log("ACCEPTER");
+            console.log(App.wallet.getAddress(req.nonce))
+            const txBytes = QoraAPI.createTransaction(
+                req.type, 
+                App.wallet.getAddress(req.nonce).keyPair, 
+                req.params
+            )
+            
+            QoraAPI.processTransaction(txBytes).then((response) => {
+                App.transactionRequest = {};
+                res(response);
+            }).catch(err => {
+                App.transactionRequest = {};
+                return res.error(err);
+            });
+        }
+        req.reject = () => {
+            App.transactionRequest = {};
+            return res.error("User rejected transaction");
+        }
+        req.typeText = TX_TYPES[req.type]
+        
+        App.transactionRequest = req;
+        App.$.transactionRequestDialog.open()
+        
     })
+
+//    mainWimp.on("sendMoney", (req, res) => {
+//        if (App.sendMoneyPrompt.open) {
+//            res.error("There is already a send money request pending.");
+//        }
+//
+//        req.sender = App.addresses[req.nonce];
+//        // Last referene at senderAddress[highest tx number].reference;
+//
+//        App.sendMoneyPrompt = {};
+//        App.sendMoneyPrompt = {
+//            open: true,
+//            address: App.addresses[req.nonce].address,
+//            recipient: req.recipient,
+//            amount: req.amount,
+//            fee: req.fee,
+//            accept: () => {
+//                console.log(App.addresses);
+//                App.sendMoneyPrompt = { open: false };
+////                Qora.sendMoney(req, App.qoraNode, res);
+//                const tx = new QoraAPI.transactions.PaymentTransaction();
+//                tx.keyPair = {
+//                    publicKey: App.addresses[req.nonce].publicKey,
+//                    privateKey: App.addresses[req.nonce].privateKey
+//                }
+//                
+//            },
+//            reject: () => {
+//                App.sendMoneyPrompt = { open: false };
+//                return res.error("User rejected transaction");
+//            }
+//        };
+//        App.$.sendMoneyConfirmDialog.open();
+//    })
 
     mainWimp.on("createAT", (req, res) => {
         console.log("Created...not");

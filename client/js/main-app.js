@@ -119,6 +119,12 @@ export default class MainApp extends Polymer.Element {
                 value: {
                     
                 }
+            },
+            transactionRequest: {
+                type: Object,
+                value: {
+                
+                }
             }
         }
     }
@@ -196,7 +202,15 @@ export default class MainApp extends Polymer.Element {
         };
         data.reject();
     }
+    
+    acceptTransactionRequest(e) {
+        this.transactionRequest.accept();
 
+    }
+    rejectTransactionRequest(e) {
+        this.transactionRequest.reject();
+    }
+    
     _toggleDrawer(e) {
         this.$.appdrawer.toggle();
     }
@@ -222,6 +236,18 @@ export default class MainApp extends Polymer.Element {
         }
         
         this.$.topMenuDialog.toggle();
+    }
+    
+    objectKeys(obj){
+        if(!obj){
+            return []
+        }
+        return Object.keys(obj).map(key => {
+            return {
+                key: key,
+                value: obj[key]
+            }
+        })
     }
 
     ready() {

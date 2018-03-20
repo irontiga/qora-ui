@@ -113,8 +113,10 @@ export default class PhraseWallet {
 
         this._addresses[nonce] = {
             address: address,
-            privateKey: addrKeyPair.secretKey,
-            publicKey: addrKeyPair.publicKey,
+            keyPair: {
+                publicKey: addrKeyPair.publicKey,
+                privateKey: addrKeyPair.secretKey
+            },
             seed: addrSeed,
             nonce: nonce
         }

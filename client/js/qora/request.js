@@ -14,7 +14,6 @@ options = {
     url: "",
     data: {}
 }
-
 */
 
 import { PROXY_URL } from "./constants.js"
@@ -27,8 +26,6 @@ export default function request(options){
     
     const node = options.node[options.type];
     const url = PROXY_URL + node.url + node.tail + options.url;
-    
-    console.log(url);
 
     return new Promise((resolve, reject) => {
         const xhttp = new XMLHttpRequest();

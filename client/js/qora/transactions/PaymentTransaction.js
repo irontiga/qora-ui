@@ -1,11 +1,25 @@
 "use strict";
 import TransactionBase from "./TransactionBase.js"
-import QORA_DECIMALS from "../constants.js"
+import { QORA_DECIMALS } from "../constants.js"
 
 export default class PaymentTransaction extends TransactionBase{
     constructor(){
         super();
         this.type = "PAYMENT_TRANSACTION";
+        this.tests.push(
+            () => {
+                if(!this._amount >= 0){
+                    return "Invalid amount " + this._amount / QORA_DECIMALS
+                }
+                return true
+            },
+            () => {
+                if(!(this._recipient instanceof Uint8Array && this._recipient.length == 25)){
+                    return "Invalid recipient " + Base58.encode(this._recipient)
+                }
+                return true
+            }
+        )
     }
     
     set recipient(recipient){// Always Base58 encoded. Accepts Uint8Array or Base58 string.
@@ -15,7 +29,7 @@ export default class PaymentTransaction extends TransactionBase{
         this._amount = amount * QORA_DECIMALS;
         this._amountBytes = this.constructor.utils.int64ToBytes(amount);
     }
-    get _params(){
+    get params(){
         const params = super.params;
         params.push(
             this._recipient,
@@ -23,17 +37,6 @@ export default class PaymentTransaction extends TransactionBase{
             this._feeBytes
         )
         return params;
-    }
-    validParams(){
-        // Checks fee, timestamp, lastReferene, and type
-        super.validParams();
-        if(!(
-            this._amount >= 0 &&
-            this._recipient instanceof Uint8Array && this._recipient.length == 25
-        )){
-            return false;
-        }
-        return true;
     }
 }
 //

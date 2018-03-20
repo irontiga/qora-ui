@@ -210,25 +210,42 @@
                     // Check for valid...^
 
                     this.sendMoneyLoading = true;
-                    this.parentWimp.request("sendMoney", {
+                    
+                    this.parentWimp.request("createTransaction", {
                         data: {
-                            // Why is it index not nonce?
+                            type: 2,
                             nonce: address.nonce,
-                            //address: address.address,
-                            amount: amount,
-                            recipient: recipient,
-                            fee: fee
+                            params: {
+                                recipient,
+                                amount,
+                                fee
+                            }
                         }
-                    }, response => {
-                        console.log(response);
-                        this.sendMoneyLoading = false;
-                        if (!response.success) {
-                            this.sendMoneyError = response.errorText;
-                        }
-                        else {
-                            //this.$.sendMoneyDialog.close();
-                        }
-                    });
+                    }).then(response => {
+                        this.$.sendMoneyDialog.close();
+                        console.log("Yay: ", response)
+                    }).catch(err => {
+                        console.error("GRRR: ", err)
+                    })
+//                    this.parentWimp.request("sendMoney", {
+//                        data: {
+//                            // Why is it index not nonce?
+//                            nonce: address.nonce,
+//                            //address: address.address,
+//                            amount: amount,
+//                            recipient: recipient,
+//                            fee: fee
+//                        }
+//                    }, response => {
+//                        console.log(response);
+//                        this.sendMoneyLoading = false;
+//                        if (!response.success) {
+//                            this.sendMoneyError = response.errorText;
+//                        }
+//                        else {
+//                            //this.$.sendMoneyDialog.close();
+//                        }
+//                    });
 
                     //this.$.sendMoneyDialog.close();
                 }

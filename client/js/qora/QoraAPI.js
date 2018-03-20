@@ -22,10 +22,18 @@ const QoraAPI = (function(){
                 return request(options)
             },
             _request: request
+        },
+        createTransaction: (type, keyPair, params) => {
+            const tx = new transactions[type]
+            Object.keys(params).forEach(param => {
+                tx[param] = params[param]
+            })
+            tx.keyPair = keyPair
+            return tx.signedBytes
         }
     }
     
-    return QoraAPI;
+    return QoraAPI
 }())
 
 export default QoraAPI

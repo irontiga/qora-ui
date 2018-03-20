@@ -75,8 +75,14 @@
                 .confirm{
                     color:green;
                 }
-                #sendMoneyConfirmDialog td{
-                    padding: 4px;
+                #transactionRequestDialog table{
+                    text-align: left;
+                }
+                #transactionRequestDialog table tr:hover{
+                    background: rgba(0,0,0,0.1)
+                }
+                .capitalize{
+                    text-transform: capitalize;
                 }
             </style>
         </custom-style>
@@ -192,6 +198,28 @@
                 <div class="buttons">
                     <paper-button autofocus dialog-dismiss on-tap="_rejectSendMoney" class="deny">Deny</paper-button>
                     <paper-button dialog-confirm on-tap="_acceptSendMoney" class="confirm">Confirm</paper-button>
+                </div>
+            </paper-dialog>
+            
+            <!-- CREATE TRANSACTION CONFIRM DIALOG --> 
+            
+            <paper-dialog id="transactionRequestDialog" modal>
+                <h2>Transaction request</h2>
+                
+                <table>
+                    <tbody>
+                        <tr><th>Type</th><td>{{transactionRequest.typeText}}</td></tr>
+                        <tr><th>From</th><td>{{transactionRequest.nonce}}</td></tr>
+                        <template is="dom-repeat" items="{{objectKeys(transactionRequest.params)}}">
+                            <tr><th class="capitalize">{{item.key}}</th><td>{{item.value}}</td></tr>
+                        </template>
+                    </tbody>
+                </table>
+
+
+                <div class="buttons">
+                    <paper-button autofocus dialog-dismiss on-tap="rejectTransactionRequest" class="deny">Deny</paper-button>
+                    <paper-button dialog-confirm on-tap="acceptTransactionRequest" class="confirm">Confirm</paper-button>
                 </div>
             </paper-dialog>
 
