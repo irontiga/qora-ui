@@ -37,7 +37,6 @@ function login(phraseOrSeed, pin, loginType, passInput) {
         this.wallet.genAddress(i);
     }
 
-
     //const addresses = doBrain(passphrase, this.addressCount);
 
     //console.log("AADDDRRRESSSSES QORA")
@@ -48,6 +47,18 @@ function login(phraseOrSeed, pin, loginType, passInput) {
 
     this.addresses = this.wallet.addresses.map(function (address) {
         address.color = this.addressColors[address.nonce % this.addressColors.length];
+        // text color
+        const hexSplit = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(address.color);
+        const rgb = hexSplit.map(color => {
+            return parseInt(color, 16)/255
+        }).map(color => {
+            return color <= 0.03928 ? color / 12.92 : Math.pow( ( color + 0.055 ) / 1.055, 2.4)
+        })
+        const luminance = 0.2126 * rgb[1] + 0.7152 * rgb[2] + 0.0722 * rgb[3];
+        
+        address.textColor = luminance > 0.179 ? "dark" : "light"
+        
+        
         return address;
         /*
         return {
@@ -56,6 +67,8 @@ function login(phraseOrSeed, pin, loginType, passInput) {
             index: index
         }*/
     }.bind(this));
+    
+    this.selectedAddress = this.addresses[0];
 
     this.loginpage.loggedin = true;
 

@@ -44,7 +44,8 @@
             <custom-style>
                 <style is="custom-style" include="burst-styles">
                     #sendMoneyWrapper{
-                        width:435px; /* Extra 3px for left border */
+                        width:430px; /* Extra 3px for left border */
+                        overflow:hidden;
                     }
                     #sendMoneyWrapper > * {
                         width: 400px !important;
@@ -107,9 +108,18 @@
             </custom-style>
             
             <div id="sendMoneyWrapper">
-                <h3>Send money</h3>
+                
+                <div style$="background-color: {{address.color}}; padding:12px 15px; width:100%; margin:0; color: {{textColor(address.textColor)}};">
+
+                    <h3 style="margin:0; padding:8px 0;">Send money</h3>
+                    
+                    <div class="selectedBalance">
+                        <span class="balance">{{address.balance}} </span>Qora available for transfer from <span style$="color: {{selectedAddress.color}}">{{address.address}}</span>
+                    </div>
+                </div>
                 
                 <!-- CHANGE SELECTED ADDRESS TO INDEX RATHER THAN OBJECT -->
+<!--
                 <paper-dropdown-menu label="From" style$="width:100%; border-left: 5px solid {{selectedAddress.color}}">
                     <paper-listbox slot="dropdown-content" class="dropdown-content" attr-for-selected="address" selected="{{selectedAddress}}">
                         
@@ -122,10 +132,9 @@
                         
                     </paper-listbox>
                 </paper-dropdown-menu>
+-->
 
-                <div class="selectedBalance">
-                    <span class="balance">{{selectedAddress.balance}} </span>Qora available for transfer from <span style$="color: {{selectedAddress.color}}">{{selectedAddress.address}}</span>
-                </div>
+                
 
                 <paper-input id="amountInput" required label="Amount" type="number" invalid={{validAmount}} value="{{amount}}" error-message="Insufficient funds" on-keyup="_checkAmount"></paper-input>
 
@@ -200,6 +209,10 @@
                         this.validAmount = false;
                     }
                 }
+                
+                textColor(color){
+                    return color == 'light' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.87)'
+                }
 
                 _sendMoney(e) {
                     var address = this.selectedAddress;
@@ -268,6 +281,7 @@
                     this.coreWimp.ready(() => {
                         this.coreWimp.listen("balances", balances => {
                             this.addresses = balances;
+                            console.log(balances)
                             
                             if(!this.selectedAddress){
                                 this.resize();
@@ -282,6 +296,11 @@
 
                     this.parentWimp.ready(() => {
                         this.resize();
+                        
+                        this.parentWimp.listen("Selected address", address => {
+                            console.log(address)
+                            this.address = address
+                        })
                     })
                     
                     this.parentWimp.on("opened", (req) => {

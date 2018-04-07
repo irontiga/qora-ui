@@ -21,12 +21,13 @@ import { PROXY_URL } from "./constants.js"
 
 export default function request(options){
     options.url = options.url || "";
+    options.method = options.method || "GET"
     
     options.node = window.App.qoraNode
     
     const node = options.node[options.type];
     const url = PROXY_URL + node.url + node.tail + options.url;
-
+    
     return new Promise((resolve, reject) => {
         const xhttp = new XMLHttpRequest();
         

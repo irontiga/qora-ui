@@ -59,10 +59,11 @@ class WalletApp extends Polymer.Element {
     }
     
     _decimals(num) {
+        num = num * 100000000
         const decimals = num - this._floor(num)
         //console.log(decimals);
         // decimals.toString().length - 2
-        return decimals * Math.pow(10, decimals.toString().length - 2);
+        return decimals * Math.pow(10, decimals.toString().length - 2) / 100000000
     }
     _log(thing) {
         console.log(thing);
@@ -84,23 +85,27 @@ class WalletApp extends Polymer.Element {
         this.coreWimp = new Wimp("core", window.parent);
         
         this.coreWimp.ready(() => {
-            this.coreWimp.listen("balances", balances => {
-                this.addresses = balances
+            this.coreWimp.listen("Address info", addresses => {
+                addresses.forEach(address => {
+                    this.splice('addresses', address.nonce, 1, address);
+                    //this.addresses[address.nonce] = address;
+                })
             });
+            console.log(this.addresses)
         })
         
-        setTimeout(() => {
-            this.parentWimp.request("open-dialog", {
-                data: {
-                    page: "core/wallet/send-money.html",
-                    data: {
-                        index: 2,
-                        amount: 20,
-                        recipient: "ASdFghjKL"
-                    }
-                }
-            })
-        },2000)
+//        setTimeout(() => {
+//            this.parentWimp.request("open-dialog", {
+//                data: {
+//                    page: "core/wallet/send-money.html",
+//                    data: {
+//                        index: 2,
+//                        amount: 20,
+//                        recipient: "ASdFghjKL"
+//                    }
+//                }
+//            })
+//        },2000)
     }
 }
 

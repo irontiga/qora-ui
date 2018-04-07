@@ -3,6 +3,7 @@
 import Wimp from "./wimp.js"
 import QoraAPI from "../qora/QoraAPI.js"
 import { TX_TYPES } from "../qora/constants.js"
+import toast from "../toast.js"
 
 export default function createParentWimp(target){
     const mainWimp = new Wimp(target);
@@ -26,6 +27,7 @@ export default function createParentWimp(target){
             url: req.url,
             title: req.title,
             menus: req.menus,
+            icon: req.icon,
             page: req.page,
             parent: parent
         });
@@ -73,6 +75,7 @@ export default function createParentWimp(target){
         // We'll get there...
         // Needs to handle storage as per md spec... if two toasts are triggered a split second apart...the later toast will have to wait for the first to be dismissed/auto dismiss itself before being displayed
         // Ahh, it needs a queue
+        toast(req, res)
     })
 
 
@@ -83,13 +86,14 @@ export default function createParentWimp(target){
     })
 
     mainWimp.on("getQoraAddresses", (req,res) => {
+        console.log(App.addresses)
         const addressIDS = App.addresses.map(address => {
-            let response = {
+            return {
                 address: address.address,
                 color: address.color,
-                nonce: address.nonce
+                nonce: address.nonce,
+                textColor: address.textColor
             }
-            return response;
         });
         //console.log(addressIDS);
         res(addressIDS);

@@ -1,0 +1,122 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-styles/typography.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+<link rel="import" href="/client/bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<dom-module id="app-styles">
+    <template>
+        <custom-style>
+            <style include="iron-flex iron-flex-alignment iron-positioning iron-flex-factors">
+                :host > * {
+                    --primary-text-color: rgba(0, 0, 0, 0.87);
+                    --primary-background-color: #ffffff;
+                    --secondary-text-color: rgba(0, 0, 0, 0.54);
+                    --disabled-text-color: rgba(0, 0, 0, 0.38);
+                    --divider-color: rgba(0,0,0,0.12);
+                    /* Primary */
+                    --primary-color: var(--paper-indigo-500);
+                    --light-primary-color: var(--paper-indigo-200);
+                    --dark-primary-color: var(--paper-indigo-600);
+                    /* Accent */
+                    --accent-color: var(--paper-pink-a200);
+                    --light-accent-color: var(--paper-pink-a100);
+                    --dark-accent-color: var(--paper-pink-a400);
+                    
+                    --active-menu-item-color: var(--primary-color);
+
+                    /* Components */
+                    /* paper-drawer-panel */
+                    --drawer-menu-color: #ffffff;
+                    --drawer-border-color: 1px solid #ccc;
+                    --drawer-toolbar-border-color: 1px solid rgba(0, 0, 0, 0.22);
+
+                    /* paper-menu */
+                    --paper-menu-background-color: #fff;
+                    --menu-link-color: #333;
+                    
+                    --white-primary: #fff;
+                    --white-secondary: rgba(255,255,255,0.7);
+                    --white-disabled: rgba(255,255,255,0.5);
+                    --white-divider: rgba(255,255,255,0.5);
+                    
+                    font-family: "Roboto", sans-serif;
+                }
+                
+                h1,
+                h3 {
+                    font-weight: 400;
+                    font-family: "Roboto Mono", monospace;
+                }
+                a {
+                    text-decoration: none;
+                }
+
+                ul {
+                    list-style: none;
+                }
+                ul li {
+                    padding: 6px;
+                }
+                .mono {
+                    font-family: "Roboto Mono", monospace
+                }
+                .weight-100{
+                    font-weight: 100;
+                }
+                
+                .text-white-primary{
+                    color: var(--white-primary)
+                }
+                .text-white-secondary{
+                    color: var(--white-secondary)
+                }
+                .text-white-disabled{
+                    color: var(--white-disabled)
+                }
+                .text-white-hint{
+                    color: var(--white-divider)
+                }
+                
+                
+                
+                paper-dropdown-menu paper-item{
+                    cursor: pointer;
+                }
+                paper-listbox iron-icon {
+                    margin-right: 33px;
+                    opacity: 0.54;
+                }
+
+                paper-listbox paper-item {
+                    @apply(--layout-horizontal);
+                    @apply(--layout-center);
+                    text-decoration: none;
+                    color: var(--menu-link-color);
+                    -webkit-font-smoothing: antialiased;
+                    text-rendering: optimizeLegibility;
+                    line-height: 48px;
+                    min-height: 48px;
+                    padding: 0 32px;
+                    cursor: pointer;
+                    width: 100%;
+                    /*font-family: 'Roboto Mono', monospace;
+                    font-weight:bold;*/
+                }
+                paper-listbox paper-item:focus::before {
+                    background: inherit;
+                }
+                paper-listbox paper-dropdown-menu{
+                    margin: 0 !important;
+                }
+                paper-listbox:hover{
+                    cursor: pointer;
+                }
+                paper-listbox paper-item{
+                    width:auto;
+                }
+                
+            </style>
+        </custom-style>
+
+    </template>
+</dom-module>

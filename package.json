@@ -8,8 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
     "server": "node server.js",
-      "build": "webpack --config webpack.config.js --mode production",
-      "build-dev": "webpack --config webpack.config.js --mode development --watch"
+    "build": "webpack --config webpack.config.js --mode production",
+    "build-dev": "webpack --config webpack.config.js --mode development --watch"
   },
   "keywords": [
     "server",
@@ -25,8 +25,9 @@
     "inert": "^3.2.0",
     "nes": "^3.0.0",
     "node-static": "^0.7.7",
-    "npm": "^5.7.1",
+    "npm": "^5.8.0",
     "request": "^2.83.0",
+    "time-elements": "^1.0.2",
     "websocket": "^1.0.22"
   },
   "devDependencies": {

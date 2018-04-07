@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="/client/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+
+        <link rel="import" href="/client/bower_components/polymer/polymer.html">
+        <link rel="import" href="/client/bower_components/paper-card/paper-card.html">
+        
+        <link rel="import" href="/client/bower_components/vaadin-material-theme/vaadin-grid.html">
+        <link rel="import" href="/client/bower_components/vaadin-grid/vaadin-grid.html">
+        
+        <link rel="import" href="/client/bower_components/iron-icons/iron-icons.html">
+        <link rel="import" href="/client/bower_components/iron-icons/device-icons.html">
+        <link rel="import" href="/client/bower_components/iron-icon/iron-icon.html">
+        
+        <link rel="import" href="/client/bower_components/paper-spinner/paper-spinner-lite.html">
+        
+
+        <link rel="stylesheet" href="/client/fonts/roboto.css">
+        <link rel="stylesheet" href="/client/fonts/roboto-mono.css">
+
+        <link rel="import" href="/client/styles/app-styles.html">
+        
+        <style>
+            html, body {
+                padding: 0;
+                margin: 0;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <dom-module id="wallet-app">
+            <template>
+                <custom-style>
+                    <style is="custom-style" include="app-styles">
+                        .red{
+                            color: var(--paper-red-500);
+                        }
+                        .green{
+                            color: var(--paper-green-500);
+                        }
+                        paper-spinner-lite{
+                            height:75px;
+                            width:75px;
+                            --paper-spinner-color: var(--primary-color);
+                            --paper-spinner-stroke-width: 2px;
+                        }
+                    </style>
+                </custom-style>
+                
+                <div hidden$="{{!loading}}" class="layout horizontal center" style="height:100vh;">
+                    <div class="layout vertical center" style="width:100%;">
+                        <paper-spinner-lite active="{{loading}}" alt="Loading address"></paper-spinner-lite>
+                    </div>
+                </div>
+
+                
+                <div hidden$="{{loading}}">
+                    <div id="topbar" style$="background:{{address.color}}; color: {{textColor(address.textColor)}}; padding: 40px;">
+                        <span class="mono weight-1300">
+                            <iron-icon icon="account-balance-wallet"></iron-icon> {{address.address}}
+                        </span>
+                        <br>
+                        <span class="mono weight-100" style="font-size: 70px;">{{floor(address.balance)}}<span style="font-size:24px; vertical-align: top; line-height:60px;">{{decimals(address.balance)}}</span></span>
+                    </div>
+                    
+                    <div id="contentDiv" style="margin: 8px;">
+                        
+                        
+                        
+                        <div class="layout horizontal">
+                            <paper-card style="width:100%">
+                                
+                                <div class="card-content"  hidden$="{{!isEmptyArray(address.transactions)}}">
+                                    Address has no transactions yet. Start by sending some Qora to <b>{{address.address}}</b>
+                                </div>
+                                
+                                <vaadin-grid hidden$="{{isEmptyArray(address.transactions)}}" height-by-rows style="height:auto;" aria-label="Transactions" items="{{address.transactions}}">
+
+                                    <vaadin-grid-column flex-grow="x">
+                                        <template class="header">
+                                            <iron-icon style="height:16px" icon="device:access-time"></iron-icon>
+                                        </template>
+                                        <template>
+                                            <time-ago datetime$="{{timestampToISO(item.transaction.timestamp)}}">
+                                                {{item.transaction.dateTime}}
+                                            </time-ago>
+                                        </template>
+                                    </vaadin-grid-column>
+                                    
+                                    <vaadin-grid-column>
+                                        <template class="header">
+                                            Type
+                                        </template>
+                                        <template>{{getTxType(item.transaction.type)}}</template>
+                                    </vaadin-grid-column>
+
+                                    <vaadin-grid-column>
+                                        <template class="header">
+                                            Amount + fee
+                                        </template>
+                                        <template>
+                                            <span class$="mono {{txColor(item.transaction)}}">
+                                                <!-- Ugly to avoid the space -->
+                                                <iron-icon hidden$="{{sendOrRecieve(item.transaction)}}" icon="icons:add-circle" style="height:16px;"></iron-icon
+                                                    ><iron-icon hidden$="{{!sendOrRecieve(item.transaction)}}" icon="icons:remove-circle" style="height:16px;"></iron-icon
+                                                ><span>[[floor(item.transaction.amount)]]</span
+                                                ><span style="font-size:8px; vertical-align:top; line-height:16px;">[[decimals(item.transaction.amount)]]</span>
+                                                +
+                                                <span>[[floor(item.transaction.fee)]]</span
+                                                    ><span style="font-size:8px; vertical-align:top; line-height:16px;">[[decimals(item.transaction.fee)]]</span>
+                                            </span>
+                                        </template>
+                                    </vaadin-grid-column>
+
+                                    <vaadin-grid-column flex-grow="4">
+                                        <template class="header">
+                                            Sender/Recipient
+                                        </template>
+                                        <template>
+                                            <span>{{senderOrRecipient(item.transaction)}}</span>
+                                        </template>
+                                    </vaadin-grid-column>
+                                    
+                                    <vaadin-grid-column>
+                                        <template class="header">
+                                            Confirmations
+                                        </template>
+                                        <template>
+                                            <span>{{getConfirmations(item.transaction.blockHeight, lastBlock.height)}}</span>
+                                        </template>
+                                    </vaadin-grid-column>
+                                    
+                                </vaadin-grid>
+                                
+                            </paper-card>
+                        </div>
+                        
+                        
+                        
+                        
+                    </div>
+                </div>
+
+            </template>
+
+            
+            <script src="/client/js/wimp/wimp.js"></script>
+            <script src="/node_modules/time-elements/dist/time-elements.js"></script>
+            <script src="wallet.js"></script>
+        </dom-module>
+
+        <wallet-app></wallet-app>
+    </body>
+
+</html>

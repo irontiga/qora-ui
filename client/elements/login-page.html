@@ -131,6 +131,7 @@
                             <span class="error-message">{{loginpage.errorMessage}}</span>
 
 
+<!--
                             <template is="dom-if" if="{{!loginpage.loading}}">
                                 <div class="show-advanced">
                                     <a on-tap="_showAdvanced">
@@ -148,11 +149,11 @@
                                     </div>
                                     <div>
                                         <h4>Wallet options</h4>
-                                        <!-- GET RID OF IT -->
                                         <paper-input label="Number of addresses" type="number" value="{{addressCount.cnt}}" on-keydown="_loginKeyDown"></paper-input>
                                     </div>
                                 </iron-collapse>
                             </template>
+-->
 
 
                             <!--
@@ -197,7 +198,11 @@
                 </p>
             </paper-dialog>
             <!-- -->
+        
+        <paper-fab icon="icons:settings" style="position:fixed; right: 24px; bottom:24px; z-index:4" on-tap="openSettings"></paper-fab>
         </template>
+    
+    
     </template>
 
     <script>
@@ -212,14 +217,6 @@
                     loginpage: {
                         type: Object
                     },
-                    node: {
-                        type: Object,
-                        notify: true
-                    },
-                    addressCount: {
-                        type: Number,
-                        notify: true
-                    },
                     override: {
                         type: String,
                         value: ""
@@ -232,6 +229,9 @@
                     */
                         type: Number,
                         value: 0
+                    },
+                    openSettings: {
+                        type: Function
                     }
                 }
             }
@@ -309,8 +309,6 @@
                     tabs.select(0);
                     tabs.notifyResize();
                 }, 1)
-
-
             }
 
         }

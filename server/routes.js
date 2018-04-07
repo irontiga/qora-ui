@@ -1,6 +1,6 @@
 const http = require("http");
 const https = require("https");
-const config = require("./config.js");
+const config = require("../config.js");
 
 const routes = [
 	{
@@ -73,6 +73,17 @@ const routes = [
                 },
                 passThrough: true,
                 xforward: true
+            }
+        }
+    },
+    {
+        method: 'GET',
+        path: '/node_modules/{param*}',
+        handler: {
+            directory: {
+                path: './node_modules',
+                redirectToSlash: true,
+                index: true
             }
         }
     }

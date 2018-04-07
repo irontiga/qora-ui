@@ -25,6 +25,7 @@ parentWimp.request("registerUrl", {
         url: "multi-wallet",
         page: "multi-wallet/index.html",
         title: "Multi Wallet",
+        icon: "view-list",
         menus: [],
         parent: false
     }

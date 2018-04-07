@@ -41,11 +41,6 @@ export default class PhraseWallet {
         this.genAddress(0);
     }
 
-    get address() {
-        // if nonce is 0...
-        return this._addresses[0];
-    }
-
     getAddress(nonce) {
         return this._addresses[nonce];
     }

@@ -1,6 +1,6 @@
 const http = require("http");
 const https = require("https");
-const config = require("./config.js");
+const config = require("../config.js");
 
 const routes = [
     {
@@ -63,6 +63,17 @@ const routes = [
             return reply.file('./client/404.html');
             // Error code isn't needed...unecessary error to handle
             //return reply.file('./client/404.html').code(404);
+        }
+    },
+    {
+        method: 'GET',
+        path: '/node_modules/{param*}',
+        handler: {
+            directory: {
+                path: './node_modules',
+                redirectToSlash: true,
+                index: true
+            }
         }
     }
 ];

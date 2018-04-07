@@ -1,4 +1,10 @@
 <link rel="import" href="/client/bower_components/polymer/polymer.html">
+<link rel="import" href="/client/bower_components/polymer/lib/mixins/gesture-event-listeners.html">
+
+
+<!-- Stupid polyfill -->
+<link rel="import" href="/client/bower_components/web-animations-js/web-animations-next.min.js">
+<link rel="import" href="/client/bower_components/neon-animation/web-animations.html">
 
 <!-- POLYMER ELEMENTS -->
 <link rel="import" href="/client/bower_components/paper-material/paper-material.html">
@@ -21,8 +27,19 @@
 <link rel="import" href="/client/bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="/client/bower_components/app-storage/app-localstorage/app-localstorage-document.html">
 <link rel="import" href="/client/bower_components/paper-styles/shadow.html">
-
 <link rel="import" href="/client/bower_components/app-layout/app-layout.html">
+<link rel="import" href="/client/bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="/client/bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="/client/bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="/client/bower_components/paper-input/paper-input.html">
+<link rel="import" href="/client/bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="/client/bower_components/paper-swatch-picker/paper-swatch-picker.html">
+
+
+<!-- GRID -->
+<link rel="import" href="/client/bower_components/vaadin-material-theme/vaadin-grid.html">
+<link rel="import" href="/client/bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="/client/bower_components/vaadin-grid/vaadin-grid-column-reordering-mixin.html">
 
 <!-- Router -->
 <link rel="import" href="/client/bower_components/app-route/app-location.html">
@@ -33,16 +50,19 @@
 <link rel="stylesheet" href="/client/fonts/roboto.css">
 <link rel="stylesheet" href="/client/styles/main.css">
 
+
 <!-- Custom elements -->
 <link rel="import" href="/client/styles/app-theme.html">
+<link rel="import" href="/client/styles/app-styles.html">
 <link rel="import" href="/client/elements/show-plugin.html">
 <link rel="import" href="/client/elements/show-modal.html">
 <link rel="import" href="/client/elements/login-page.html">
+<link rel="import" href="/client/elements/settings-menu.html">
 
 <dom-module id="main-app">
 	<template>
         <custom-style>
-            <style is="custom-style" include="burst-styles iron-flex iron-flex-alignment iron-positioning iron-flex-factors">
+            <style is="custom-style" include="app-styles burst-styles iron-flex iron-flex-alignment iron-positioning iron-flex-factors">
                 paper-toolbar{
                     --paper-toolbar-title: {
                         lefarrayt:0;
@@ -84,93 +104,147 @@
                 .capitalize{
                     text-transform: capitalize;
                 }
+                i.dot::before{
+                    content: "\25CF";
+                    font-size: 20px;
+                    padding-right: 8px;
+                }
+
+                paper-listbox.sideNavMenu paper-item {
+                    font-size: 14px;
+                    font-weight: 400;
+                    text-transform: uppercase;
+                }
+                paper-listbox.sideNavMenu paper-item:focus::before {
+                    background: inherit;
+                }
+                paper-listbox.sideNavMenu paper-item.iron-selected{
+/*                    color: var(--active-menu-item-color);*/
+                    font-weight: 700;
+                }
             </style>
         </custom-style>
         
         <div>
             <app-location route="{{route}}"></app-location>
+            <app-location route="{{hashRoute}}" use-hash-as-path></app-location>
             <app-route
                        route="{{route}}"
                        pattern="/qora/:currentPluginUrl"
                        data="{{routeData}}"
                        tail="{{subroute}}">
             </app-route>
+            <app-route
+                       route="{{hashRoute}}"
+                       pattern="/:hash"
+                       data="{{hash}}"
+                       tail="{{subhash}}">
+            </app-route>
 
-            <!-- Store settings -->
-            <app-localstorage-document key="qoraNode" data="{{qoraNode}}"></app-localstorage-document>
-            <app-localstorage-document key="addressCount" data="{{addressCount}}"></app-localstorage-document>
+
 
             <!-- LOGIN PAGE -->
-            <login-page loginpage="{{loginpage}}" node="{{qoraNode}}" passphrase="{{passphrase}}" pin="{{pin}}" address-count="{{addressCount}}"></login-page>
+            <login-page loginpage="{{loginpage}}"passphrase="{{passphrase}}" pin="{{pin}}" address-count="{{addressCount}}"  open-settings='{{getOpenSettings()}}'></login-page>
 
-
-            <app-header-layout>
-
-                <app-header slot="header">
-                    <app-toolbar>
-                        <paper-icon-button icon="menu" drawer-toggle on-click="_toggleDrawer" class="show-only-mobile"></paper-icon-button>
-                        <div main-title><span class="qora-title">Qora | </span> {{activeUrl.title}}</div>
+            
+            <app-drawer-layout>
+                <app-drawer swipe-open slot="drawer" id="appdrawer">
+                    <app-header-layout has-scrolling-region>
                         
-                        <template is="dom-repeat" items="{{topMenuItems}}">
-                            <paper-button style="font-size:16px; height:40px;" on-tap="_openTopMenuModal">{{item.text}}&nbsp;<iron-icon icon="{{item.icon}}"></iron-icon></paper-button>
-                        </template>
                         
-                        <paper-icon-button icon="settings"></paper-icon-button>
-                        <paper-icon-button icon="power-settings-new" on-tap="_logout"></paper-icon-button>
-                    </app-toolbar>
-                </app-header>
+                        <div id="accountDrawer"  style$="background-color: {{selectedAddress.color}}">
+                            <iron-icon style$="color: {{textColor(selectedAddress.textColor)}};height:60px; width:60px; padding:12px;" icon="account-circle"></iron-icon>
+                            <paper-menu-button horizontal-align="left" id="accountMenu" style="padding:0; max-width:100%;">
+                                <div slot="dropdown-trigger" style="position:relative">
+                                    <!--                                <paper-icon-button noink icon="account-circle"></paper-icon-button>-->
+                                    <div style="max-width:auto !important; padding:8px; text-overflow: ellipsis; overflow:hidden; font-size:16px; white-space: nowrap;color: {{textColor(selectedAddress.textColor)}};">
+                                        <iron-icon icon="icons:arrow-drop-down"></iron-icon>
+                                        {{selectedAddress.address}}
+                                    </div>
+                                    <paper-ripple></paper-ripple>
+                                </div>
+                                <paper-tooltip position="bottom">Account</paper-tooltip>
 
-                <app-drawer-layout>
-                    
-                    <!-- Make it nice n easy to make toasts -->
-                    <!--<paper-toast id="toast0" text="This toast auto-closes after 3 seconds"></paper-toast>-->
 
-                    <app-drawer swipe-open slot="drawer" id="appdrawer">
-                        <app-header-layout has-scrolling-region>
 
-                            <app-header fixed slot="header">
-                                <app-toolbar>
-                                    <div main-title>Qora</div>
-                                </app-toolbar>
-                            </app-header>
-                            
-                            <paper-listbox class="sideNavMenu" attr-for-selected="item-url" selected="{{route.path}}">
-                                <template is="dom-repeat" items="{{urls}}">
-                                    <template is="dom-if" if="menus.length > 0">
-                                        <template is="dom-repeat" items="{{menus}}">
-                                            <a href="{{_genIframeUrl(item.url)}}">{{item.title}}</a>
+                                <div slot="dropdown-content">
+                                    <paper-listbox slot="dropdown-content" selected="{{selectedAddress}}" attr-for-selected="address">
+                                        <template is="dom-repeat" items="{{addresses}}">
+                                            <paper-item address="{{item}}">
+                                                <i class="dot" style$="color: {{item.color}}"></i>{{item.address}}
+                                                <paper-ripple></paper-ripple>
+                                            </paper-item>
                                         </template>
-                                    </template>
+                                    </paper-listbox>
+                                </div>
+                            </paper-menu-button>
+                        </div>
+                        
+                        
 
-                                    <template is="dom-if" if="menus.length == 0">
-                                        <paper-item item-url="{{_genIframeUrl(item.url)}}">
-<!--
-                                            <a is="pushstate-anchor" href="{{_genIframeUrl(item.url)}}">
-                                            </a>
--->
-                                            
-                                            {{item.title}}
-                                            <paper-ripple></paper-ripple>
-                                        </paper-item>
+                        <paper-listbox class="sideNavMenu" attr-for-selected="item-url" selected="{{route.path}}">
+                            <template is="dom-repeat" items="{{urls}}">
+                                <template is="dom-if" if="menus.length > 0">
+                                    <template is="dom-repeat" items="{{menus}}">
+                                        <a href="{{_genIframeUrl(item.url)}}">{{item.title}}</a>
                                     </template>
                                 </template>
-                            </paper-listbox>
 
-                        </app-header-layout>
-                    </app-drawer>
+                                <template is="dom-if" if="menus.length == 0">
+                                    <paper-item item-url="{{_genIframeUrl(item.url)}}" style="width:auto;">
+                                        <!--
+<a is="pushstate-anchor" href="{{_genIframeUrl(item.url)}}">
+</a>
+-->
+                                        <iron-icon style="opacity:1" icon="{{item.icon}}"></iron-icon>
+                                        {{item.title}}
+                                        <paper-ripple></paper-ripple>
+                                    </paper-item>
+                                </template>
+                            </template>
+                            
+                        </paper-listbox>
+
+                    </app-header-layout>
+                </app-drawer>
+
+                <app-header-layout>
+
+                    <app-header slot="header">
+                        <app-toolbar>
+                            <paper-icon-button icon="menu" drawer-toggle on-click="_toggleDrawer" class="show-only-mobile"></paper-icon-button>
+                            <div main-title><span class="qora-title">Qora | </span> {{activeUrl.title}} <small><i>{{route.path}}#{{hashRoute.path}}</i></small></div>
+
+                            <template is="dom-repeat" items="{{topMenuItems}}">
+                                <paper-button style="font-size:16px; height:40px;" on-tap="_openTopMenuModal">{{item.text}}&nbsp;<iron-icon icon="{{item.icon}}"></iron-icon></paper-button>
+                            </template>
 
 
-                    <!-- PLUGIN IFRAMEEEE -->
-                    <!---------------------->
+
+                            
+
+                            <!--
+<div style="display:inline">
+<paper-icon-button icon="add" id="addAccountButton"></paper-icon-button>
+<paper-tooltip position="top">Add an account</paper-tooltip>
+</div>
+<div style="display:inline">
+<paper-icon-button icon="settings"></paper-icon-button>
+<paper-tooltip position="top">Settings</paper-tooltip>
+</div>
+-->
+                            <div style="display:inline">
+                                <paper-icon-button icon="icons:settings" on-tap="openSettings"></paper-icon-button>
+                                <paper-tooltip position="top">Logout</paper-tooltip>
+                                <paper-icon-button icon="power-settings-new" on-tap="_logout"></paper-icon-button>
+                            </div>
+                        </app-toolbar>
+                    </app-header>
+
                     <show-plugin logged-in="{{loginpage.loggedin}}" current-plugin-frame="{{currentPluginFrame}}" route="{{route}}" data="{{routeData}}" subroute="{{subroute}}" url="{{activeUrl}}"></show-plugin>
 
-
-
-                </app-drawer-layout>
-
-
-
-            </app-header-layout>
+                </app-header-layout>
+            </app-drawer-layout>
             
             
             <!-- TOP MENU DIALOG -->
@@ -178,28 +252,12 @@
                 <show-modal modal-frame="{{modalFrame}}" item="{{selectedModal}}" frame-size="{{modalFrameSize}}"></show-modal>
             </paper-dialog>
             <!-- -->
-
-
-            <!-- SEND MONEY CONFIRM DIALOG -->
-            <!-- with-backdrop -->
-            <paper-dialog id="sendMoneyConfirmDialog" modal>
-                <h2>Send money request</h2>
-
-                <table>
-                    <tbody>
-                        <tr><td>From</td><td>{{sendMoneyPrompt.address}}</td></tr>
-                        <tr><td>Amount&nbsp;</td><td>{{sendMoneyPrompt.amount}} Qora</td></tr>
-                        <tr><td>To</td><td>{{sendMoneyPrompt.recipient}}</td></tr>
-                        <tr><td>Fee</td><td>{{sendMoneyPrompt.fee}}</td></tr>
-                    </tbody>
-                </table>
-
-
-                <div class="buttons">
-                    <paper-button autofocus dialog-dismiss on-tap="_rejectSendMoney" class="deny">Deny</paper-button>
-                    <paper-button dialog-confirm on-tap="_acceptSendMoney" class="confirm">Confirm</paper-button>
-                </div>
+            
+            <!-- SETTINGS -->
+            <paper-dialog with-backdrop id="settingsDialog">
+                <settings-menu style="width: 400px; height:400px; max-width: 100%; max-height: 100%;" qora-node="{{qoraNode}}" address-colors="{{addressColors}}" address-count="{{addressCount}}"></settings-menu>
             </paper-dialog>
+            <!-- -->
             
             <!-- CREATE TRANSACTION CONFIRM DIALOG --> 
             
@@ -222,6 +280,10 @@
                     <paper-button dialog-confirm on-tap="acceptTransactionRequest" class="confirm">Confirm</paper-button>
                 </div>
             </paper-dialog>
+            
+            <paper-toast id="toastElement" duration="3" text="{{toast.text}}">
+                <paper-button onclick="toast.res" class="yellow-button">Close now!</paper-button>
+            </paper-toast>
 
 
             <!--<iframe id="plugin-js-loader" src="/client/plugin-js.html"></iframe>-->

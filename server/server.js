@@ -1,11 +1,12 @@
-const url = require('url');
-const Path = require('path');
-const Hapi = require('hapi');
+const url = require('url')
+const Path = require('path')
+const Hapi = require('hapi')
 const Inert = require('inert');
-const Nes = require('nes');
-const routes = require('./routes');
-const pluginRoutes = require('./pluginRoutes');
+const Nes = require('nes')
+const routes = require('./routes')
+const pluginRoutes = require('./pluginRoutes')
 const h2o2 = require('h2o2')
+const QORA_CONFIG = require("../config.js")
 
 // ELECTRONNN
 // Being used purely as a browser window - none of it's node integrations are used
@@ -20,7 +21,7 @@ const server = new Hapi.Server({
 		}
 	}
 });
-server.connection({ port: 3000 });
+server.connection({ port: QORA_CONFIG.server.client.port });
 
 server.register(Inert, () => {});
 server.register(h2o2, () => {});
@@ -48,7 +49,7 @@ const pluginServer = new Hapi.Server({
         }
     }
 });
-pluginServer.connection({ port: 3001 });
+pluginServer.connection({ port: QORA_CONFIG.server.plugins.port });
 
 pluginServer.register(Inert, () => {});
 pluginServer.register(h2o2, () => {});

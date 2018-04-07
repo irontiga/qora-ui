@@ -160,8 +160,6 @@
                         <!--<h1>&nbsp;&nbsp;Addresses</h1>-->
 
                         <template is="dom-repeat" items="{{addresses}}" indexAs="index">
-
-
                             <paper-icon-item class="address-item">
                                 <iron-icon class="address-icon" icon="account-balance-wallet" slot="item-icon" style$="border-color:{{item.color}}"></iron-icon>
                                 <paper-item-body two-line>
@@ -174,13 +172,13 @@
                                     </div>
                                 </paper-item-body>
                                 <div class="address-balance mono">
-                                    <span>{{_floor(item.balance)}}</span><i style="font-size:16px;">.{{_decimals(item.balance)}}</i>
+                                    <span>{{_floor(item.balance)}}</span><span style="font-size:18px;">.{{_decimals(item.balance)}}</span>
                                 </div>
                                 <!--<paper-icon-button title="Send money" icon="redo" on-click="_sendMoneyDialog"></paper-icon-button>-->
                             </paper-icon-item>
 
                             <iron-collapse class="recent-transactions" ident$="subitem[[index]]">
-                                <vaadin-grid aria-label="Transactions" items="[[_getTransactions(item.info)]]">
+                                <vaadin-grid aria-label="Transactions" items="[[item.transactions]]">
 
                                     <vaadin-grid-column width="160px" flex-grow="0">
                                         <template class="header">Date</template>
@@ -198,7 +196,7 @@
                                             <span class="mono">
                                                 <span>[[_floor(item.transaction.amount)]]</span>
                                                 <span style="font-size:9px;">
-                                                    <i>.[[_decimals(item.transaction.amount)]]</i>
+                                                    .[[_decimals(item.transaction.amount)]]
                                                 </span>
                                             </span>
                                         </template>

@@ -2,6 +2,7 @@ import {login, logout} from "./login.js"
 import Wimp from "./wimp/wimp.js"
 import createParentWimp from "./wimp/createParentWimp.js"
 import QoraAPI from "./qora/QoraAPI.js"
+import QORA_CONFIG from "../../config.js"
 
 export default class MainApp extends Polymer.Element {
     static get is() {
@@ -65,23 +66,11 @@ export default class MainApp extends Polymer.Element {
             },
             qoraNode: {
                 type: Object,
-                value: {
-                    explorer: {
-                        url: "http://127.0.0.1:9090",
-                        tail: "/index/blockexplorer.json"
-                    },
-                    api: {
-                        url: "http://127.0.0.1:9085",
-                        tail: "/"
-                    }
-                }
+                value: QORA_CONFIG.qoraNode
             },
-            // addressCount.cnt because for some reason electron won't play nice with a number....*shrug*
+            
             addressCount: {
-                type: Object,
-                value: {
-                    cnt: 1
-                }
+                type: Object
             },
             // Qora
             addresses: {
@@ -95,17 +84,15 @@ export default class MainApp extends Polymer.Element {
                 }
             },
             addressColors: {
-                type: Array,
-                value: ["#4caf50",
-                    "#3f51b5",
-                    "#e91e63",
-                    "#2196f3",
-                    "#f44336",
-                    "#ff9800",
-                    "#795548",
-                    "#9c27b0",
-                    "#18ffff",
-                    "#ffeb3b"]
+                type: Array
+            },
+            selectedAddress: {
+                type: Object,
+                value: {
+                    address: "",
+                    color:"#000",
+                    nonce: 0
+                }
             },
             currentPluginFrame: {
                 type: Object
@@ -128,10 +115,18 @@ export default class MainApp extends Polymer.Element {
             }
         }
     }
+
+    static get observers(){
+        return  [
+            '_addressChanged(selectedAddress)'
+        ]
+
+    }
     
     constructor() {
         super();
-        this.wimps = {};
+        this.wimps = {}
+        this.streams = {}
     }
     
 //    // All my beautiful functions now
@@ -200,7 +195,15 @@ export default class MainApp extends Polymer.Element {
         this.sendMoneyPrompt = {
             open: false
         };
-        data.reject();
+        data.reject()
+    }
+    
+    getOpenSettings(){
+        return this.openSettings.bind(this)
+    }
+    
+    openSettings(){
+        this.$.settingsDialog.open();
     }
     
     acceptTransactionRequest(e) {
@@ -236,6 +239,11 @@ export default class MainApp extends Polymer.Element {
         }
         
         this.$.topMenuDialog.toggle();
+    }
+    
+    textColor(color){
+        console.log(color)
+        return color == 'light' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.87)'
     }
     
     objectKeys(obj){
@@ -293,6 +301,53 @@ export default class MainApp extends Polymer.Element {
             });
         })
         
+        // Clicking inside the iframe will blur the window and close the menu
+        window.addEventListener("blur", e =>{
+            this.$.accountMenu.close()
+        })
+        
+//        this.streams.selectedAddress = [
+//            this.wimps.activePlugin.createStream("Selected address", (req, res) => {
+//                res(this.selectedAddress)
+//            })
+//        ]
+            
+            
+        this.streams.selectedAddress = Object.values(this.wimps).map(w => {
+            return w.createStream("Selected address", (req, res) => {
+                if(!this.selectedAddress){
+                    return
+                }
+                res({
+                    address: this.selectedAddress.address,
+                    color: this.selectedAddress.color,
+                    nonce: this.selectedAddress.nonce,
+                    textColor: this.selectedAddress.textColor
+                });
+            })
+        })
+        
+        
+    }
+
+    _addressChanged(selectedAddress){
+        if(!selectedAddress){
+            return
+        }
+        console.log(selectedAddress)
+        
+        this.updateStyles({
+            "--active-menu-item-color" : selectedAddress.color
+        });
+        
+        this.streams.selectedAddress.forEach(w => {
+            w.emit({
+                address: selectedAddress.address,
+                color: selectedAddress.color,
+                nonce: selectedAddress.nonce,
+                textColor: this.selectedAddress.textColor
+            })
+        })
     }
 
 }

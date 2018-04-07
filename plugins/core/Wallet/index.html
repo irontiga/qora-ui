@@ -10,7 +10,7 @@
     <!-- <link rel="stylesheet" href="/client/fonts/roboto.css">
     <link rel="stylesheet" href="/client/fonts/roboto-mono.css"> -->
 
-    <link rel="import" href="/client/styles/app-theme.html">
+    <link rel="import" href="wallet-app.html">
 
     <style>
         html,
@@ -21,40 +21,7 @@
 </head>
 
 <body>
-    <h1>HIIIIIIIIIIIIIIIIIIIIIIIII</h1>
-
-
-    <dom-module id="send-money">
-
-        <template>
-            Hey hey Hey hey Hey hey
-        </template>
-
-        <script>
-            //console.log(window.top);
-
-            class SendMoney extends Polymer.Element {
-                static get is() {
-                    return "send-money";
-                }
-                constructor() {
-                    super();
-                }
-            }
-
-            window.customElements.define(SendMoney.is, SendMoney);
-        </script>
-    </dom-module>
-
-    <send-money></send-money>
-
-    <script src="/client/js/wimp.js"></script>
-    <script>
-        const parentWimp = new Wimp(window.parent);
-        
-        Wimp.init();
-        
-    </script>
+   <wallet-app></wallet-app>
 </body>
 
 </html>
