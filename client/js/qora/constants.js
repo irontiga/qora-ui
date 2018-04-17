@@ -54,4 +54,8 @@ const QORA_DECIMALS = 100000000
 
 const PROXY_URL = "/proxy/" // Proxy for api calls
 
-export { TX_TYPES, QORA_DECIMALS, PROXY_URL }
+// Used as a salt for all qora addresses. Salts used for storing your private keys in local storage will be randomly generated
+const STATIC_SALT = new Uint8Array([54, 190, 201, 206, 65, 29, 123, 129, 147, 231, 180, 166, 171, 45, 95, 165, 78, 200, 208, 194, 44, 207, 221, 146, 45, 238, 68, 68, 69, 102, 62, 6])
+const PBKDF2_ROUNDS = Math.pow(2,17)
+
+export { TX_TYPES, QORA_DECIMALS, PROXY_URL, STATIC_SALT, PBKDF2_ROUNDS }

@@ -76,9 +76,7 @@ function login(phraseOrSeed, pin, loginType, passInput) {
     this.loginpage = {};
     this.loginpage = loginpage;
     
-    Object.keys(this.wimps).forEach(thisWimp => {
-        this.wimps[thisWimp].request("login", {expectResponse: false});
-    })
+
 }
 
 

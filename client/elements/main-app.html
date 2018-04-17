@@ -34,7 +34,9 @@
 <link rel="import" href="/client/bower_components/paper-input/paper-input.html">
 <link rel="import" href="/client/bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="/client/bower_components/paper-swatch-picker/paper-swatch-picker.html">
-
+<link rel="import" href="/client/bower_components/iron-label/iron-label.html">
+<link rel="import" href="/client/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/client/bower_components/iron-pages/iron-pages.html">
 
 <!-- GRID -->
 <link rel="import" href="/client/bower_components/vaadin-material-theme/vaadin-grid.html">
@@ -56,13 +58,13 @@
 <link rel="import" href="/client/styles/app-styles.html">
 <link rel="import" href="/client/elements/show-plugin.html">
 <link rel="import" href="/client/elements/show-modal.html">
-<link rel="import" href="/client/elements/login-page.html">
+<link rel="import" href="/client/elements/login-container/login-container.html">
 <link rel="import" href="/client/elements/settings-menu.html">
 
 <dom-module id="main-app">
 	<template>
         <custom-style>
-            <style is="custom-style" include="app-styles burst-styles iron-flex iron-flex-alignment iron-positioning iron-flex-factors">
+            <style is="custom-style" include="app-theme iron-flex iron-flex-alignment iron-positioning iron-flex-factors app-styles">
                 paper-toolbar{
                     --paper-toolbar-title: {
                         lefarrayt:0;
@@ -144,7 +146,8 @@
 
 
             <!-- LOGIN PAGE -->
-            <login-page loginpage="{{loginpage}}"passphrase="{{passphrase}}" pin="{{pin}}" address-count="{{addressCount}}"  open-settings='{{getOpenSettings()}}'></login-page>
+<!--            <login-page loginpage="{{loginpage}}"passphrase="{{passphrase}}" pin="{{pin}}" address-count="{{addressCount}}"  open-settings='{{getOpenSettings()}}'></login-page>-->
+            <login-container id="login-container" class="fade-hide" hidden$="{{loggedIn}}" logged-in="{{loggedIn}}" wallet="{{wallet}}" address-count="{{addressCount}}" addresses="{{addresses}}" address-colors="{{addressColors}}" open-settings='{{getOpenSettings()}}'></login-container>
 
             
             <app-drawer-layout>
@@ -152,12 +155,12 @@
                     <app-header-layout has-scrolling-region>
                         
                         
-                        <div id="accountDrawer"  style$="background-color: {{selectedAddress.color}}">
+                        <div id="accountDrawer" style$="background-color: {{selectedAddress.color}}">
                             <iron-icon style$="color: {{textColor(selectedAddress.textColor)}};height:60px; width:60px; padding:12px;" icon="account-circle"></iron-icon>
                             <paper-menu-button horizontal-align="left" id="accountMenu" style="padding:0; max-width:100%;">
                                 <div slot="dropdown-trigger" style="position:relative">
                                     <!--                                <paper-icon-button noink icon="account-circle"></paper-icon-button>-->
-                                    <div style="max-width:auto !important; padding:8px; text-overflow: ellipsis; overflow:hidden; font-size:16px; white-space: nowrap;color: {{textColor(selectedAddress.textColor)}};">
+                                    <div style="max-width:auto !important; padding:8px; text-overflow: ellipsis; overflow:hidden; font-size:16px; white-space: nowrap; color: {{textColor(selectedAddress.textColor)}};">
                                         <iron-icon icon="icons:arrow-drop-down"></iron-icon>
                                         {{selectedAddress.address}}
                                     </div>
@@ -212,7 +215,9 @@
 
                     <app-header slot="header">
                         <app-toolbar>
-                            <paper-icon-button icon="menu" drawer-toggle on-click="_toggleDrawer" class="show-only-mobile"></paper-icon-button>
+                            
+                            <paper-icon-button icon="menu" drawer-toggle onclick="_toggleDrawer" class="show-only-mobile"></paper-icon-button>
+                            
                             <div main-title><span class="qora-title">Qora | </span> {{activeUrl.title}} <small><i>{{route.path}}#{{hashRoute.path}}</i></small></div>
 
                             <template is="dom-repeat" items="{{topMenuItems}}">
@@ -236,12 +241,12 @@
                             <div style="display:inline">
                                 <paper-icon-button icon="icons:settings" on-tap="openSettings"></paper-icon-button>
                                 <paper-tooltip position="top">Logout</paper-tooltip>
-                                <paper-icon-button icon="power-settings-new" on-tap="_logout"></paper-icon-button>
+                                <paper-icon-button icon="power-settings-new" on-tap="logOut"></paper-icon-button>
                             </div>
                         </app-toolbar>
                     </app-header>
 
-                    <show-plugin logged-in="{{loginpage.loggedin}}" current-plugin-frame="{{currentPluginFrame}}" route="{{route}}" data="{{routeData}}" subroute="{{subroute}}" url="{{activeUrl}}"></show-plugin>
+                    <show-plugin logged-in="{{loggedIn}}" current-plugin-frame="{{currentPluginFrame}}" route="{{route}}" data="{{routeData}}" subroute="{{subroute}}" url="{{activeUrl}}"></show-plugin>
 
                 </app-header-layout>
             </app-drawer-layout>

@@ -1,0 +1,28 @@
+<dom-module id="login-welcome-page">
+    <template>
+        <custom-style>
+            <style is="custom-style" include="app-styles app-theme iron-flex iron-flex-alignment iron-positioning iron-flex-factors">
+                .light-primary-button{
+                    background:var(--light-primary-color);
+                    color: white;
+                }
+            </style>
+        </custom-style>
+        <div style="text-align:center">
+            <h1 style="color:white; font-size: 100px; text-align:center; line-height: 80px; margin:4px;">
+                <span>QORA</span
+                    ><span class="roboto" style="font-size: 24px; font-weight:100; line-height: 24px;"
+                           ><br>Welcome to Qora<br></span>
+            </h1>
+            <div>
+                <br>
+                <paper-button class="light-primary-button" on-tap="_newAccountClick">Create account</paper-button>
+                <paper-button class="light-primary-button" on-tap="_loginClick">Login</paper-button>
+            </div>
+        </div>
+    
+    </template>
+    
+    <script src="login-welcome-page.js"></script>
+    
+</dom-module>

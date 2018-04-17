@@ -1,0 +1,270 @@
+
+<link rel="import" href="/client/bower_components/paper-input/paper-input.html">
+<link rel="import" href="/client/bower_components/paper-card/paper-card.html">
+<link rel="import" href="/client/bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="/client/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/client/bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="/client/bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="/client/bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="/client/bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="/client/bower_components/paper-item/paper-item.html">
+<link rel="import" href="/client/bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="/client/bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="/client/bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="/client/bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="/client/bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="/client/bower_components/paper-checkbox/paper-checkbox.html">
+
+<link rel="import" href="/client/styles/app-theme.html">
+
+
+
+<dom-module id="login-page">
+
+    <template>
+        <custom-style>
+            <style is="custom-style" include=" app-theme iron-flex iron-flex-alignment iron-positioning iron-flex-factors app-styles">
+
+                paper-progress {
+/*                    z-index: 4;*/
+                    width: 100%;
+                    --paper-progress-active-color: var(--accent-color);
+                    --paper-progress-container-color: var(--primary-color);
+                }
+
+                paper-spinner {
+                    z-index: 4;
+                }
+
+                .show-advanced {
+                    text-align: right;
+                    padding: 14px 0 0 0;
+                }
+
+                .show-advanced a {
+                    cursor: pointer;
+                    color: var(--accent-color);
+                }
+
+                .error-message {
+                    width: 100%;
+                    text-align: right;
+                    color: var(--paper-red-500)
+                }
+
+                paper-button[disabled] {
+                    background: transparent;
+                }
+
+                paper-card {
+                    --paper-card-header-color: #333;
+
+                    --paper-card-header: {
+                        text-align: center;
+                        padding-top: 10px;
+                        padding-bottom: 10px;
+                        border-bottom: 2px solid #ccc;
+                        font-family: "Roboto Mono", monospace;
+                    }
+                }
+
+                paper-input icon-icon{
+                    padding-bottom:8px;
+                }
+
+
+
+                /* ------ 
+                Login page tab animations
+                ------- */
+                @keyframes fade {
+                    from {
+                        opacity: 0;
+                    }
+
+                    to {
+                        opacity: 1;
+                    }
+                }     
+                .animated {
+                    animation-duration: 0.6s;
+                    animation-name: fade;
+                }
+                
+                .deleteItemIconButton{
+                    display:inline-block;
+                    padding:10px;
+                    padding-left: 0;
+                    float:right;
+                    margin-top:4px;
+                }
+                
+            </style>
+        </custom-style>
+
+        <app-localstorage-document key="encryptedSeeds" data="{{encryptedSeeds}}"></app-localstorage-document>
+        
+        
+        <div id="login-container" class="layout vertical center-justified">
+
+            <iron-pages>
+                <div>
+
+                </div>
+
+                <div>
+
+                </div>
+
+                <div>
+
+                </div>
+            </iron-pages>
+
+
+
+
+            <!--<div class="layout horizontal center-justified">
+<paper-spinner active></paper-spinner>
+</div>-->
+            <div class="layout horizontal center-justified">
+                <paper-card heading="Login" style="max-width:98%; width:400px;" >
+                    <template is="dom-if" if="{{loginpage.loading}}">
+                        <paper-progress indeterminate></paper-progress>
+                    </template>
+
+                    <paper-tabs id="loginTabs" selected="{{loginType}}" attr-for-selected="type">
+                        <paper-tab type="existingSeed" hidden$="{{!encryptedSeedsExist}}">Existing account</paper-tab>
+                        <paper-tab type="passphrase">Passphrase</paper-tab>
+                        <paper-tab type="seed">Qora wallet Seed</paper-tab>
+                        <!--<paper-tab>Address</paper-tab>-->
+                    </paper-tabs>
+
+
+                    <div class="card-content" style="padding: 12px 24px;">
+                        <!--    EXAMPLE
+<div class="fade-hide" hidden$="{{!rememberMe}}">
+<h1>HELLOOOOO</h1>
+</div>
+-->
+                        <iron-pages id="loginTypePages" selected="{{loginType}}" attr-for-selected="type">
+
+                            <div type="existingSeed">
+
+                                <div class="layout horizontal wrap">
+                                    <iron-icon icon="icons:account-circle" slot="prefix" style="color:#333; padding-right: 12px; margin-top: 28px;"></iron-icon>
+                                    <paper-dropdown-menu id="encryptedSeedDropdownMenu" class="flex" label="Account">
+                                        <paper-listbox id="encryptedSeedDropdownMenuListbox" slot="dropdown-content" selected="{{selectedEncryptedSeed}}" attr-for-selected="item" selectable="paper-item">
+                                            <template items="{{encryptedSeeds}}" is="dom-repeat">
+                                                <paper-item item="{{item}}" style="display:inline-block">
+                                                    <div class="layout horizontal" style="width:100%;">
+                                                        <div class="flex">
+                                                            <span>{{item.name}}</span>
+                                                        </div>
+                                                    </div>
+                                                </paper-item>
+                                                <paper-icon-button class="deleteItemIconButton" on-tap="_deleteEncryptedSeed" icon="icons:close"></paper-icon-button>
+                                                <br>
+                                            </template>
+                                        </paper-listbox>
+                                    </paper-dropdown-menu>
+                                </div>
+
+                                <div class="layout horizontal wrap">
+                                    <iron-icon icon="icons:lock" slot="prefix" style="color:#333; padding-right: 12px; margin-top: 28px;"></iron-icon>
+                                    <paper-input class="flex" label="Unlock password" type="password" id="unlockSeedPassword" value="{{unlockSeedPassword}}" on-keydown="_loginKeyDown"></paper-input>
+                                </div>
+
+                            </div>
+
+                            <div class="layout horizontal wrap" type="passphrase">
+                                <iron-icon icon="communication:vpn-key" slot="prefix" style="color:#333; padding-right: 12px; margin-top: 28px;"></iron-icon>
+                                <paper-input class="flex" char-counter label="Passphrase" type="password" id="passphrase" value="{{passphrase}}" autofocus on-keydown="_loginKeyDown"></paper-input>
+                            </div>
+
+                            <div class="layout horizontal wrap" type="seed">
+                                <iron-icon icon="communication:vpn-key" slot="prefix" style="color:#333; padding-right: 12px; margin-top: 28px;"></iron-icon>
+                                <paper-input class="flex" char-counter label="Qora generation seed" type="password" id="generationSeed" value="{{generationSeed}}" on-keydown="_loginKeyDown"></paper-input>
+                            </div>
+
+                        </iron-pages>
+
+                        <div hidden$="{{_equals(loginType, 'existingSeed')}}" >
+                            <iron-collapse id="collapse" opened="{{rememberMe}}">
+                                <div class="layout horizontal wrap">
+                                    <iron-icon icon="icons:account-circle" slot="prefix" style="color:#333; padding-right: 12px; margin-top: 28px;"></iron-icon>
+                                    <paper-input class="flex" value="{{name}}" id="nameInput" label="Name/Identifier" focused="{{nameFocused}}"></paper-input>
+                                </div>
+                                <iron-collapse opened="{{nameFocused}}" style="">
+                                    <small>Can be anything</small>
+                                </iron-collapse>
+
+                                <div class="layout horizontal wrap">
+                                    <iron-icon icon="icons:lock" slot="prefix" style="color:#333; padding-right: 12px; margin-top:28px"></iron-icon>
+                                    <paper-input class="flex" value="{{password}}" id="passwordInput" label="Password" maxlength="50" type="password" focused="{{passwordFocused}}"></paper-input>
+                                </div>
+                                
+                                <iron-collapse opened="{{passwordFocused}}" style="">
+                                    <small>Used to encrypt seed when storing in local storage. Will be required to unlock your wallet next time you sign in</small>
+                                </iron-collapse>
+                            </iron-collapse>
+
+                            <div class="layout horizontal">
+                                <div class="flex"></div>
+                                <iron-label style="margin-top:24px; display:block; cursor: pointer">
+                                    Remember me &nbsp;
+                                    <paper-checkbox iron-label-target style="" class="" checked="{{rememberMe}}"></paper-checkbox>
+                                </iron-label>
+                            </div>
+
+
+                        </div>
+
+                        <span class="error-message">{{errorMessage}}</span>
+                        
+                    </div>
+                    <div class="card-actions" style="height:36px;">
+                        <paper-button style="float:right" on-tap="_loginClick">Login</paper-button>
+                    </div>
+                </paper-card>
+            </div>
+        </div>
+
+            <!-- NEW ACCOUNT DIALOG -->
+<!--
+            <paper-dialog with-backdrop id="newAccountDialog" style="max-width:750px;">
+                <h2>Creating a new Qora account</h2>
+                <h3>Passphrase</h3>
+                <p>
+                    With this wallet there is no need to "create" an account. Simply enter a passphrase (a long password) and a pin of your choice.
+                    This combination will point to a Qora address, and whenever you login with the same passphrase and pin,
+                    you will see the same account. It is recommended that you choose a very strong passphrase which meets
+                    the following criteria, as it is all that stands between you and a hacker. You can NOT use your qora
+                    generation seed as your passphrase(at least not if you want to see the same addresses as in your qora
+                    wallet), as it is processed differently.
+
+                <ul>
+                    <li>Is at least 15 characters long</li>
+                    <li>Contains a capital letter</li>
+                    <li>Contains a lowercase letter</li>
+                    <li>Contains a number</li>
+                    <li>Contains a symbol</li>
+                </ul>
+
+                </p>
+
+            <h3>Pin</h3>
+            <p>
+                You can choose any 4 digit pin.
+            </p>
+            </paper-dialog>
+-->
+        <!-- -->
+
+        <paper-fab icon="icons:settings" style="position:fixed; right: 24px; bottom:24px; z-index:4" on-tap="openSettings"></paper-fab>
+    </template>
+
+
+    </template>
+<script src="login-page-bundle.js"></script>
+</dom-module>

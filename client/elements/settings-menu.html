@@ -18,9 +18,6 @@
                     padding:4px;
                     color: var(--paper-red-500)
                 }
-                .remove-color-icon{
-                    
-                }
             </style>
         </custom-style>
         
@@ -33,8 +30,14 @@
             
             <paper-material elevation="1" style="height: 100%;" >
                 <paper-listbox selected="{{selectedSetting}}" attr-for-selected="setting">
-                    <paper-item setting="qora-node">Qora node</paper-item>
-                    <paper-item setting="addresses">Addresses</paper-item>
+                    <paper-item setting="qora-node">
+                        Qora node
+                        <paper-ripple></paper-ripple>
+                    </paper-item>
+                    <paper-item setting="addresses">
+                        Addresses
+                        <paper-ripple></paper-ripple>
+                    </paper-item>
                 </paper-listbox>
             </paper-material>
             

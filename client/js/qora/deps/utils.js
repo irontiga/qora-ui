@@ -10,10 +10,10 @@ const utils = {
 
     stringtoUTF8Array(message) {
         if (typeof message == 'string') {
-            var s = unescape(encodeURIComponent(message)); // UTF-8
-            message = new Uint8Array(s.length);
+            var s = unescape(encodeURIComponent(message)) // UTF-8
+            message = new Uint8Array(s.length)
             for (var i = 0; i < s.length; i++) {
-                message[i] = s.charCodeAt(i) & 0xff;
+                message[i] = s.charCodeAt(i) & 0xff
             }
         }
         return message;

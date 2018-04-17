@@ -37,12 +37,10 @@ export default class MainApp extends Polymer.Element {
             route: {
                 type: Object
             },
-            loginpage: {
-                type: Object,
-                value: {
-                    loggedin: false,
-                    loading: false
-                }
+            loggedIn: {
+                type: Boolean,
+                value: false,
+                observer: "_loginObserver"
             },
             data: {
                 type: Object
@@ -257,22 +255,26 @@ export default class MainApp extends Polymer.Element {
             }
         })
     }
+    
+    logOut(){
+        this.$["login-container"].logOut()
+    }
 
     ready() {
         super.ready();
         // -----------------------
         // LOGIN FUNCTION
         // -----------------------
-        this.loginpage.login = (...args) => {
-            try {
-                login.bind(this)(...args);
-            } catch(e) {
-                this.set('loginpage.errorMessage', e);
-                this.set('loginpage.loading', false);
-                console.error(e);
-            }
-        }
-        this._logout = logout.bind(this);
+//        this.loginpage.login = (...args) => {
+//            try {
+//                login.bind(this)(...args);
+//            } catch(e) {
+//                this.set('loginpage.errorMessage', e);
+//                this.set('loginpage.loading', false);
+//                console.error(e);
+//            }
+//        }
+//        this._logout = logout.bind(this);
         
         Wimp.registerTarget("plugin-frame", this.currentPluginFrame.contentWindow);
         
@@ -348,6 +350,17 @@ export default class MainApp extends Polymer.Element {
                 textColor: this.selectedAddress.textColor
             })
         })
+    }
+    
+    _loginObserver(){
+        
+        if(this.loggedIn != this.lastLoginState || this.loggedIn){
+            this.selectedAddress = this.addresses[0]
+            Object.keys(this.wimps).forEach(thisWimp => {
+                this.wimps[thisWimp].request("login", {expectResponse: false});
+            })
+        }
+        this.lastLoginState = this.loggedIn;
     }
 
 }

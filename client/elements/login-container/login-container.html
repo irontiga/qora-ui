@@ -1,0 +1,62 @@
+<link rel="import" href="/client/elements/login-container/login-welcome-page/login-welcome-page.html">
+<link rel="import" href="/client/elements/login-container/login-page/login-page.html">
+
+<dom-module id="login-container">
+    <template>
+        <custom-style>
+            <style is="custom-style" include="app-styles iron-flex iron-flex-alignment iron-positioning iron-flex-factors">
+                #container {
+                    position: absolute;
+                    top:0;
+                    left:0;
+                    height: 100%;
+                    width:100%;
+                    z-index:6;
+                    background: var(--primary-color);
+                    transition: opacity 0.5s ease;
+                }
+                
+                @keyframes fade {
+                    from {
+                        opacity: 0;
+                        margin-left: -100%;
+                    }
+                    to {
+                        opacity: 1;
+                        margin-left:0;
+                    }
+                }
+                iron-pages .animated {
+                    animation-duration: 0.6s;
+                    animation-name: fade;
+                }
+                paper-icon-button{
+                    color: #fff;
+                }
+            </style>
+        </custom-style>
+
+        <div class="layout vertical center-justified" style="height:100%;" id="container">
+            <div class="layout horizontal center-justified">
+                <iron-pages selected="{{selectedPage}}" attr-for-selected="page" id="loginContainerPages">
+                    <div page="welcome">
+                        <login-welcome-page selected-page="{{selectedPage}}"></login-welcome-page>
+                    </div>
+                    
+                    <div page="new-account">
+                        <paper-icon-button icon="icons:arrow-back" on-tap="_backToWelcome"></paper-icon-button><br>
+                        Nu accccccccc
+                    </div>
+                    
+                    <div page="login">
+                        <paper-icon-button icon="icons:arrow-back" on-tap="_backToWelcome"></paper-icon-button><br>
+                        <login-page id="login-page" wallet="{{wallet}}" address-count="{{addressCount}}" addresses="{{addresses}}" address-colors="{{addressColors}}" logged-in="{{loggedIn}}"></login-page>
+                    </div>
+                </iron-pages>
+                
+            </div>
+        </div>
+    </template>
+
+    <script src="login-container-bundle.js"></script>
+</dom-module>
