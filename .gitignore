@@ -6,3 +6,4 @@ node_modules/
 .bower-tmp
 client/bower_components
 server/node_modules
+.brackets.json
