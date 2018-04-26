@@ -1,0 +1,6 @@
+{
+  "name": "Qora lite UI",
+  "short_name": "Qora",
+  "start_url": "/",
+  "display": "standalone"
+}

@@ -1,0 +1,29 @@
+<link rel="import" href="/src/styles/app-theme.html">
+
+<dom-module id="simple-table">
+    
+    <template>
+        
+        <style>
+
+            #table ::content td, th{
+                padding:10px;
+                text-align:left;
+                font-size:14px;
+            }
+            #table ::content th{
+                color:var(--menu-link-color);
+            }
+        </style>
+        
+        <table id="table">
+            <slot></slot>
+        </table>
+    </template>
+    
+    <script>
+        Polymer({
+            is: "simple-table"
+        });
+    </script>
+</dom-module>

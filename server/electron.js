@@ -1,17 +1,17 @@
-const url = require('url');
-const Path = require('path');
-const {app, BrowserWindow} = require('electron');
+const url = require('url')
+const Path = require('path')
+const { app, BrowserWindow } = require('electron')
+const config = require("../config/config-loader.js")
 
 // Run the server first
-require("./server.js");
-
-// ELECTRONNN
+const { server, pluginServer } = require("./server.js");
 
 let win;
 
 function createWindow () {
     // Create the browser window.
     win = new BrowserWindow({
+        //frame: false,
         backgroundColor: '#eee',
         width: 800,
         height: 600,
@@ -19,7 +19,7 @@ function createWindow () {
             nodeIntegration: false,
             partition: "persist:qora"
         },
-        icon: "./icon.png",
+        icon: Path.join(__dirname, "../", config.icon),
         autoHideMenuBar: true
     })
 
@@ -29,18 +29,15 @@ function createWindow () {
         protocol: 'file:',
         slashes: true
     }))*/
-
+    
     win.loadURL(url.format({
-        pathname: "127.0.0.1:3000/qora/multi-wallet",
-        protocol: 'http:',
+        pathname: config.primary.domain + ":" + config.primary.port + "/qora/" + config.plugins.default,
+        protocol: config.primary.protocol + ":",
         slashes: true
     }))
 
     win.maximize();
-
-    // Open the DevTools.
-    // win.webContents.openDevTools()
-
+    
     // Emitted when the window is closed.
     win.on('closed', () => {
         // Dereference the window object, usually you would store windows

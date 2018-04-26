@@ -1,69 +1,27 @@
-const url = require('url')
-const Path = require('path')
-const Hapi = require('hapi')
-const Inert = require('inert');
-const Nes = require('nes')
-const routes = require('./routes')
-const pluginRoutes = require('./pluginRoutes')
-const h2o2 = require('h2o2')
-const QORA_CONFIG = require("../config.js")
+const serverFactory = require("./serverFactory.js")
 
-// ELECTRONNN
-// Being used purely as a browser window - none of it's node integrations are used
-const {app, BrowserWindow} = require('electron');
+const primaryRoutes = require('./routes/primaryRoutes.js')
+const pluginRoutes = require('./routes/pluginRoutes.js')
 
-const server = new Hapi.Server({
-	connections: {
-		routes: {
-			files: {
-				relativeTo: Path.join(__dirname, '../')
-			}
-		}
-	}
-});
-server.connection({ port: QORA_CONFIG.server.client.port });
-
-server.register(Inert, () => {});
-server.register(h2o2, () => {});
+//const QORA_CONFIG = require("../config.js")
+const config = require("../config/config-loader.js")
 
 
-
-server.route(routes);
-
-server.start((err) => {
-
-	if (err) {
-		throw err;
-	}
-
-	console.log('Server running at:', server.info.uri);
-});
+primaryServer = new serverFactory(primaryRoutes, config.primary.domain, config.primary.port)
+primaryServer.startServer()
+    .then(server => {
+    console.log(`Primary server started at ${server.info.uri} and listening on ${server.info.address}`)
+})
+    .catch(e => {
+    console.error(e)
+})
 
 
-const pluginServer = new Hapi.Server({
-    connections: {
-        routes: {
-            files: {
-                relativeTo: Path.join(__dirname, '../')
-            }
-        }
-    }
-});
-pluginServer.connection({ port: QORA_CONFIG.server.plugins.port });
-
-pluginServer.register(Inert, () => {});
-pluginServer.register(h2o2, () => {});
-
-
-
-pluginServer.route(pluginRoutes);
-
-pluginServer.start((err) => {
-
-    if (err) {
-        throw err;
-    }
-
-    console.log('Plugin server running at:', pluginServer.info.uri);
-});
-
+pluginServer = new serverFactory(pluginRoutes, config.plugins.domain, config.plugins.port)
+pluginServer.startServer()
+    .then(server => {
+    console.log(`Plugin server started at ${server.info.uri} and listening on ${server.info.address}`)
+})
+    .catch(e => {
+    console.error(e)
+})

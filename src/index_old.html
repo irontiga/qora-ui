@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+		<link rel="import" href="/client/elements/main-app.html">
+        <link rel="import" href="/client/elements/menu-bar/menu-bar.html">
+        <style>
+            body.electron{
+                display:flex;
+            }
+            .menubar{
+                height:0;
+                overflow:hidden;
+            }
+            body.electron .menubar{
+                height:48px;
+            }
+        </style>
+	</head>
+	<body>
+        
+        <main-app></main-app>
+        
+        
+        <script>
+        
+        </script>
+	</body>
+	
+</html>

@@ -1,0 +1,70 @@
+<dom-module id="show-modal" style="padding:0;">
+
+    <template>
+
+        <style>
+            :host {
+                padding:0 !important;
+                margin:0 !important;
+                display: inherit;
+            }
+            iframe {
+                max-width:calc(100vw - 120px);
+                max-height: calc(100vh - 110px);
+                border:0;
+                padding:0;
+                margin:0;
+            }
+        </style>
+
+        <iframe id="modalFrame" security="restricted" sandbox="allow-scripts allow-same-origin" src="{{_frameUrl(item)}}" style$="height:{{frameSize.height}}; width: {{frameSize.width}};"></iframe>
+        
+    </template>
+
+    <script>
+        class ShowModal extends Polymer.Element{
+            static get is(){
+                return "show-modal";
+            }
+            
+            static get properties(){
+                return {
+                    item: Object,
+                    modalFrame: {
+                        notify: true
+                    },
+                    frameSize: {
+                        type: Object,
+                        value: {
+                            height: "200px",
+                            width: "200px"
+                        }
+                    }
+                }
+            }
+            
+            constructor(){
+                super();
+            }
+            
+            connectedCallback() {
+                super.connectedCallback();
+                this.modalFrame = this.shadowRoot.querySelector("#modalFrame");
+            }
+
+            _frameUrl(item){
+                if(!item.page){
+                    return "about:blank";
+                }
+                return window.location.protocol + "//" + window.location.hostname + ":" + (parseInt(window.location.port) + 1) + "/plugins/" + item.page;
+            }
+            
+            ready(){
+                super.ready();
+            }
+        }
+        
+        customElements.define(ShowModal.is, ShowModal);
+    </script>
+
+</dom-module>

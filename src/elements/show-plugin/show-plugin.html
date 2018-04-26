@@ -1,0 +1,73 @@
+<dom-module id="show-plugin">
+    
+    <template>
+        
+        <style>
+            iframe{
+                width:100%;
+                height:calc(100vh - 68px);
+                border:0;
+                padding:0;
+                margin:0;
+            }
+        </style>
+        
+        <iframe id="currentFrame" security="restricted" sandbox="allow-scripts allow-same-origin" src="{{frameUrl}}"></iframe>
+    </template>
+
+    <script>
+        class ShowPlugin extends Polymer.Element{
+            static get is(){
+                return "show-plugin";
+            }
+
+            static get properties(){
+                return {
+                    route: Object,
+                    data: Object,
+                    subroute: Object,
+                    url: Object,
+                    currentPluginFrame: {
+                        notify: true
+                    },
+                    loggedIn: Boolean,
+                    config: Object,
+                    frameUrl : {
+                        computed: "_getFrameUrl(route, data, subroute, url, loggedIn, config)"
+                    }
+                }
+            }
+            
+            constructor(){
+                super();
+            }
+            
+            connectedCallback() {
+                super.connectedCallback();
+                this.currentPluginFrame = this.shadowRoot.querySelector("#currentFrame");
+            }
+            
+            _getFrameUrl(route, data, subroute, url, loggedIn, config){
+                if(!loggedIn){
+                    return "about:blank";
+                }
+                console.log(config);
+                return window.location.protocol + "//" + config.plugins.domain + ":" + config.plugins.port + "/plugins/" + url.page + window.location.hash;
+            }
+            
+            toJSON(object){
+                return JSON.stringify(object);
+            }
+            
+            ready(){
+                super.ready();
+                //console.log(this.url);
+                //this.firstFrame = this.shadowRoot.querySelector("#currentFrame");
+                
+            }
+        }
+        
+        customElements.define(ShowPlugin.is, ShowPlugin);
+    </script>
+
+</dom-module>

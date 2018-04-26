@@ -1,5 +1,5 @@
 "use strict"
-import Wimp from "../client/js/wimp/wimp.js"
+import Wimp from "../src/modules/wimp/wimp.js"
 
 window.Wimp = Wimp
 

@@ -1,0 +1,150 @@
+<link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module id="settings-menu" style="padding:0;">
+
+    <template>
+
+        <custom-style>
+            <style is="custon-style" include="app-styles iron-flex iron-flex-alignment iron-positioning iron-flex-factors">
+                :host {
+                    padding:0 !important;
+                    margin:0 !important;
+                    display: inherit;
+                }
+                paper-icon-button.remove-color-icon{
+                    height:24px;
+                    width:24px;
+                    position:relative;
+                    left:-24px;
+                    top:-12px;
+                    padding:4px;
+                    color: var(--paper-red-500)
+                }
+            </style>
+        </custom-style>
+        
+        <!-- <app-localstorage-document key="config" data="{{config}}"></app-localstorage-document> -->
+        
+        <!-- Store settings -->
+        <!-- <app-localstorage-document key="qoraNode" data="{{qoraNode}}"></app-localstorage-document>
+        <app-localstorage-document key="addressCount" data="{{addressCount}}"></app-localstorage-document>
+        <app-localstorage-document key="addressColors" data="{{addressColors}}"></app-localstorage-document> -->
+        
+        <div class="layout horizontal" style="height:100%;">
+            
+            <paper-material elevation="1" style="height: 100%;" >
+                <paper-listbox selected="{{selectedSetting}}" attr-for-selected="setting">
+                    <paper-item setting="qora-node">
+                        Qora node
+                        <paper-ripple></paper-ripple>
+                    </paper-item>
+                    <paper-item setting="addresses">
+                        Addresses
+                        <paper-ripple></paper-ripple>
+                    </paper-item>
+                </paper-listbox>
+            </paper-material>
+            
+            <div style="padding:8px;  overflow: auto">
+                <iron-pages selected="{{selectedSetting}}" attr-for-selected="setting" style="width:100%;">
+                    <div setting="qora-node">
+                        <paper-input label="Explorer URL" type="text" value="{{config.qoraNode.explorer.url}}" on-keydown="_loginKeyDown"></paper-input>
+                        <paper-input label="API URL" type="text" value="{{config.qoraNode.api.url}}" on-keydown="_loginKeyDown"></paper-input>
+                    </div>
+                    <div setting="addresses" style="width:auto;height:100%;">
+                        <small>Please log out and log back in to apply changes</small>
+                        
+                        <!-- GET RID OF IT -->
+                        <paper-input label="Number of addresses" type="number" value="{{config.addressCount}}" on-keydown="_loginKeyDown"></paper-input>
+                        
+                        <template is="dom-repeat" items="{{config.addressColors}}">
+                            <div style="display:inline-block">
+                                <paper-swatch-picker color="{{item}}"></paper-swatch-picker>
+                                <paper-icon-button class="remove-color-icon" icon="icons:remove-circle-outline" on-tap="removeColor"></paper-icon-button>
+                            </div>
+                        </template>
+                        <paper-icon-button icon="icons:add-circle-outline" on-tap="addColor"></paper-icon-button>
+                        
+                        
+                    </div>
+                </iron-pages>
+            </div>
+            
+        </div>
+
+    </template>
+
+    <script>
+        class SettingsMenu extends Polymer.Element{
+            static get is(){
+                return "settings-menu";
+            }
+
+            static get properties(){
+                return {
+                    config: {
+                        type: Object,
+                        notify: true,
+                        value: {}
+                    },
+                    selectedSetting: {
+                        type: String,
+                        value: "qora-node"
+                    },
+                    // addressColors: {
+                    //     type: Array,
+                    //     value: [
+                    //         "#3f51b5",
+                    //         "#212121",
+                    //         "#009688",
+                    //         "#d32f2f",
+                    //         "#795548",
+                    //         "#004d40",
+                    //         "#006064",
+                    //         "#9c27b0",
+                    //         "#2196f3",
+                    //         "#d81b60"
+                    //     ],
+                    //     notify: true
+                    // },
+                    // // addressCount.cnt because for some reason electron won't play nice with a number....*shrug*
+                    // addressCount: {
+                    //     type: Object,
+                    //     value: {
+                    //         cnt: 1
+                    //     },
+                    //     notify: true
+                    // },
+                    // qoraNode: {
+                    //     type: Object,
+                    //     notify: true
+                    // }
+                }
+            }
+
+            constructor(){
+                super();
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+            }
+            ready(){
+                super.ready();
+                setTimeout(() => {
+                    this.selectedSetting = "qora-node"
+                }, 1)
+            }
+            addColor(){
+                this.push("config.addressColors", "#212121")
+            }
+            removeColor(e){
+                console.log(e.model.itemsIndex)
+                this.splice("config.addressColors", e.model.itemsIndex, 1)
+            }
+        }
+
+        customElements.define(SettingsMenu.is, SettingsMenu);
+    </script>
+
+</dom-module>
