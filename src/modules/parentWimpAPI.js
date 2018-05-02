@@ -7,7 +7,7 @@ import toast from "./toast.js"
 
 // Creates and returns a wimp with the api routes already listening
 
-export default function createParentWimp(target){
+export default function parentWimpAPI(target){
     const mainWimp = new Wimp(target);
 
     mainWimp.on("hello", (req, res) => {

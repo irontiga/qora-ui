@@ -4,3 +4,4 @@ node_modules/
 .bower-registry
 .bower-tmp
 .brackets.json
+build/

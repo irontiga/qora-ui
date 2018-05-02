@@ -1,6 +1,6 @@
 {
     "name": "qora-ui",
-    "main": "index.html",
+    "main": "src/index.html",
     "dependencies": {
         "polymer": "Polymer/polymer#^2.1.1",
         "app-route": "PolymerElements/app-route#^2.0.2",
@@ -53,7 +53,8 @@
         "paper-toast": "PolymerElements/paper-toast#^2.1.0",
         "paper-swatch-picker": "PolymerElements/paper-swatch-picker#^2.2.0",
         "paper-checkbox": "PolymerElements/paper-checkbox#^2.0.3",
-        "iron-label": "PolymerElements/iron-label#^2.1.0"
+        "iron-label": "PolymerElements/iron-label#^2.1.0",
+        "marked-element": "PolymerElements/marked-element#^2.4.0"
     },
     "devDependencies": {
         "web-component-tester": "Polymer/web-component-tester#^6.0.0",

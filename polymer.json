@@ -3,5 +3,12 @@
     "rules": [
       "polymer-2"
     ]
-  }
+  },
+  "entrypoint": "src/index.html",
+  "builds" : [
+      {
+          "name" : "bundle",
+          "bundle" : true
+      }
+  ]
 }

@@ -18,6 +18,7 @@ routes.push(
         path: '/qora/{path*}',
         handler: {
             file: path.join(__dirname, "../../src/index.html")
+            // file: path.join(__dirname, "../../build/src/index.html") // Production
         }
     },
     {

@@ -1,4 +1,10 @@
-const path = require('path');
+const path = require('path')
+const webpack = require('webpack')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+// const HTMLWebpackPlugin = require('html-webpack-plugin')
+
+
+
 
 module.exports = {
     entry: {
@@ -11,13 +17,20 @@ module.exports = {
     output: {
         path: path.resolve(__dirname),
         filename: '[name]'
-    }
-
-
-
-    //    entry: './client/js/app.js',
-    //    output: {
-    //        filename: 'bundle.js',
-    //        path: path.resolve(__dirname, 'client/js')
-    //    }
+    },
+    plugins: [
+        new UglifyJsPlugin()
+    ], 
+    // optimization: {
+    //     // Not working, might need to try import the modules asmCrypto modules from their individual files. ick
+    //     splitChunks: {
+    //         cacheGroups: {
+    //             commons: {
+    //                 name: "src/elements/common-scripts/common-scripts-bundle.js",
+    //                 chunks: "initial",
+    //                 minChunks: 1
+    //             }
+    //         }
+    //     }
+    // }
 };

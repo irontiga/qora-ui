@@ -2,9 +2,11 @@ import PhraseWallet from "../../../qora/PhraseWallet.js"
 import utils from "../../../qora/deps/utils.js"
 import { STATIC_SALT, PBKDF2_ROUNDS } from "../../../qora/constants.js"
 import Base58 from "../../../qora/deps/Base58.js"
-import * as asmCrypto from "asmcrypto.js/asmcrypto.all.js"
-const getRandomValues = (window.crypto || window.msCrytpo) ? crypto.getRandomValues.bind(window.crypto) : asmCrypto.getRandomValues
-//window.asmCrypto = asmCrypto
+// import * as asmCrypto from "asmcrypto.js/asmcrypto.all.js"
+// import { PBKDF2_HMAC_SHA512, HMAC_SHA512, getRandomValues as asmGetRandomValues, AES_CBC } from "asmcrypto.js/asmcrypto.all.js"
+import { PBKDF2_HMAC_SHA512, HMAC_SHA512, getRandomValues as asmGetRandomValues, AES_CBC } from "asmcrypto.js/src/entry-export_all.js"
+const getRandomValues = (window.crypto || window.msCrytpo) ? crypto.getRandomValues.bind(window.crypto) : asmGetRandomValues
+
 
 class LoginPage extends Polymer.Element {
     static get is() {
@@ -154,52 +156,65 @@ class LoginPage extends Polymer.Element {
         }, 1)
     }
     _loginClickHandler() {
+        this.loading = true;
         
-        switch(this.loginType){
-            case "passphrase":
-                const passphrase = this.passphrase
-                if (passphrase == undefined || passphrase.length == 0 ) return
-                
-                const passphraseSeed = asmCrypto.PBKDF2_HMAC_SHA512.bytes(utils.stringtoUTF8Array(passphrase), STATIC_SALT, PBKDF2_ROUNDS, 64);
-                
-                this.login(new PhraseWallet(passphraseSeed, 2))
-                
-                if(this.rememberMe){
-                    this._remember(passphraseSeed, 2)
+        setTimeout(() => {
+            try {
+                switch (this.loginType) {
+                    case "passphrase":
+                        const passphrase = this.passphrase
+                        if (passphrase == undefined || passphrase.length == 0) {
+                            this.loading = false
+                            return
+                        }
+
+                        const passphraseSeed = PBKDF2_HMAC_SHA512.bytes(utils.stringtoUTF8Array(passphrase), STATIC_SALT, PBKDF2_ROUNDS, 64);
+
+                        this.login(new PhraseWallet(passphraseSeed, 2))
+
+                        if (this.rememberMe) {
+                            this._remember(passphraseSeed, 2)
+                        }
+
+                        break;
+                    case "seed":
+                        const seedBytes = Base58.decode(this.generationSeed)
+                        this.login(new PhraseWallet(seedBytes, 1))
+
+                        if (this.rememberMe) {
+                            this._remember(seedBytes, 1)
+                        }
+
+                        break;
+                    case "existingSeed":
+
+                        const encryptedSeedBytes = Base58.decode(this.selectedEncryptedSeed.encryptedSeed)
+                        const salt = Base58.decode(this.selectedEncryptedSeed.salt)
+                        const iv = Base58.decode(this.selectedEncryptedSeed.iv)
+
+                        const key = PBKDF2_HMAC_SHA512.bytes(utils.stringtoUTF8Array(this.unlockSeedPassword), salt, this.selectedEncryptedSeed.pbkdf2Rounds, 64)
+                        const encryptionKey = key.slice(0, 32)
+                        const macKey = key.slice(32, 63)
+
+                        const mac = HMAC_SHA512.bytes(encryptedSeedBytes, macKey)
+                        if (Base58.encode(mac) != this.selectedEncryptedSeed.mac) {
+                            throw "Incorrect password"
+                            return
+                        }
+
+                        const decryptedBytes = AES_CBC.decrypt(encryptedSeedBytes, encryptionKey, false, iv)
+                        console.log(this.selectedEncryptedSeed)
+                        this.login(new PhraseWallet(decryptedBytes, this.selectedEncryptedSeed.version))
+
+                        break;
                 }
-                
-                break;
-            case "seed":
-                const seedBytes = Base58.decode(this.generationSeed)
-                this.login(new PhraseWallet(seedBytes, 1))
-                
-                if(this.rememberMe){
-                    this._remember(seedBytes, 1)
-                }
-                
-                break;
-            case "existingSeed":
-                
-                const encryptedSeedBytes = Base58.decode( this.selectedEncryptedSeed.encryptedSeed )
-                const salt = Base58.decode(this.selectedEncryptedSeed.salt)
-                const iv = Base58.decode(this.selectedEncryptedSeed.iv)
-                
-                const key = asmCrypto.PBKDF2_HMAC_SHA512.bytes(utils.stringtoUTF8Array(this.unlockSeedPassword), salt, this.selectedEncryptedSeed.pbkdf2Rounds, 64)
-                const encryptionKey = key.slice(0, 32)
-                const macKey = key.slice(32, 63)
-                
-                const mac = asmCrypto.HMAC_SHA512.bytes(encryptedSeedBytes, macKey)
-                if (Base58.encode(mac) != this.selectedEncryptedSeed.mac){
-                    this.errorMessage = "Incorrect password"
-                    return
-                }
-                
-                const decryptedBytes = asmCrypto.AES_CBC.decrypt(encryptedSeedBytes, encryptionKey, false, iv)
-                console.log(this.selectedEncryptedSeed)
-                this.login(new PhraseWallet(decryptedBytes, this.selectedEncryptedSeed.version))
-                
-                break;
-        }
+            }
+            catch(e){
+                this.errorMessage = e
+                this.loading = false
+            }
+        }, 0)
+        
         
     }
     
@@ -209,12 +224,12 @@ class LoginPage extends Polymer.Element {
         let salt = new Uint8Array(32)
         getRandomValues(salt)
 
-        const key = asmCrypto.PBKDF2_HMAC_SHA512.bytes(utils.stringtoUTF8Array(this.password), salt, PBKDF2_ROUNDS, 64) // 512bit key to be split in two for mac/encryption
+        const key = PBKDF2_HMAC_SHA512.bytes(utils.stringtoUTF8Array(this.password), salt, PBKDF2_ROUNDS, 64) // 512bit key to be split in two for mac/encryption
         const encryptionKey = key.slice(0, 32)
         const macKey = key.slice(32, 63)
         
-        const encryptedSeed = asmCrypto.AES_CBC.encrypt(seed, encryptionKey, false, iv)
-        const mac = asmCrypto.HMAC_SHA512.bytes(encryptedSeed, macKey)
+        const encryptedSeed = AES_CBC.encrypt(seed, encryptionKey, false, iv)
+        const mac = HMAC_SHA512.bytes(encryptedSeed, macKey)
 
         // Store everything base58 encoded for consistency...except for the name. That'd be pointless
         this.push("encryptedSeeds", {
@@ -230,7 +245,6 @@ class LoginPage extends Polymer.Element {
     
     login(wallet){
         // Seed has already gone thorough pbkdf2 and is threrefor 32bytes OR is is a qora generation seed 32 bytes (44chars but base58)
-        this.loading = true;
         
         this.wallet = wallet;
         console.log(this.wallet)

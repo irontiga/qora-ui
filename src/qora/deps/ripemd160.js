@@ -1,5 +1,6 @@
 "Generated from Java with JSweet 1.0.0 - http://www.jsweet.org";
-//var RIPEMD160 = (function () {
+// BAD IMPLEMENTATION. BROKEN, BUT MUST KEEP CAUSE OF NETWORK
+//const RIPEMD160 = (function () {
 // == Convert to ES6 module for export == //
 const RIPEMD160 = (function () {
     function RIPEMD160() {

@@ -37,6 +37,7 @@
 <link rel="import" href="/bower_components/paper-button/paper-button.html">
 <link rel="import" href="/bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="/bower_components/marked-element/marked-element.html">
 
 <!-- GRID -->
 <link rel="import" href="/bower_components/vaadin-material-theme/vaadin-grid.html">
@@ -123,6 +124,11 @@
                 paper-listbox.sideNavMenu paper-item.iron-selected{
 /*                    color: var(--active-menu-item-color);*/
                     font-weight: 700;
+                }
+                paper-toast marked-element [slot="markdown-html"] p {
+                    margin: 0 !important;
+                    line-height: 31.5px;
+                    cursor: text;
                 }
             </style>
         </custom-style>
@@ -269,8 +275,15 @@
                 </div>
             </paper-dialog>
             
-            <paper-toast id="toastElement" duration="3" text="{{toast.text}}">
-                <paper-button onclick="toast.res" class="yellow-button">Close now!</paper-button>
+            <paper-toast id="toastElement" text="" style="z-index:10000; top:80%;">
+                <div class="layout horizontal">
+                    <marked-element markdown="{{toast.text}}">
+                        <div slot="markdown-html"></div>
+                    </marked-element>
+                    <!-- <span class="flex" style="line-height:31.5px"></span> -->
+                    <paper-button on-tap="_toastClick" hidden$="{{!toast.action}}">{{toast.action}}</paper-button>
+                </div>
+                
             </paper-toast>
 
         </div>

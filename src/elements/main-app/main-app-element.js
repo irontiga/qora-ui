@@ -1,6 +1,7 @@
 import Wimp from "../../modules/wimp/wimp.js"
-import createParentWimp from "../../modules/createParentWimp.js"
+import parentWimpAPI from "../../modules/parentWimpAPI.js"
 import pluginLoader from "../../modules/pluginLoader.js"
+import addModalRoutes from "./modal-routes.js"
 
 export default class MainApp extends Polymer.Element {
     static get is() {
@@ -81,7 +82,8 @@ export default class MainApp extends Polymer.Element {
                 }
             },
             addressColors: {
-                type: Array
+                type: Array,
+                computed: "_getAddressColors(config.addressColors)"
             },
             selectedAddress: {
                 type: Object,
@@ -106,6 +108,16 @@ export default class MainApp extends Polymer.Element {
                 type: Object,
                 value: {
                 
+                }
+            },
+            toast: {
+                type: Object,
+                value: {
+                    req: {
+                        text: "Some toast text",
+                        action: "Click me!"
+                    },
+                    res: () => {}
                 }
             }
         }
@@ -264,22 +276,23 @@ export default class MainApp extends Polymer.Element {
             
         Wimp.registerTarget("plugin-frame", this.currentPluginFrame.contentWindow)
         
-        this.wimps.activePlugin = createParentWimp("plugin-frame")
+        this.wimps.activePlugin = parentWimpAPI("plugin-frame")
         this.wimps.activePlugin.hashSync()
         
         
         Wimp.registerTarget("modal-frame", this.modalFrame.contentWindow)
         
-        this.wimps.modal = createParentWimp("modal-frame")
+        this.wimps.modal = parentWimpAPI("modal-frame")
         
+        addModalRoutes(this.wimps.modal, this)
         // Doesn't really need to be defined before Wimp.init() because the modal can't be opened initially
-        this.wimps.modal.on("modalFrameSize", (req, res) => {
-            this.modalFrameSize = {
-                height: req.height,
-                width: req.width
-            }
-            this.$.topMenuDialog.center()
-        })
+        // this.wimps.modal.on("modalFrameSize", (req, res) => {
+        //     this.modalFrameSize = {
+        //         height: req.height,
+        //         width: req.width
+        //     }
+        //     this.$.topMenuDialog.center()
+        // })
         
         // Should be called whenever the modal is opened
         this.wimps.modal.ready(() => {
@@ -332,11 +345,35 @@ export default class MainApp extends Polymer.Element {
     _loginObserver(){
         if(this.loggedIn != this.lastLoginState || this.loggedIn){
             this.selectedAddress = this.addresses[0]
-            Object.keys(this.wimps).forEach(thisWimp => {
-                this.wimps[thisWimp].request("login", {expectResponse: false})
-            })
+            console.log(this.wimps)
+            for (const w in this.wimps ){
+                w.request("login", { expectResponse: false })
+            }
         }
         this.lastLoginState = this.loggedIn
+    }
+
+    _getAddressColors(addressColors){
+        if(!addressColors) return []
+
+        return addressColors.map(hexColor => {
+            const hexSplit = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hexColor)
+            const rgb = hexSplit.map(color => {
+                return parseInt(color, 16) / 255
+            }).map(color => {
+                return color <= 0.03928 ? color / 12.92 : Math.pow((color + 0.055) / 1.055, 2.4)
+            })
+            const luminance = 0.2126 * rgb[1] + 0.7152 * rgb[2] + 0.0722 * rgb[3]
+
+            return {
+                color: hexColor,
+                textColor: luminance > 0.179 ? "dark" : "light"
+            }
+        })
+    }
+
+    _toastClick(){
+        this.toast.res()
     }
 
 }

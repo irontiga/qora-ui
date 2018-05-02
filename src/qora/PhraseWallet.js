@@ -4,10 +4,15 @@ Copyright 2017-2018 @ irontiga and vbcs (original developer)
 "use strict";
 import Base58 from "./deps/Base58.js"
 import RIPEMD160 from "./deps/ripemd160.js"
-import * as asmCrypto from "asmcrypto.js/asmcrypto.all.js"
+// import { SHA256, SHA512 } from "asmcrypto.js/asmcrypto.all.js"
+import { SHA256, SHA512 } from "asmcrypto.js/src/entry-export_all.js"
 import nacl from "./deps/nacl-fast.js"
 import utils from "./deps/utils.js"
 import { ADDRESS_VERSION } from "./constants.js"
+
+// Just for a quick debug
+window.utils = utils
+window.RIPEMD160 = RIPEMD160
 
 export default class PhraseWallet {
     constructor(seed, walletVersion) {
@@ -82,23 +87,23 @@ export default class PhraseWallet {
         // Questionable advantage to sha256d...sha256(sha256(x) + x) does not increase collisions the way sha256d does. Really nitpicky though. Not that this seed is computed from the original seed (which went through (pbkdf2) so does it's generation does not need to be computationally expenise
         if(this._walletVersion == 1){
             // addrSeed = new SHA256.digest(SHA256.digest(addrSeed))
-            addrSeed = asmCrypto.SHA256.bytes(asmCrypto.SHA256.bytes(addrSeed))
+            addrSeed = SHA256.bytes(SHA256.bytes(addrSeed))
         } else {
             // addrSeed = new SHA256.digest(utils.appendBuffer(SHA256.digest(addrSeed), addrSeed))
             // Why not use sha512?
-            addrSeed = asmCrypto.SHA512.bytes(utils.appendBuffer(asmCrypto.SHA512.bytes(addrSeed), addrSeed)).slice(0, 32)
+            addrSeed = SHA512.bytes(utils.appendBuffer(SHA512.bytes(addrSeed), addrSeed)).slice(0, 32)
         }
 
         const addrKeyPair = nacl.sign.keyPair.fromSeed(new Uint8Array(addrSeed));
 
-        const publicKeyHash = new RIPEMD160().digest(asmCrypto.SHA256.bytes(addrKeyPair.publicKey));
+        const publicKeyHash = new RIPEMD160().digest(SHA256.bytes(addrKeyPair.publicKey));
         
         let address = new Uint8Array();
 
         address = utils.appendBuffer(address, [ADDRESS_VERSION]);
         address = utils.appendBuffer(address, publicKeyHash);
         
-        const checkSum = asmCrypto.SHA256.bytes(asmCrypto.SHA256.bytes(address));
+        const checkSum = SHA256.bytes(SHA256.bytes(address));
 
         address = utils.appendBuffer(address, checkSum.subarray(0, 4));
         // Turn it into a string

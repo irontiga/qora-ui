@@ -68,12 +68,23 @@ class WalletApp extends Polymer.Element {
         this.parentWimp = new Wimp(window.parent);
         
         this.parentWimp.ready().then(() => {
-            console.log("==========READYYY")
+            // console.log("==========READYYY")
             this.parentWimp.listen("Selected address", address => {
-                console.log(address)
+                // console.log(address)
                 this.address = address
             })
         })
+
+        setInterval(() => {
+            this.parentWimp.request("toast", {
+                data: {
+                    text: "**QMLGFLi9Y5VWiu2AMJeyn4fWW6HeWurYyG** received **15** Qora from **QMLGFLi9Y5VWiu2AMJeyn4fWW6HeWurYyG**",
+                    action: "Click me"
+                }
+            }, res => {
+                console.log(res)
+            })
+        }, 3000)
         
         this.coreWimp.listen("New block", block => {
             this.lastBlock = block;

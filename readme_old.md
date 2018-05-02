@@ -27,12 +27,12 @@ Check the wiki
 - *"Finalize"* apis for the below
 - Documentation website - perhaps some js file comments stuff. Really needed so that I can get other plugin developers to help
 - Wallet plugin:
-  - Sort out the whole polling for unconfirmed transactions stuff
-  - In browser database. Loki or pouch or whatever. This makes all this far easier and far more efficient
-    - Addresses DB which is kept up to date when the address is logged in. If an address has not been used in 30 days it will be deleted, along with it's transactions in their corresponding table. Each address is stored with a lastBlock field to check for the 30 days
-    - Transations table. Stores each watched address's n most recent transactions
+   - Sort out the whole polling for unconfirmed transactions stuff
+   - In browser database. Loki or pouch or whatever. This makes all this far easier and far more efficient
+     - Addresses DB which is kept up to date when the address is logged in. If an address has not been used in 30 days it will be deleted, along with it's transactions in their corresponding table. Each address is stored with a lastBlock field to check for the 30 days
+     - Transations table. Stores each watched address's n most recent transactions
     - Unconfirmed tx.s table. Will have to be checked upon every unconfirmed transactions check.
- - Set/edit primary name
+  - Set/edit primary name
 - Bundle and make tiny
 - Random sentence generator - verb tenses and plural nouns
 - Electrom custom navigation bar

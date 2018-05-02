@@ -55,8 +55,8 @@
                         float:right;
                     }
                     #sendMoneyWrapper .buttons{
-                        --paper-button-ink-color: var(--paper-green-500);
-                        color: var(--paper-green-500);
+                        /* --paper-button-ink-color: var(--paper-green-500);
+                        color: var(--paper-green-500); */
                     }
                     .address-item {
                         --paper-item-focused: {
@@ -158,7 +158,7 @@
         </template>
         
         
-        <script src="/client/js/wimp/wimp.js"></script>
+        <script src="/src/modules/wimp/wimp.js"></script>
         <script>
             
             class WalletApp extends Polymer.Element {
@@ -224,10 +224,12 @@
 
                     this.sendMoneyLoading = true;
                     
+                    console.log(this.selectedAddress)
+
                     this.parentWimp.request("createTransaction", {
                         data: {
                             type: 2,
-                            nonce: address.nonce,
+                            nonce: this.selectedAddress.nonce,
                             params: {
                                 recipient,
                                 amount,
@@ -276,6 +278,7 @@
                 ready(){
                     super.ready();
                     
+                    // Communication with plugins/core/main.js. Uses window.parent as a proxy.
                     this.coreWimp = new Wimp("core", window.parent);
 
                     this.coreWimp.ready(() => {
@@ -303,7 +306,7 @@
                         })
                     })
                     
-                    this.parentWimp.on("opened", (req) => {
+                    this.parentWimp.on("opened", req => {
                         req = req || {};
                         console.log("Open with data ", req)
                         this.data = req || this.data;
