@@ -3,10 +3,6 @@ const TOAST_DURATION = 3000
 const toastQueue = []
 let active = false
 
-setInterval(() => {
-    console.log(toastQueue, active)
-}, 1000)
-
 export default function toast(req, res){
     // console.log(req, res)
     // res for onclick

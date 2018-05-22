@@ -6,7 +6,7 @@ import Base58 from "../../../qora/deps/Base58.js"
 // import { PBKDF2_HMAC_SHA512, HMAC_SHA512, getRandomValues as asmGetRandomValues, AES_CBC } from "asmcrypto.js/asmcrypto.all.js"
 import { PBKDF2_HMAC_SHA512, HMAC_SHA512, getRandomValues as asmGetRandomValues, AES_CBC } from "asmcrypto.js/src/entry-export_all.js"
 const getRandomValues = (window.crypto || window.msCrytpo) ? crypto.getRandomValues.bind(window.crypto) : asmGetRandomValues
-
+//window.PBKDF2_HMAC_SHA512 = PBKDF2_HMAC_SHA512
 
 class LoginPage extends Polymer.Element {
     static get is() {
@@ -169,7 +169,7 @@ class LoginPage extends Polymer.Element {
                         }
 
                         const passphraseSeed = PBKDF2_HMAC_SHA512.bytes(utils.stringtoUTF8Array(passphrase), STATIC_SALT, PBKDF2_ROUNDS, 64);
-
+                        console.log(passphraseSeed)
                         this.login(new PhraseWallet(passphraseSeed, 2))
 
                         if (this.rememberMe) {
@@ -285,3 +285,19 @@ class LoginPage extends Polymer.Element {
 }
 
 customElements.define(LoginPage.is, LoginPage);
+
+
+/*
+
+proposed
+    const key1 = PBKDF2_HMAC_SHA512.bytes(passphrase, salt1, Math.pow(2,17), 16)
+    const key2 = PBKDF2_HMAC_SHA512.bytes(passphrase, salt2, Math.pow(2,17), 16)
+    const key3 = PBKDF2_HMAC_SHA512.bytes(passphrase, salt3, Math.pow(2,17), 16)
+    const key4 = PBKDF2_HMAC_SHA512.bytes(passphrase, salt4, Math.pow(2,17), 16)
+    const key = new Uint8Array(64)
+    key.set(key1)
+    key.set(16, key2)
+    key.set(32, key3)
+    key.set(48, key4)
+
+*/

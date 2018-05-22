@@ -18,5 +18,13 @@
 
         <main-app id="main-qora-app"></main-app>
 
+
+        <script>
+            if (window.top !== window.self) {
+                 window.top.location.replace(window.self.location.href)
+
+                 alert("Loaded insecurely! Wallet is being loaded inside and iframe and should not be used.")
+            }
+        </script>
     </body>
 </html>

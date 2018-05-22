@@ -41,5 +41,6 @@ Check the wiki
 - Package electron as an installer
 - POLYMER THREE PLEASE
 - Worker / service workers. Worker for pbkdf2 password derivations, will need to make sure origins within WIMP are working properly. Service workers can allow the wallet to function even in an offline state, due to caching.
+- Use broadcast channel instead of wimp.proxy maybe? OR implement it as a wimp feature / plugin....might need to expand wimp to use plugins.
 
 Might be handy https://gist.github.com/Couto/b29676dd1ab8714a818f

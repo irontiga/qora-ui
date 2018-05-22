@@ -281,7 +281,8 @@
                         <div slot="markdown-html"></div>
                     </marked-element>
                     <!-- <span class="flex" style="line-height:31.5px"></span> -->
-                    <paper-button on-tap="_toastClick" hidden$="{{!toast.action}}">{{toast.action}}</paper-button>
+                    <paper-button onclick="_toastClick()" hidden$="{{!toast.action}}">{{toast.action}}</paper-button>
+                    <paper-button onclick="_closeToast()" hidden$="{{toast.action}}">Close</paper-button>
                 </div>
                 
             </paper-toast>

@@ -79,7 +79,7 @@ class WalletApp extends Polymer.Element {
             this.parentWimp.request("toast", {
                 data: {
                     text: "**QMLGFLi9Y5VWiu2AMJeyn4fWW6HeWurYyG** received **15** Qora from **QMLGFLi9Y5VWiu2AMJeyn4fWW6HeWurYyG**",
-                    action: "Click me"
+                    action: false
                 }
             }, res => {
                 console.log(res)

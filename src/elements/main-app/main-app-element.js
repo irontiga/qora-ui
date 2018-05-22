@@ -375,5 +375,8 @@ export default class MainApp extends Polymer.Element {
     _toastClick(){
         this.toast.res()
     }
+    _closeToast(){
+        this.$.toastElement.close()
+    }
 
 }
