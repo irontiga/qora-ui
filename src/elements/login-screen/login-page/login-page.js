@@ -1,12 +1,10 @@
 import PhraseWallet from "../../../qora/PhraseWallet.js"
 import utils from "../../../qora/deps/utils.js"
-import { STATIC_SALT, PBKDF2_ROUNDS } from "../../../qora/constants.js"
+import { STATIC_SALT, PBKDF2_ROUNDS, KDF_THREADS } from "../../../qora/constants.js"
 import Base58 from "../../../qora/deps/Base58.js"
-// import * as asmCrypto from "asmcrypto.js/asmcrypto.all.js"
-// import { PBKDF2_HMAC_SHA512, HMAC_SHA512, getRandomValues as asmGetRandomValues, AES_CBC } from "asmcrypto.js/asmcrypto.all.js"
-import { PBKDF2_HMAC_SHA512, HMAC_SHA512, getRandomValues as asmGetRandomValues, AES_CBC } from "asmcrypto.js/src/entry-export_all.js"
-const getRandomValues = (window.crypto || window.msCrytpo) ? crypto.getRandomValues.bind(window.crypto) : asmGetRandomValues
-//window.PBKDF2_HMAC_SHA512 = PBKDF2_HMAC_SHA512
+import bcryptjs from 'bcryptjs'
+import { PBKDF2_HMAC_SHA512, HMAC_SHA512, getRandomValues as asmGetRandomValues, AES_CBC, SHA512 } from "asmcrypto.js/dist_es5/entry-export_all.js"
+// const getRandomValues = window.crypto ? crypto.getRandomValues.bind(window.crypto) : asmGetRandomValues - asm no longer has rand number
 
 class LoginPage extends Polymer.Element {
     static get is() {
@@ -87,9 +85,12 @@ class LoginPage extends Polymer.Element {
 
         setTimeout(() => {
             const tabs = this.shadowRoot.querySelector("#loginTabs");
-            tabs.select(this.encryptedSeedsExist ? "existingSeed" : "passphrase");
+            tabs.select(this.loginHandler.encryptedSeedsExist ? "existingSeed" : "passphrase");
             tabs.notifyResize();
         }, 1)
+
+        console.log(this.loginHandler)
+        setTimeout(() => console.log(this.loginHandler), 1)
     }
     
     logOut(){
@@ -151,13 +152,12 @@ class LoginPage extends Polymer.Element {
         }
     }
     _loginClick(){
-        setTimeout(() => {
-            this._loginClickHandler()
-        }, 1)
+        setTimeout(() => this._loginClickHandler(), 1)
     }
     _loginClickHandler() {
         this.loading = true;
         
+        // use promises idiot
         setTimeout(() => {
             try {
                 switch (this.loginType) {
@@ -168,7 +168,12 @@ class LoginPage extends Polymer.Element {
                             return
                         }
 
-                        const passphraseSeed = PBKDF2_HMAC_SHA512.bytes(utils.stringtoUTF8Array(passphrase), STATIC_SALT, PBKDF2_ROUNDS, 64);
+                        // Let's change to Sha512(Bcrypt(Sha512(Passphrase + nonce)) * 8)
+                        // const passphraseSeed = PBKDF2_HMAC_SHA512.bytes(utils.stringtoUTF8Array(passphrase), STATIC_SALT, PBKDF2_ROUNDS, 64);
+                        const nonces = Array.from(Array(KDF_THREADS).keys())
+                        seedPieces = nonces.map(nonce => {
+                            return SHA512(nonce + passphrase + nonce)
+                        })
                         console.log(passphraseSeed)
                         this.login(new PhraseWallet(passphraseSeed, 2))
 

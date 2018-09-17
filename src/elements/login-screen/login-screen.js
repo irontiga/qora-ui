@@ -47,6 +47,7 @@ class LoginContainer extends Polymer.Element {
     ready() {
         super.ready()
         this.selectedPage = "welcome"
+        this.loginHandler = this.$.loginHandler
     }
     logOut(){
         this.$["login-page"].logOut()

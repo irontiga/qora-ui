@@ -28,11 +28,13 @@ const config = {
     addressCount: 1,
     qoraNode: {
         explorer: {
-            url: "http://127.0.0.1:9090",
+            // url: "http://127.0.0.1:9090", // Qora
+            url: "http://127.0.0.1:4940", // Karma
             tail: "/index/blockexplorer.json"
         },
         api: {
-            url: "http://127.0.0.1:9085",
+            // url: "http://127.0.0.1:9085", // Qora
+            url: "http://127.0.0.1:4930", // Karma
             tail: "/"
         }
     },

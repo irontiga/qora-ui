@@ -12,7 +12,8 @@ module.exports = {
         'plugins/pluginLoaderBundle.js': './plugins/pluginLoader.js',
         'src/elements/login-screen/login-screen-bundle.js': './src/elements/login-screen/login-screen.js',
         'src/elements/login-screen/login-page/login-page-bundle.js': './src/elements/login-screen/login-page/login-page.js',
-        'src/elements/login-screen/create-account-page/create-account-page-bundle.js': './src/elements/login-screen/create-account-page/create-account-page.js'
+        'src/elements/login-screen/create-account-page/create-account-page-bundle.js': './src/elements/login-screen/create-account-page/create-account-page.js',
+        'src/elements/login-screen/login-handler/login-handler-bundle.js' : './src/elements/login-screen/login-handler/login-handler.js'
     },
     output: {
         path: path.resolve(__dirname),

@@ -1,5 +1,7 @@
+<link rel="import" href="/src/elements/login-screen/login-handler/login-handler.html">
 <link rel="import" href="/src/elements/login-screen/login-welcome-page/login-welcome-page.html">
 <link rel="import" href="/src/elements/login-screen/login-page/login-page.html">
+<link rel="import" href="/src/elements/login-screen/create-account-page/create-account-page.html">
 
 <dom-module id="login-screen">
     <template>
@@ -36,6 +38,8 @@
             </style>
         </custom-style>
 
+        <login-handler id="loginHandler" logged-in="{{loggedIn}}" loading="{{loading}}"" wallet="{{wallet}}" config="{{config}}" addresses="{{addresses}}"></login-handler>
+
         <div class="layout vertical center-justified" style="height:100%;" id="container">
             <div class="layout horizontal center-justified">
                 <iron-pages selected="{{selectedPage}}" attr-for-selected="page" id="loginContainerPages">
@@ -45,12 +49,12 @@
                     
                     <div page="new-account">
                         <paper-icon-button icon="icons:arrow-back" on-tap="_backToWelcome"></paper-icon-button><br>
-                        Nu accccccccc
+                        <create-account-page></create-account-page>
                     </div>
                     
                     <div page="login">
                         <paper-icon-button icon="icons:arrow-back" on-tap="_backToWelcome"></paper-icon-button><br>
-                        <login-page id="login-page" wallet="{{wallet}}" config="{{config}}" addresses="{{addresses}}" logged-in="{{loggedIn}}"></login-page>
+                        <login-page login-handler="{{loginHandler}}" id="login-page" wallet="{{wallet}}" config="{{config}}" addresses="{{addresses}}" logged-in="{{loggedIn}}"></login-page>
                     </div>
                 </iron-pages>
                 

@@ -5,7 +5,7 @@ Copyright 2017-2018 @ irontiga and vbcs (original developer)
 import Base58 from "./deps/Base58.js"
 import RIPEMD160 from "./deps/ripemd160.js"
 // import { SHA256, SHA512 } from "asmcrypto.js/asmcrypto.all.js"
-import { SHA256, SHA512 } from "asmcrypto.js/src/entry-export_all.js"
+import { SHA256, SHA512 } from "asmcrypto.js/dist_es5/entry-export_all.js"
 import nacl from "./deps/nacl-fast.js"
 import utils from "./deps/utils.js"
 import { ADDRESS_VERSION } from "./constants.js"

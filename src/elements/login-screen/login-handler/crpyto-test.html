@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+    <body>
+        <script src="../../../../node_modules/asmcrypto.js/asmcrypto.all.js"></script>
+        <script src="../../../../node_modules/bcryptjs/dist/bcrypt.js"></script>
+        <script>
+            window.bcrypt = dcodeIO.bcrypt
+            // const salt = bcrypt.genSaltSync(10)
+            const salt = "$2a$10$5Njc9FMRLNqajFHaHXYgbO"
+            console.log(salt)
+
+            const SHA512 = asmCrypto.SHA512
+            const hash = SHA512.base64("asm")
+    
+            const startTime = Date.now()
+            console.log(hash.length)
+            const bcryptHash = bcrypt.hashSync(hash.substring(0, 72), salt)
+            console.log((Date.now() - startTime) / 1000)
+            console.log(bcryptHash)
+        </script>
+    </body>
+</html>

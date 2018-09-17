@@ -19,7 +19,8 @@
     "author": "irontiga",
     "license": "GPL-3.0",
     "dependencies": {
-        "asmcrypto.js": "^0.22.0",
+        "asmcrypto.js": "^2.3.2",
+        "bcryptjs": "^2.4.3",
         "boom": "^7.2.0",
         "electron": "^1.8.4",
         "h2o2": "^8.1.0",
