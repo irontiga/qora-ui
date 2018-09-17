@@ -1,13 +1,18 @@
 import PhraseWallet from "../../../qora/PhraseWallet.js"
 import utils from "../../../qora/deps/utils.js"
-import { STATIC_SALT, PBKDF2_ROUNDS, KDF_THREADS } from "../../../qora/constants.js"
+import { STATIC_SALT, PBKDF2_ROUNDS, KDF_THREADS, STATIC_BCRYPT_SALT } from "../../../qora/constants.js"
 import Base58 from "../../../qora/deps/Base58.js"
-import bcryptjs from 'bcryptjs'
+import bcrypt from 'bcryptjs'
 // import * as asmCrypto from "asmcrypto.js/asmcrypto.all.js"
 // import { PBKDF2_HMAC_SHA512, HMAC_SHA512, getRandomValues as asmGetRandomValues, AES_CBC } from "asmcrypto.js/asmcrypto.all.js"
-import { HMAC_SHA512, getRandomValues as asmGetRandomValues, AES_CBC, SHA512, STATIC_BCRYPT_SALT } from "asmcrypto.js/dist_es5/entry-export_all.js"
+import { HmacSha512, AES_CBC, Sha512, base64_to_bytes, bytes_to_base64 } from "asmcrypto.js/dist_es5/entry-export_all.js"
 
 const getRandomValues = window.crypto ? window.crypto.getRandomValues.bind(window.crypto) : window.msCrypto.getRandomValues.bind(window.msCrypto)
+
+// const sha512Test = new Sha512()
+// sha512Test.process(utils.stringtoUTF8Array("abcsdfsdafsdfsdfsdfsddsfsdfsd"))
+// sha512Test.finish()
+// console.log(sha512Test)
 
 // if (!window.crypto.getRandomValues) {alert('Browser does not support window.crypto. Please download Google Chrome in order to use this wallet')}
 
@@ -77,15 +82,22 @@ class LoginHandler extends Polymer.Element {
         return this.encryptedSeeds.length != 0
     }
 
+    deleteEncryptedSeed(index) {
+        this.splice("encryptedSeeds", index, 1)
+    }
+
     // WILL CHANGE TO BEING MULTI-THREADED (USING WEB WORKERS)
     async kdf (key) {
         const nonces = Array.from(Array(KDF_THREADS).keys())
-        seedParts = nonces.map(nonce => {
-            const sha512Hash = SHA512.base64(STATIC_SALT + key + nonce) // base64, no 00xF starting bytes
+        const seedParts = nonces.map(nonce => {
+            const sha512Hash = new Sha512().process(utils.stringtoUTF8Array(STATIC_SALT + key + nonce)).finish().result
+            const sha512HashBase64 = bytes_to_base64(sha512Hash)
+            console.log(sha512Hash, sha512HashBase64)
+            // const sha512Hash = Sha512.base64(STATIC_SALT + key + nonce) // base64, no 00xF starting bytes
             // Truncate sha512 output to 72 characters
-            return bcrypt.hashSync(sha512Hash.substring(0, 72), STATIC_BCRYPT_SALT)
+            return bcrypt.hashSync(sha512HashBase64.substring(0, 72), STATIC_BCRYPT_SALT)
         })
-        return SHA512.bytes(STATIC_SALT + seedParts.reduce((a, c) => a + c))
+        return new Sha512().process(utils.stringtoUTF8Array(STATIC_SALT + seedParts.reduce((a, c) => a + c))).finish().result
     }
 
     async logOut () {
@@ -96,7 +108,7 @@ class LoginHandler extends Polymer.Element {
 
     async decryptEncryptedSeed (encryptedSeed, password) {
         const encryptedSeedBytes = Base58.decode(encryptedSeed.encryptedSeed)
-        const salt = Base58.decode(eEncryptedSeed.salt)
+        const salt = Base58.decode(encryptedSeed.salt)
         const iv = Base58.decode(encryptedSeed.iv)
 
         // const key = PBKDF2_HMAC_SHA512.bytes(utils.stringtoUTF8Array(this.unlockSeedPassword), salt, this.selectedEncryptedSeed.pbkdf2Rounds, 64)
@@ -104,7 +116,7 @@ class LoginHandler extends Polymer.Element {
         const encryptionKey = key.slice(0, 32)
         const macKey = key.slice(32, 63)
 
-        const mac = HMAC_SHA512.bytes(encryptedSeedBytes, macKey)
+        const mac = HmacSha512.bytes(encryptedSeedBytes, macKey)
         if (Base58.encode(mac) != this.selectedEncryptedSeed.mac) {
             throw new Error('Incorrect password')
         }
@@ -125,7 +137,7 @@ class LoginHandler extends Polymer.Element {
         const macKey = key.slice(32, 63)
 
         const encryptedSeed = AES_CBC.encrypt(seed, encryptionKey, false, iv)
-        const mac = HMAC_SHA512.bytes(encryptedSeed, macKey)
+        const mac = HmacSha512.bytes(encryptedSeed, macKey)
 
         // Store everything base58 encoded for consistency...except for the name. That'd be pointless
         this.push("encryptedSeeds", {

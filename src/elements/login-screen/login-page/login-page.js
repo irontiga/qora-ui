@@ -16,7 +16,7 @@ class LoginPage extends Polymer.Element {
             loggedIn : {
                 type : Boolean,
                 notify: true,
-                value: false
+                observer: "loggedInObserver"
             },
             config: {
                 type: Object,
@@ -64,10 +64,7 @@ class LoginPage extends Polymer.Element {
                 type: Array,
                 value: [],
                 notify: true
-            },
-            // addressColors: {
-            //     type: Array
-            // }
+            }
         }
     }
 
@@ -94,27 +91,36 @@ class LoginPage extends Polymer.Element {
     }
     
     logOut(){
-        this.seed = ""
-        this.wallet = {}
-        this.loggedIn = false
-        this.generationSeed = ""
-        this.passphrase = ""
-        this.password = ""
-        this.name = ""
-        this.unlockSeedPassword = ""
-        this.rememberMe = false
-        this.errorMessage = ""
-        this.loading = false
+        this.loggedIn = false // Triggers loggedInObserver
     }
 
-    _encryptedSeedsExist(){
-        return this.encryptedSeeds.length != 0
+    loggedInObserver (loggedIn) {
+        if (loggedIn) {
+            /**
+             * LOGGED IN
+             */
+
+        } else {
+            /**
+             * LOGGED OUT
+             */
+            this.wallet = {}
+            this.generationSeed = ""
+            this.passphrase = ""
+            this.password = ""
+            this.name = ""
+            this.unlockSeedPassword = ""
+            this.rememberMe = false
+            this.errorMessage = ""
+
+            // this.seed = ""
+            // this.loading = false
+        }
     }
     
     _deleteEncryptedSeed(e){
-        console.log(e.model.item)
-        console.log(e.model.index)
-        this.splice("encryptedSeeds", e.model.index, 1)
+        // this.splice("encryptedSeeds", e.model.index, 1)
+        this.loginHandler.deleteEncryptedSeed(e.model.index)
     }
 
     _equals(a, b){
@@ -151,141 +157,118 @@ class LoginPage extends Polymer.Element {
             this._loginClick();
         }
     }
-    _loginClick(){
-        setTimeout(() => this._loginClickHandler(), 1)
-    }
-    _loginClickHandler() {
+    
+    // _loginClick(){
+    //     setTimeout(() => this._loginClickHandler(), 1)
+    // }
+
+    //_loginClickHandler() {
+    async _loginClick() {
         this.loading = true;
+
+        let seed, walletVersion
         
-        // use promises idiot
-        setTimeout(() => {
-            try {
-                switch (this.loginType) {
-                    case "passphrase":
-                        const passphrase = this.passphrase
-                        if (passphrase == undefined || passphrase.length == 0) {
-                            this.loading = false
-                            return
-                        }
+        try {
+            switch (this.loginType) {
+                case "passphrase":
+                    const passphrase = this.passphrase
+                    if (passphrase == undefined || passphrase.length == 0) throw new Error('No passphrase')
 
-                        // Let's change to Sha512(Bcrypt(Sha512(Passphrase + nonce)) * 8)
-                        // const passphraseSeed = PBKDF2_HMAC_SHA512.bytes(utils.stringtoUTF8Array(passphrase), STATIC_SALT, PBKDF2_ROUNDS, 64);
-                        const nonces = Array.from(Array(KDF_THREADS).keys())
-                        seedPieces = nonces.map(nonce => {
-                            return SHA512(nonce + passphrase + nonce)
-                        })
-                        console.log(passphraseSeed)
-                        this.login(new PhraseWallet(passphraseSeed, 2))
-
-                        if (this.rememberMe) {
-                            this._remember(passphraseSeed, 2)
-                        }
-
-                        break;
-                    case "seed":
-                        const seedBytes = Base58.decode(this.generationSeed)
-                        this.login(new PhraseWallet(seedBytes, 1))
-
-                        if (this.rememberMe) {
-                            this._remember(seedBytes, 1)
-                        }
-
-                        break;
-                    case "existingSeed":
-
-                        const encryptedSeedBytes = Base58.decode(this.selectedEncryptedSeed.encryptedSeed)
-                        const salt = Base58.decode(this.selectedEncryptedSeed.salt)
-                        const iv = Base58.decode(this.selectedEncryptedSeed.iv)
-
-                        const key = PBKDF2_HMAC_SHA512.bytes(utils.stringtoUTF8Array(this.unlockSeedPassword), salt, this.selectedEncryptedSeed.pbkdf2Rounds, 64)
-                        const encryptionKey = key.slice(0, 32)
-                        const macKey = key.slice(32, 63)
-
-                        const mac = HMAC_SHA512.bytes(encryptedSeedBytes, macKey)
-                        if (Base58.encode(mac) != this.selectedEncryptedSeed.mac) {
-                            throw "Incorrect password"
-                            return
-                        }
-
-                        const decryptedBytes = AES_CBC.decrypt(encryptedSeedBytes, encryptionKey, false, iv)
-                        console.log(this.selectedEncryptedSeed)
-                        this.login(new PhraseWallet(decryptedBytes, this.selectedEncryptedSeed.version))
-
-                        break;
-                }
+                    seed = await this.loginHandler.kdf(passphrase)
+                    walletVersion = 2
+                    break;
+                case "seed":
+                    seed = Base58.decode(this.generationSeed)
+                    walletVersion = 1
+                    break;
+                case "existingSeed":
+                    seed = await this.loginHandler.decryptEncryptedSeed(this.selectedEncryptedSeed, this.unlockSeedPassword)
+                    walletVersion = this.selectedEncryptedSeed.version
+                    break;
             }
-            catch(e){
-                this.errorMessage = e
-                this.loading = false
+
+            const wallet = this.loginHandler.newWallet(seed, walletVersion)
+            this.loginHandler.login(wallet)
+
+            if (this.rememberMe && this.loginType !== 'existingSeed') {
+                // this._remember(passphraseSeed, 2)
+                this.loginHandler.saveSeed(seed, walletVersion, this.name, this.password)
             }
-        }, 0)
-        
-        
-    }
-    
-    _remember(seed, version){
-        let iv = new Uint8Array(16)
-        getRandomValues(iv)
-        let salt = new Uint8Array(32)
-        getRandomValues(salt)
-
-        const key = PBKDF2_HMAC_SHA512.bytes(utils.stringtoUTF8Array(this.password), salt, PBKDF2_ROUNDS, 64) // 512bit key to be split in two for mac/encryption
-        const encryptionKey = key.slice(0, 32)
-        const macKey = key.slice(32, 63)
-        
-        const encryptedSeed = AES_CBC.encrypt(seed, encryptionKey, false, iv)
-        const mac = HMAC_SHA512.bytes(encryptedSeed, macKey)
-
-        // Store everything base58 encoded for consistency...except for the name. That'd be pointless
-        this.push("encryptedSeeds", {
-            name: this.name,
-            encryptedSeed: Base58.encode(encryptedSeed),
-            salt: Base58.encode(salt),
-            iv: Base58.encode(iv),
-            version: version,
-            mac: Base58.encode(mac),
-            pbkdf2Rounds: PBKDF2_ROUNDS // Store it so that this number can be increased at any time
-        })
-    }
-    
-    login(wallet){
-        // Seed has already gone thorough pbkdf2 and is threrefor 32bytes OR is is a qora generation seed 32 bytes (44chars but base58)
-        
-        this.wallet = wallet;
-        console.log(this.wallet)
-        
-        for (let i = 0; i < this.config.addressCount; i++) {
-            this.wallet.genAddress(i);
         }
-        
-        this.addresses = []
-        this.addresses = this.wallet.addresses.map(address =>  {
-            address.color = this.config.addressColors[address.nonce % this.config.addressColors.length]
-            
-            const hexSplit = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(address.color)
-            const rgb = hexSplit.map(color => {
-                return parseInt(color, 16)/255
-            }).map(color => {
-                return color <= 0.03928 ? color / 12.92 : Math.pow( ( color + 0.055 ) / 1.055, 2.4)
-            })
-            const luminance = 0.2126 * rgb[1] + 0.7152 * rgb[2] + 0.0722 * rgb[3]
-
-            address.textColor = luminance > 0.179 ? "dark" : "light"
-
-
-            return address;
-            /*
-        return {
-            address: address,
-            color: this.addressColors[index % this.addressColors.length],
-            index: index
-        }*/
-        });
-         
-        this.loading = false
-        this.loggedIn = true
-        console.log(this.loggedIn)
+        catch (e) {
+            this.errorMessage = e
+            this.loading = false
+            throw new Error(e) // Rejects promise
+        }
     }
+    
+    // _remember(seed, version){
+    //     let iv = new Uint8Array(16)
+    //     getRandomValues(iv)
+    //     let salt = new Uint8Array(32)
+    //     getRandomValues(salt)
+
+    //     const key = PBKDF2_HMAC_SHA512.bytes(utils.stringtoUTF8Array(this.password), salt, PBKDF2_ROUNDS, 64) // 512bit key to be split in two for mac/encryption
+    //     const encryptionKey = key.slice(0, 32)
+    //     const macKey = key.slice(32, 63)
+        
+    //     const encryptedSeed = AES_CBC.encrypt(seed, encryptionKey, false, iv)
+    //     const mac = HMAC_SHA512.bytes(encryptedSeed, macKey)
+
+    //     // Store everything base58 encoded for consistency...except for the name. That'd be pointless
+    //     this.push("encryptedSeeds", {
+    //         name: this.name,
+    //         encryptedSeed: Base58.encode(encryptedSeed),
+    //         salt: Base58.encode(salt),
+    //         iv: Base58.encode(iv),
+    //         version: version,
+    //         mac: Base58.encode(mac),
+    //         pbkdf2Rounds: PBKDF2_ROUNDS // Store it so that this number can be increased at any time
+    //     })
+    // }
+    
+    // login(wallet){
+    //     // Seed has already gone thorough pbkdf2 and is threrefor 32bytes OR is is a qora generation seed 32 bytes (44chars but base58)
+        
+    //     this.wallet = wallet;
+    //     console.log(this.wallet)
+        
+    //     for (let i = 0; i < this.config.addressCount; i++) {
+    //         this.wallet.genAddress(i);
+    //     }
+        
+    //     this.addresses = []
+    //     this.addresses = this.wallet.addresses.map(address =>  {
+    //         address.color = this.config.addressColors[address.nonce % this.config.addressColors.length]
+            
+    //         const hexSplit = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(address.color)
+    //         const rgb = hexSplit.map(color => {
+    //             return parseInt(color, 16)/255
+    //         }).map(color => {
+    //             return color <= 0.03928 ? color / 12.92 : Math.pow( ( color + 0.055 ) / 1.055, 2.4)
+    //         })
+    //         const luminance = 0.2126 * rgb[1] + 0.7152 * rgb[2] + 0.0722 * rgb[3]
+
+    //         address.textColor = luminance > 0.179 ? "dark" : "light"
+
+
+    //         return address;
+    //         /*
+    //     return {
+    //         address: address,
+    //         color: this.addressColors[index % this.addressColors.length],
+    //         index: index
+    //     }*/
+    //     });
+         
+    //     this.loading = false
+    //     this.loggedIn = true
+    //     console.log(this.loggedIn)
+    // }
+
+    // _encryptedSeedsExist(){
+    //     return this.encryptedSeeds.length != 0
+    // }
 
 }
 
