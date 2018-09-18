@@ -18,7 +18,7 @@
             }
         </style>
         
-        <iframe id="modalFrame" security="restricted" sandbox="allow-scripts allow-same-origin" src="{{_frameUrl(item)}}" style$="height:{{frameSize.height}}; width: {{frameSize.width}};"></iframe>
+        <iframe id="modalFrame" security="restricted" sandbox="allow-scripts allow-same-origin" src="{{_frameUrl(item, config)}}" style$="height:{{frameSize.height}}; width: {{frameSize.width}};"></iframe>
         
     </template>
 
@@ -34,6 +34,7 @@
                     modalFrame: {
                         notify: true
                     },
+                    config: Object,
                     frameSize: {
                         type: Object,
                         value: {
@@ -53,11 +54,11 @@
                 this.modalFrame = this.shadowRoot.querySelector("#modalFrame");
             }
 
-            _frameUrl(item){
+            _frameUrl(item, config){
                 if(!item.page){
                     return "about:blank";
                 }
-                return window.location.protocol + "//" + window.location.hostname + ":" + (parseInt(window.location.port) + 1) + "/plugins/" + item.page;
+                return window.location.protocol + "//" + config.plugins.domain + ":" + config.plugins.port + "/plugins/" + item.page;
             }
 
             closeModal (e) {
