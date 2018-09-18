@@ -29,7 +29,7 @@ function createWindow () {
         protocol: 'file:',
         slashes: true
     }))*/
-    
+    console.log(config)
     win.loadURL(url.format({
         pathname: config.primary.domain + ":" + config.primary.port + "/qora/" + config.plugins.default,
         protocol: config.primary.protocol + ":",

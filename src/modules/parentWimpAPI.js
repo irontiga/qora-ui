@@ -33,7 +33,7 @@ export default function parentWimpAPI(target){
             icon: req.icon,
             page: req.page,
             parent: parent
-        });
+        })
 
         // Dirty updating url array https://www.polymer-project.org/1.0/docs/devguide/model-data#array-mutation
         // let allUrls = App.urls;
@@ -47,10 +47,11 @@ export default function parentWimpAPI(target){
             return 0;
             // Throw some sort of error if they're the same...can't have two menus with the same name, too confusing.
         })
+        
         // App.urls = [];
-        App.urls = App.urls;
+        App.urls = App.urls.slice()
         //App.set('urls')
-        res();
+        res()
     });
 
     mainWimp.on("addMenuItem", (req, res) => {

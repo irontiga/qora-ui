@@ -5,7 +5,7 @@ Copyright 2017-2018 @ irontiga and vbcs (original developer)
 import Base58 from "./deps/Base58.js"
 import RIPEMD160 from "./deps/ripemd160.js"
 // import { SHA256, SHA512 } from "asmcrypto.js/asmcrypto.all.js"
-import { SHA256, SHA512 } from "asmcrypto.js/dist_es5/entry-export_all.js"
+import { Sha256, Sha512 } from "asmcrypto.js/dist_es5/entry-export_all.js"
 import nacl from "./deps/nacl-fast.js"
 import utils from "./deps/utils.js"
 import { ADDRESS_VERSION } from "./constants.js"
@@ -59,11 +59,17 @@ export default class PhraseWallet {
 
     // Some string, and amount of times to sha256 it
     _repeatSHA256(passphrase, hashes) {
-        let hash;
+        let hash = passphrase;
         for (let i = 0; i < hashes; i++) {
-            hash = SHA256.digest(passphrase);
+            hash = new Sha256().process(hash).finish().result
         }
         return hash;
+    }
+
+    _genAddressSeed (seed) {
+        let newSeed = new Sha512().process(seed).finish().result
+        newSeed = new Sha512().process(utils.appendBuffer(newSeed, seed)).finish().result
+        return newSeed
     }
 
     genAddress(nonce) {
@@ -79,31 +85,47 @@ export default class PhraseWallet {
         const nonceBytes = utils.int32ToBytes(nonce);
 
         let addrSeed = new Uint8Array();
-
+        console.log("Initial seed ", addrSeed)
         addrSeed = utils.appendBuffer(addrSeed, nonceBytes);
+        console.log("Seed after nonceBytes ", addrSeed)
         addrSeed = utils.appendBuffer(addrSeed, this._byteSeed);
+        console.log("Seed after nonce and seed ", addrSeed)
         addrSeed = utils.appendBuffer(addrSeed, nonceBytes);
+        console.log("Appended seed ", addrSeed)
         
         // Questionable advantage to sha256d...sha256(sha256(x) + x) does not increase collisions the way sha256d does. Really nitpicky though. Not that this seed is computed from the original seed (which went through (pbkdf2) so does it's generation does not need to be computationally expenise
         if(this._walletVersion == 1){
             // addrSeed = new SHA256.digest(SHA256.digest(addrSeed))
-            addrSeed = SHA256.bytes(SHA256.bytes(addrSeed))
+            // addrSeed = Sha256.bytes(Sha256.bytes(addrSeed))
+            addrSeed = new Sha512().process(
+                new Sha512()
+                .process(addrSeed)
+                .finish()
+                .result
+            ).finish()
+            .result
         } else {
             // addrSeed = new SHA256.digest(utils.appendBuffer(SHA256.digest(addrSeed), addrSeed))
             // Why not use sha512?
-            addrSeed = SHA512.bytes(utils.appendBuffer(SHA512.bytes(addrSeed), addrSeed)).slice(0, 32)
+            // addrSeed = Sha512.bytes(utils.appendBuffer(Sha512.bytes(addrSeed), addrSeed)).slice(0, 32)
+            // addrSeed = new Sha512().process(utils.stringtoUTF8Array(addrSeed)).finish().result
+            // Sha512.bytes(utils.appendBuffer(Sha512.bytes(addrSeed), addrSeed)).slice(0, 32)
+            addrSeed = this._genAddressSeed(addrSeed).slice(0, 32)
         }
 
+        console.log(addrSeed)
         const addrKeyPair = nacl.sign.keyPair.fromSeed(new Uint8Array(addrSeed));
 
-        const publicKeyHash = new RIPEMD160().digest(SHA256.bytes(addrKeyPair.publicKey));
+        // const publicKeyHash = new RIPEMD160().digest(Sha256.bytes(addrKeyPair.publicKey));
+        const publicKeyHash = new RIPEMD160().digest(new Sha256().process(addrKeyPair.publicKey).finish().result)
         
         let address = new Uint8Array();
 
-        address = utils.appendBuffer(address, [ADDRESS_VERSION]);
-        address = utils.appendBuffer(address, publicKeyHash);
+        address = utils.appendBuffer(address, [ADDRESS_VERSION])
+        address = utils.appendBuffer(address, publicKeyHash)
         
-        const checkSum = SHA256.bytes(SHA256.bytes(address));
+        // const checkSum = Sha256.bytes(Sha256.bytes(address))
+        const checkSum = this._repeatSHA256(address, 2)
 
         address = utils.appendBuffer(address, checkSum.subarray(0, 4));
         // Turn it into a string

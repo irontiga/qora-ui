@@ -20,7 +20,8 @@ function doToast(){
         App.set("toast", item.req) 
         App.set("toast.res", item.res)
         
-        App.$.toastElement.open()
+        // IT'LL OPEN BUT NOT CLOSE WHATTTT
+        //App.$.toastElement.open()
         // 3 seconds per toast
         setTimeout(() => {
             App.$.toastElement.close()

@@ -7,6 +7,7 @@
                 padding:0 !important;
                 margin:0 !important;
                 display: inherit;
+                background: #fff;
             }
             iframe {
                 max-width:calc(100vw - 120px);
@@ -16,7 +17,7 @@
                 margin:0;
             }
         </style>
-
+        
         <iframe id="modalFrame" security="restricted" sandbox="allow-scripts allow-same-origin" src="{{_frameUrl(item)}}" style$="height:{{frameSize.height}}; width: {{frameSize.width}};"></iframe>
         
     </template>
@@ -57,6 +58,10 @@
                     return "about:blank";
                 }
                 return window.location.protocol + "//" + window.location.hostname + ":" + (parseInt(window.location.port) + 1) + "/plugins/" + item.page;
+            }
+
+            closeModal (e) {
+                this.modalFrame.close()
             }
             
             ready(){

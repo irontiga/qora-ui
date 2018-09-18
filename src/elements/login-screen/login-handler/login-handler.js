@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs'
 // import * as asmCrypto from "asmcrypto.js/asmcrypto.all.js"
 // import { PBKDF2_HMAC_SHA512, HMAC_SHA512, getRandomValues as asmGetRandomValues, AES_CBC } from "asmcrypto.js/asmcrypto.all.js"
 import { HmacSha512, AES_CBC, Sha512, base64_to_bytes, bytes_to_base64 } from "asmcrypto.js/dist_es5/entry-export_all.js"
-
+window.Sha512 = Sha512
 const getRandomValues = window.crypto ? window.crypto.getRandomValues.bind(window.crypto) : window.msCrypto.getRandomValues.bind(window.msCrypto)
 
 // const sha512Test = new Sha512()
@@ -92,7 +92,7 @@ class LoginHandler extends Polymer.Element {
         const seedParts = nonces.map(nonce => {
             const sha512Hash = new Sha512().process(utils.stringtoUTF8Array(STATIC_SALT + key + nonce)).finish().result
             const sha512HashBase64 = bytes_to_base64(sha512Hash)
-            console.log(sha512Hash, sha512HashBase64)
+            // console.log(sha512Hash, sha512HashBase64)
             // const sha512Hash = Sha512.base64(STATIC_SALT + key + nonce) // base64, no 00xF starting bytes
             // Truncate sha512 output to 72 characters
             return bcrypt.hashSync(sha512HashBase64.substring(0, 72), STATIC_BCRYPT_SALT)
@@ -116,8 +116,9 @@ class LoginHandler extends Polymer.Element {
         const encryptionKey = key.slice(0, 32)
         const macKey = key.slice(32, 63)
 
-        const mac = HmacSha512.bytes(encryptedSeedBytes, macKey)
-        if (Base58.encode(mac) != this.selectedEncryptedSeed.mac) {
+        const mac = new HmacSha512(macKey).process(encryptedSeedBytes).finish().result
+        // const mac = HmacSha512.bytes(encryptedSeedBytes, macKey)
+        if (Base58.encode(mac) != encryptedSeed.mac) {
             throw new Error('Incorrect password')
         }
 
@@ -137,7 +138,8 @@ class LoginHandler extends Polymer.Element {
         const macKey = key.slice(32, 63)
 
         const encryptedSeed = AES_CBC.encrypt(seed, encryptionKey, false, iv)
-        const mac = HmacSha512.bytes(encryptedSeed, macKey)
+        // const mac = HmacSha512.bytes(encryptedSeed, macKey)
+        const mac = new HmacSha512(macKey).process(encryptedSeed).finish().result
 
         // Store everything base58 encoded for consistency...except for the name. That'd be pointless
         this.push("encryptedSeeds", {
@@ -155,6 +157,7 @@ class LoginHandler extends Polymer.Element {
         this.wallet = wallet
 
         for (let i = 0; i < this.config.addressCount; i++) {
+            console.log("CCCONNNFFFIIGGG", this.config)
             this.wallet.genAddress(i);
         }
 

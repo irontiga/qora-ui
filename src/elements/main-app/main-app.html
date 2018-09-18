@@ -130,6 +130,17 @@
                     line-height: 31.5px;
                     cursor: text;
                 }
+
+                .close-dialog-button-container {
+                    position:absolute;
+                    top:-64px;
+                    padding:0;
+                    right: 0;
+                }
+                .close-dialog-button-container paper-icon-button{
+                    background:transparent;
+                    color:#fff;
+                }
             </style>
         </custom-style>
         
@@ -221,7 +232,13 @@
                             
                             <paper-icon-button icon="menu" drawer-toggle onclick="_toggleDrawer" class="show-only-mobile"></paper-icon-button>
                             
-                            <div main-title><span class="qora-title">Qora | </span> {{activeUrl.title}} <small><i>{{route.path}}#{{hashRoute.path}}</i></small></div>
+                            <div main-title>
+                                <span class="qora-title">
+                                    <!-- Qora |  -->
+                                </span> {{activeUrl.title}} <small>
+                                    <!-- <i>{{route.path}}#{{hashRoute.path}}</i> -->
+                                </small>
+                            </div>
 
                             <template is="dom-repeat" items="{{topMenuItems}}">
                                 <paper-button style="font-size:16px; height:40px;" on-tap="_openTopMenuModal">{{item.text}}&nbsp;<iron-icon icon="{{item.icon}}"></iron-icon></paper-button>
@@ -242,13 +259,20 @@
             
             
             <!-- TOP MENU DIALOG -->
-            <paper-dialog with-backdrop id="topMenuDialog">
+            <paper-dialog with-backdrop id="topMenuDialog" style="background: transparent">
+                <div class="close-dialog-button-container">
+                    <paper-icon-button class="close-dialog-button" icon="icons:close" on-tap="closeTopMenuModal"></paper-icon-button>
+                </div>
+                
                 <show-modal modal-frame="{{modalFrame}}" item="{{selectedModal}}" frame-size="{{modalFrameSize}}"></show-modal>
             </paper-dialog>
             <!-- -->
             
             <!-- SETTINGS -->
             <paper-dialog with-backdrop id="settingsDialog">
+                <div class="close-dialog-button-container">
+                    <paper-icon-button class="close-dialog-button" icon="icons:close" on-tap="closeSettingsModal"></paper-icon-button>
+                </div>
                 <settings-menu style="width: 400px; height:400px; max-width: 100%; max-height: 100%;" config="{{config}}" qora-node="{{qoraNode}}" address-colors="{{addressColors}}" address-count="{{addressCount}}"></settings-menu>
             </paper-dialog>
             <!-- -->
@@ -275,14 +299,16 @@
                 </div>
             </paper-dialog>
             
-            <paper-toast id="toastElement" text="" style="z-index:10000; top:80%;">
+
+            <!--  style="z-index:10000; top:80%;" -->
+            <paper-toast id="toastElement" text="" opened="{{toastOpened}}">
                 <div class="layout horizontal">
                     <marked-element markdown="{{toast.text}}">
                         <div slot="markdown-html"></div>
                     </marked-element>
                     <!-- <span class="flex" style="line-height:31.5px"></span> -->
-                    <paper-button onclick="_toastClick()" hidden$="{{!toast.action}}">{{toast.action}}</paper-button>
-                    <paper-button onclick="_closeToast()" hidden$="{{toast.action}}">Close</paper-button>
+                    <paper-button on-tap="_toastClick()" hidden$="{{!toast.action}}">{{toast.action}}</paper-button>
+                    <paper-button on-tap="_closeToast()" hidden$="{{toast.action}}">Close</paper-button>
                 </div>
                 
             </paper-toast>

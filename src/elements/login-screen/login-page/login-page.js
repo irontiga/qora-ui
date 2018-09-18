@@ -95,6 +95,7 @@ class LoginPage extends Polymer.Element {
     }
 
     loggedInObserver (loggedIn) {
+        console.log(loggedIn)
         if (loggedIn) {
             /**
              * LOGGED IN
@@ -198,7 +199,7 @@ class LoginPage extends Polymer.Element {
         catch (e) {
             this.errorMessage = e
             this.loading = false
-            throw new Error(e) // Rejects promise
+            throw e // Rejects promise
         }
     }
     

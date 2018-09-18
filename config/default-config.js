@@ -4,13 +4,15 @@ const config = {
         port: 9080, // Port to access the Qora UI from
         directory: "./src/", // Core Qora-lite code.,
         page404: "./src/404.html",
-        protocol: "http"
+        protocol: "http",
+        host: "0.0.0.0"
     },
     plugins: {
         domain: "127.0.0.1",
         port: 9081, // Port for plugins to be loaded from. User will never interact with this port
         directory: "./plugins", // Where the plugin folders are stored,
-        default: "wallet"
+        default: "wallet",
+        host: "0.0.0.0"
     },
     icon: "./src/img/icon.png",
     addressColors: [

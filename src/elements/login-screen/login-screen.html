@@ -38,7 +38,7 @@
             </style>
         </custom-style>
 
-        <login-handler id="loginHandler" logged-in="{{loggedIn}}" loading="{{loading}}"" wallet="{{wallet}}" config="{{config}}" addresses="{{addresses}}"></login-handler>
+        <login-handler id="loginHandler" logged-in="{{loggedIn}}" loading="{{loading}}" wallet="{{wallet}}" config="{{config}}" addresses="{{addresses}}"></login-handler>
 
         <div class="layout vertical center-justified" style="height:100%;" id="container">
             <div class="layout horizontal center-justified">
@@ -49,12 +49,12 @@
                     
                     <div page="new-account">
                         <paper-icon-button icon="icons:arrow-back" on-tap="_backToWelcome"></paper-icon-button><br>
-                        <create-account-page></create-account-page>
+                        <create-account-page id="create-account-page" login-handler="{{loginHandler}}" loading="{{loading}}"></create-account-page>
                     </div>
                     
                     <div page="login">
                         <paper-icon-button icon="icons:arrow-back" on-tap="_backToWelcome"></paper-icon-button><br>
-                        <login-page login-handler="{{loginHandler}}" id="login-page" config="{{config}}" logged-in="{{loggedIn}}"></login-page>
+                        <login-page id="login-page" login-handler="{{loginHandler}}" config="{{config}}" logged-in="{{loggedIn}}" loading="{{loading}}"></login-page>
                     </div>
                 </iron-pages>
                 

@@ -114,7 +114,7 @@
                     <h3 style="margin:0; padding:8px 0;">Send money</h3>
                     
                     <div class="selectedBalance">
-                        <span class="balance">{{address.balance}} </span>Qora available for transfer from <span style$="color: {{selectedAddress.color}}">{{address.address}}</span>
+                        <span class="balance">{{address.balance}} </span>Karma available for transfer from <span style$="color: {{selectedAddress.color}}">{{address.address}}</span>
                     </div>
                 </div>
                 
@@ -283,6 +283,7 @@
 
                     this.coreWimp.ready(() => {
                         this.coreWimp.listen("balances", balances => {
+                            console.log("=== BALANCESSS ===")
                             this.addresses = balances;
                             console.log(balances)
                             
@@ -290,6 +291,7 @@
                                 this.resize();
                             }
                             
+                            // Preselect an address...
                             this.selectedAddress = this.selectedAddress || this.addresses[this.data.index ? this.data.index : 0]
                             
                         });
@@ -302,6 +304,7 @@
                         
                         this.parentWimp.listen("Selected address", address => {
                             console.log(address)
+                            this.address = {}
                             this.address = address
                         })
                     })

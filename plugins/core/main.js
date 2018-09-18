@@ -22,7 +22,7 @@ parentWimp.request("registerTopMenuModal", {
     data: {
         icon: "send",
         page: "core/wallet/send-money.html",
-        text: "Send Qora"
+        text: "Send Karma"
     }
 }, response => {
     //console.log(response);

@@ -1,7 +1,7 @@
 let config = require("./default-config.js")
 let userConfig = {}
 try{
-    userConfig = require("./default-config.js")
+    userConfig = require("./config.js")
 } catch(e){
     console.warn("Error loading user config")
 }

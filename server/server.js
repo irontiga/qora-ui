@@ -6,8 +6,8 @@ const pluginRoutes = require('./routes/pluginRoutes.js')
 //const QORA_CONFIG = require("../config.js")
 const config = require("../config/config-loader.js")
 
-
-primaryServer = new serverFactory(primaryRoutes, config.primary.domain, config.primary.port)
+console.log(config.primary.host)
+primaryServer = new serverFactory(primaryRoutes, config.primary.host, config.primary.port)
 primaryServer.startServer()
     .then(server => {
     console.log(`Primary server started at ${server.info.uri} and listening on ${server.info.address}`)
@@ -17,7 +17,7 @@ primaryServer.startServer()
 })
 
 
-pluginServer = new serverFactory(pluginRoutes, config.plugins.domain, config.plugins.port)
+pluginServer = new serverFactory(pluginRoutes, config.plugins.host, config.plugins.port)
 pluginServer.startServer()
     .then(server => {
     console.log(`Plugin server started at ${server.info.uri} and listening on ${server.info.address}`)

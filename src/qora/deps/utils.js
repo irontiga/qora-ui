@@ -28,7 +28,6 @@ const utils = {
         return tmp;
     },
     
-
     int64ToBytes (int64) {
         // we want to represent the input as a 8-bytes array
         var byteArray = [0, 0, 0, 0, 0, 0, 0, 0];

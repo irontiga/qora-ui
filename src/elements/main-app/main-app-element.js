@@ -146,6 +146,7 @@ export default class MainApp extends Polymer.Element {
 
     _getActiveUrl(routeData, urls) {
         const activeUrl = routeData.currentPluginUrl
+        console.log(activeUrl)
         let activePlugin = {
             url: "404",
             title: "404",
@@ -153,7 +154,6 @@ export default class MainApp extends Polymer.Element {
             page: "404",
             parent: false
         }
-
         for (let i = 0; i < urls.length; i++) {
             if (activeUrl == urls[i].url) {
                 activePlugin = urls[i]
@@ -214,6 +214,13 @@ export default class MainApp extends Polymer.Element {
         }
         
         this.$.topMenuDialog.toggle()
+    }
+
+    closeTopMenuModal (e) {
+        this.$.topMenuDialog.close()
+    }
+    closeSettingsModal (e) {
+        this.$.settingsDialog.close()
     }
     
     textColor(color){
@@ -375,8 +382,14 @@ export default class MainApp extends Polymer.Element {
     _toastClick(){
         this.toast.res()
     }
-    _closeToast(){
+
+    _closeToast(e){
         this.$.toastElement.close()
+        this.toastOpened = false
+        console.log("TRYING TO CLOSE ", this.$.toastElement)
+
+        // const toastElement = this.$.querySelector("#toastElement")
+        // toastElement.close()
     }
 
 }

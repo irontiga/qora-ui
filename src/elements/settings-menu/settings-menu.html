@@ -32,7 +32,7 @@
         
         <div class="layout horizontal" style="height:100%;">
             
-            <paper-material elevation="1" style="height: 100%;" >
+            <paper-material elevation="1" style="height: 100%; min-height:100%;" >
                 <paper-listbox selected="{{selectedSetting}}" attr-for-selected="setting">
                     <paper-item setting="qora-node">
                         Qora node
@@ -49,14 +49,14 @@
             <div style="padding:8px;  overflow: auto">
                 <iron-pages selected="{{selectedSetting}}" attr-for-selected="setting" style="width:100%;">
                     <div setting="qora-node">
-                        <paper-input label="Explorer URL" type="text" value="{{config.qoraNode.explorer.url}}" on-keydown="_loginKeyDown"></paper-input>
-                        <paper-input label="API URL" type="text" value="{{config.qoraNode.api.url}}" on-keydown="_loginKeyDown"></paper-input>
+                        <paper-input label="Explorer URL" type="text" value="{{config.qoraNode.explorer.url}}"></paper-input>
+                        <paper-input label="API URL" type="text" value="{{config.qoraNode.api.url}}"></paper-input>
                     </div>
                     <div setting="addresses" style="width:auto;height:100%;">
                         <small>Please log out and log back in to apply changes</small>
                         
                         <!-- GET RID OF IT -->
-                        <paper-input label="Number of addresses" type="number" value="{{config.addressCount}}" on-keydown="_loginKeyDown"></paper-input>
+                        <paper-input label="Number of addresses" type="number" value="{{config.addressCount}}"></paper-input>
                         
                         <template is="dom-repeat" items="{{config.addressColors}}">
                             <div style="display:inline-block">

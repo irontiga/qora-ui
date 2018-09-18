@@ -1,10 +1,10 @@
 // import { WORDLIST } from "../../../wordlist.js"
 
 class CreateAccountPage extends Polymer.Element {
-    static get is() {
+    static get is () {
         return "create-account-page";
     }
-    static get properties() {
+    static get properties () {
         return {
             generatedPassphrase: {
                 type: String,
@@ -17,48 +17,53 @@ class CreateAccountPage extends Polymer.Element {
             passphraseVisibilityIcon: {
                 type: String,
                 value: "icons:visibility-off"
+            },
+            loginHandler: {
+                type: Object
             }
         }
     }
-    constructor() {
+
+    constructor () {
         super()
         this.crypto = window.crypto || window.msCrytpo
     }
-    connectedCallback() {
+
+    connectedCallback () {
         super.connectedCallback()
     }
-    ready() {
+
+    ready () {
         super.ready()
         // this.generatedPassphrase = this.generatePassphrase()
     }
 
-    _regeneratePassphrase(){
+    _regeneratePassphrase () {
         this.generatedPassphrase = this.generatePassphrase()
     }
-    togglePassphraseVisibility() {
+
+    togglePassphraseVisibility () {
         this.passphraseInputType = this.passphraseInputType === "password" ? "text" : "password";
         this.passphraseVisibilityIcon = this.passphraseInputType === "password" ? "icons:visibility-off" : "icons:visibility"
     }
 
+    _createClick (e) {
+        this.login()
+    }
 
-    create(){
+    async login () {
         const passphrase = this.passphrase
-        if (passphrase == undefined || passphrase.length == 0) {
-            this.loading = false
-            return
-        }
+        if (passphrase == undefined || passphrase.length == 0) throw new Error('No passphrase')
 
-        // Let's change to Sha512(Bcrypt(Sha512(Passphrase + nonce)) * 8)
-        // const passphraseSeed = PBKDF2_HMAC_SHA512.bytes(utils.stringtoUTF8Array(passphrase), STATIC_SALT, PBKDF2_ROUNDS, 64);
-        const nonces = Array.from(Array(KDF_THREADS).keys())
-        seedPieces = nonces.map(nonce => {
-            return SHA512(nonce + passphrase + nonce)
-        })
-        console.log(passphraseSeed)
-        this.login(new PhraseWallet(passphraseSeed, 2))
+        const seed = await this.loginHandler.kdf(passphrase)
+        const walletVersion = 2
+        
+        const wallet = this.loginHandler.newWallet(seed, walletVersion)
+        this.loginHandler.login(wallet)
 
-        if (this.rememberMe) {
-            this._remember(passphraseSeed, 2)
+        if (this.rememberMe && this.loginType !== 'existingSeed') {
+            // this._remember(passphraseSeed, 2)
+            this.loginHandler.saveSeed(seed, walletVersion, this.name, this.password)
         }
     }
 }

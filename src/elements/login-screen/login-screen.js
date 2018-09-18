@@ -50,7 +50,10 @@ class LoginContainer extends Polymer.Element {
         this.loginHandler = this.$.loginHandler
     }
     logOut(){
-        this.$["login-page"].logOut()
+        // this.$["login-page"].logOut()
+        // this.$.loginHandler.loggedIn = false
+        this.loggedIn = false
+        this.selectedPage = "welcome"
     }
     _pageChange(newPage, oldPage){
         if(!this.shadowRoot.querySelector("#loginContainerPages") || !newPage){
