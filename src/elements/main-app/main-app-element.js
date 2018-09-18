@@ -352,9 +352,8 @@ export default class MainApp extends Polymer.Element {
     _loginObserver(){
         if(this.loggedIn != this.lastLoginState || this.loggedIn){
             this.selectedAddress = this.addresses[0]
-            console.log(this.wimps)
             for (const w in this.wimps ){
-                w.request("login", { expectResponse: false })
+                this.wimps[w].request("login", { expectResponse: false })
             }
         }
         this.lastLoginState = this.loggedIn
