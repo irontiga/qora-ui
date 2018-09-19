@@ -1,33 +1,17 @@
-# \<qora-ui\>
-
-
-
-## Install the Polymer-CLI
-
-First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your application locally.
-
-## Viewing Your Application
-
+## Installation
 ```
-$ polymer serve
+# git clone https://github.com/irontiga/qora-ui.git
+# npm install
+# bower install
+# npm run build
+# npm run server
 ```
 
-## Building Your Application
+## Config
+You can find a config file in config/config.js. Edit this based on default-config.js
 
+## Electron
 ```
-$ polymer build
+## npm start
 ```
-
-This will create builds of your application in the `build/` directory, optimized to be served in production. You can then serve the built versions by giving `polymer serve` a folder to serve from:
-
-```
-$ polymer serve build/default
-```
-
-## Running Tests
-
-```
-$ polymer test
-```
-
-Your application is already set up to be tested via [web-component-tester](https://github.com/Polymer/web-component-tester). Run `polymer test` to run your application's test suite locally.
+This will launch the wallet using electron on the local machine, as well as starting the server
