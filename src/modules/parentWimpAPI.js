@@ -5,16 +5,31 @@ import QoraAPI from "../qora/QoraAPI.js"
 import { TX_TYPES } from "../qora/constants.js"
 import toast from "./toast.js"
 
+const allWimps = []
+const windowSizeStreams = []
+
+window.addEventListener('resize', () => {
+    windowSizeStreams.forEach(stream => {
+        stream.emit(getWindowDimensions())
+    })
+})
+
+function getWindowDimensions() {
+    return {
+        y: window.innerHeight,
+        x: window.innerWidth
+    }
+}
+
 // Creates and returns a wimp with the api routes already listening
 
-export default function parentWimpAPI(target){
+export default function parentWimpAPI (target) {
     const mainWimp = new Wimp(target);
 
     mainWimp.on("hello", (req, res) => {
         console.info("Someone said hi!")
         res("Hello from Qora! :)");
     })
-
 
     mainWimp.on("pluginsLoaded", (req, res) => {
         App.pluginsLoaded = true;
@@ -119,7 +134,7 @@ export default function parentWimpAPI(target){
         }
         
         req.accept = () => {
-            console.log("ACCEPTER");
+            console.log("ACCEPTED");
             console.log(App.wallet.getAddress(req.nonce))
             const txBytes = QoraAPI.createTransaction(
                 req.type, 
@@ -159,6 +174,13 @@ export default function parentWimpAPI(target){
         });
     })
 
+    const windowSizeStream = mainWimp.createStream("windowSize", (req, res) => {
+        // In pixels
+        res(getWindowDimensions())
+    })
+    windowSizeStreams.push(windowSizeStream)
+
+    allWimps.push(mainWimp)
     return mainWimp;
 }
 

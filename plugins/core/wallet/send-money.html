@@ -48,7 +48,8 @@
                         overflow:hidden;
                     }
                     #sendMoneyWrapper > * {
-                        width: 400px !important;
+                        width: auto !important;
+                        /* 400px */
                         padding: 0 15px;
                     }
                     #sendMoneyWrapper paper-button{
@@ -57,6 +58,7 @@
                     #sendMoneyWrapper .buttons{
                         /* --paper-button-ink-color: var(--paper-green-500);
                         color: var(--paper-green-500); */
+                        width:auto !important;
                     }
                     .address-item {
                         --paper-item-focused: {
@@ -101,20 +103,20 @@
                     }
 
                     .selectedBalance .balance {
-                        font-size: 24px;
+                        font-size: 22px;
                         font-weight: 100;
                     }
                 </style>
             </custom-style>
             
-            <div id="sendMoneyWrapper">
+            <div id="sendMoneyWrapper" style$="max-width: {{maxWidth}}px !important; background:#fff;">
                 
                 <div style$="background-color: {{selectedAddress.color}}; padding:12px 15px; width:100%; margin:0; color: {{textColor(selectedAddress.textColor)}};">
 
                     <h3 style="margin:0; padding:8px 0;">Send money</h3>
                     
                     <div class="selectedBalance"> <!--  style$="color: {{selectedAddress.color}}" -->
-                        <span class="balance">{{selectedAddressInfo.balance.total.0}} </span>Karma available for transfer from <span>{{selectedAddress.address}}</span>
+                        <span class="balance">{{selectedAddressInfo.balance.total.0}} KMX</span> available for transfer from <span>{{selectedAddress.address}}</span>
                     </div>
                 </div>
                 
@@ -142,7 +144,7 @@
 
                 <!-- <paper-input label="Fee" type="text" value="{{fee}}"></paper-input> -->
 
-                <p>{{sendMoneyError}}</p>
+                <p style="color:red">{{errorMessage}}</p>
 
                 <div class="buttons">
                     <div>
@@ -178,7 +180,7 @@
                         amount: {
                             type: Number
                         },
-                        sendMoneyError: {
+                        errorMessage: {
                             type: String,
                             value: ""
                         },
@@ -202,6 +204,10 @@
                             type: Object,
                             value: {},
                             computed: "_getSelectedAddressInfo(addressesInfo, selectedAddress)"
+                        },
+                        maxWidth: {
+                            type: String,
+                            value: "600"
                         }
                     }
                 }
@@ -261,7 +267,9 @@
                         this.$.sendMoneyDialog.close();
                         console.log("Yay: ", response)
                     }).catch(err => {
-                        console.error("GRRR: ", err)
+                        this.errorMessage = "Payment request rejected"
+                        this.resize()
+                        // console.error("GRRR: ", err)
                     })
 //                    this.parentWimp.request("sendMoney", {
 //                        data: {
@@ -286,10 +294,10 @@
                     //this.$.sendMoneyDialog.close();
                 }
                 
-                resize(){
+                resize () {
                     this.parentWimp.request("modalFrameSize", {
                         data: {
-                            height: (document.body.scrollHeight + 6) + "px", // Plus height of floated buttons
+                            height: (document.body.scrollHeight + 12) + "px", // Plus height of floated buttons
                             width: document.body.scrollWidth + "px"
                         },
                         expectResponse: false
@@ -297,8 +305,6 @@
                 }
 
                 _getSelectedAddressInfo(addressesInfo, selectedAddress) {
-                    console.log(this.addressesInfo)
-                    console.log("Trying to set...", this.addressesInfo[selectedAddress.address], selectedAddress.address, addressesInfo)
                     return this.addressesInfo[selectedAddress.address]
                 }
                 
@@ -306,12 +312,20 @@
                     super.ready();
                     
                     // Communication with plugins/core/main.js. Uses window.parent as a proxy.
-                    this.coreWimp = new Wimp("core", window.parent);
+                    this.coreWimp = new Wimp("core", window.parent)
                     
-                    this.parentWimp = new Wimp(window.parent);
+                    this.parentWimp = new Wimp(window.parent)
 
                     this.parentWimp.ready(() => {
-                        this.resize();
+                        this.resize()
+
+                        this.parentWimp.listen("windowSize", dimensions => {
+                            console.log(dimensions)
+                            this.parentDimensions = dimensions
+                            this.maxWidth = this.parentDimensions.x - 120 // Gaps on sides....MAKE IT LESS
+                            this.maxHeight = 0.8 * this.parentDimensions.y
+                            this.resize()
+                        })
                         
                         this.parentWimp.listen("Selected address", selectedAddress => {
                             console.log(selectedAddress)
@@ -326,20 +340,19 @@
                                     const addressesInfoStore = this.addressesInfo
                                     this.addressesInfo = {}
                                     this.addressesInfo = addressesInfoStore
-                                    console.log(this.addressesInfo)
                                 })
                             })
                         })
                     })
                     
                     this.parentWimp.on("opened", req => {
-                        req = req || {};
+                        req = req || {}
                         console.log("Open with data ", req)
-                        this.data = req || this.data;
-                        this.selectedAddress = req.index ? this.addresses[req.index] : this.selectedAddress;
-                        this.amount = req.amount || this.amount;
-                        this.recipient = req.recipient || this.recipient;
-                        this.resize();
+                        this.data = req || this.data
+                        this.selectedAddress = req.index ? this.addresses[req.index] : this.selectedAddress
+                        this.amount = req.amount || this.amount
+                        this.recipient = req.recipient || this.recipient
+                        this.resize()
                     })
 
                     Wimp.init();
