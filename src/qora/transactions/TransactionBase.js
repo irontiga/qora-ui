@@ -50,12 +50,13 @@ export default class TransactionBase{
                 if(!(this._keyPair)){
                     return "keyPair must be specified"
                 }
-                if(!(this._keyPair.publicKey instanceof Uint8Array && this._keyPair.byteLength === 32)){
+                if(!(this._keyPair.publicKey instanceof Uint8Array && this._keyPair.publicKey.byteLength === 32)){
                     return "Invalid publicKey"
                 }
-                if(!(this._keyPair.privatyeKey instanceof Uint8Array && this._keyPair.byteLength === 64)){
+                if(!(this._keyPair.privateKey instanceof Uint8Array && this._keyPair.privateKey.byteLength === 64)){
                     return "Invalid privateKey"
                 }
+                return true
             }
         ]
     }
@@ -100,6 +101,7 @@ export default class TransactionBase{
         let finalResult = {
             valid: true
         }
+        // const valid = 
         this.tests.some(test => {
             const result = test()
             if(result !== true){
@@ -116,7 +118,9 @@ export default class TransactionBase{
     generateBase(){
         const isValid = this.validParams();
         if(!isValid.valid){
-            throw isValid.message
+            console.log("EERRORRR HEEEEERRREEE")
+            console.log(isValid)
+            throw new Error(isValid.message)
         }
         
         let result = new Uint8Array();
@@ -134,12 +138,13 @@ export default class TransactionBase{
         if(!this._keyPair){
             throw "keyPair not defined";
         }
+        console.log(this._keyPair)
         if(!this._base){
             this.generateBase();
         }
         this._signature = this.constructor.nacl.sign.detached(this._base, this._keyPair.privateKey);
         
-        this._signedBytes = this.constructor.utils.appendBuffer(this._base,this._signature);
+        this._signedBytes = this.constructor.utils.appendBuffer(this._base, this._signature);
         
         return this._signature;
     }

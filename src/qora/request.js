@@ -73,7 +73,8 @@ export default function request(options){
         else {
             xhttp.open(options.method, url, true);
             xhttp.setRequestHeader("Accept", "application/json")
-            xhttp.send(options.data);
+            console.log(options)
+            xhttp.send(options.data)
         }
     })
 }

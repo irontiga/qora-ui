@@ -8,7 +8,7 @@ export default class PaymentTransaction extends TransactionBase{
         this.type = 2
         this.tests.push(
             () => {
-                if(!this._amount >= 0){
+                if(!(this._amount >= 0)){
                     return "Invalid amount " + this._amount / QORA_DECIMALS
                 }
                 return true

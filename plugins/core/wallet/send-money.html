@@ -240,9 +240,9 @@
                     return color == 'light' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.87)'
                 }
 
-                _sendMoney(e) {
+                async _sendMoney(e) {
                     var address = this.selectedAddress;
-                    var amount = this.amount;
+                    var amount = this.amount * Math.pow(10, 8);
                     var recipient = this.recipient;
                     // var fee = this.fee
 
@@ -252,22 +252,33 @@
                     
                     console.log(this.selectedAddress)
 
+                    let lastRef = await this.parentWimp.request("qoraApiCall", {
+                        data: {
+                            type: "api",
+                            url: `addresses/lastreference/${this.selectedAddress.address}`
+                        }
+                    })
+                    lastRef = lastRef.data
+
                     this.parentWimp.request("createTransaction", {
                         data: {
                             type: 2,
                             nonce: this.selectedAddress.nonce,
                             params: {
                                 recipient,
-                                amount
+                                amount,
+                                lastReference: lastRef
                                 // ,
                                 // fee
                             }
                         }
                     }).then(response => {
-                        this.$.sendMoneyDialog.close();
+                        // this.$.sendMoneyDialog.close();
+                        // needs a parent wimp request to close it
                         console.log("Yay: ", response)
                     }).catch(err => {
-                        this.errorMessage = "Payment request rejected"
+                        console.log(err)
+                        this.errorMessage = err
                         this.resize()
                         // console.error("GRRR: ", err)
                     })

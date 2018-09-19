@@ -1,5 +1,6 @@
 import transactions from "./transactions/transactions.js"
 import request from "./request.js"
+import Base58 from './deps/Base58.js'
 
 const QoraAPI = (function(){
     
@@ -7,9 +8,10 @@ const QoraAPI = (function(){
         transactions: transactions,
         processTransaction: (bytes) => {
             return request({
-                url: "/transactions/process",
-                type: "POST",
-                data: bytes
+                url: "transactions/process",
+                method: "POST",
+                type: "api",
+                data: Base58.encode(bytes)
             })
         },
         request: {

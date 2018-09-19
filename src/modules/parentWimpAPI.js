@@ -134,7 +134,8 @@ export default function parentWimpAPI (target) {
         }
         
         req.accept = () => {
-            console.log("ACCEPTED");
+            console.log("ACCEPTED")
+            console.log(req.params)
             console.log(App.wallet.getAddress(req.nonce))
             const txBytes = QoraAPI.createTransaction(
                 req.type, 
