@@ -1,39 +1,17 @@
-// var parentWindow = new ParentHelper();
-// parentWindow.install(StreamHelper);
-
-Wimp.init();
-
-const parentWimp = new Wimp(window.parent);
-
-parentWimp.request("registerUrl", {
-    data: {
-        url: "wallet",
-        page: "core/wallet/index.html",
-        title: "Wallet",
-        icon: "credit-card",
-        menus: [],
-        parent: false
-    }
-}, response => {
-    //console.log(response);
-});
-
-parentWimp.request("registerTopMenuModal", {
-    data: {
-        icon: "send",
-        page: "core/wallet/send-money.html",
-        text: "Send Karma"
-    }
-}, response => {
-    //console.log(response);
-});
-
-/* ====================================
-Core streams
-==================================== */
-
-const streamScript = document.createElement("script");
-streamScript.type = "text/javascript";
-streamScript.async = false;
-streamScript.src = "/plugins/core/addressStream.js";
-document.body.appendChild(streamScript);
+!function(r){var e={};function n(s){if(e[s])return e[s].exports;var t=e[s]={i:s,l:!1,exports:{}};return r[s].call(t.exports,t,t.exports,n),t.l=!0,t.exports}n.m=r,n.c=e,n.d=function(r,e,s){n.o(r,e)||Object.defineProperty(r,e,{configurable:!1,enumerable:!0,get:s})},n.r=function(r){Object.defineProperty(r,"__esModule",{value:!0})},n.n=function(r){var e=r&&r.__esModule?function(){return r.default}:function(){return r};return n.d(e,"a",e),e},n.o=function(r,e){return Object.prototype.hasOwnProperty.call(r,e)},n.p="",n(n.s="./plugins/core/main-src.js")}({"./plugins/core/main-src.js":
+/*!**********************************!*\
+  !*** ./plugins/core/main-src.js ***!
+  \**********************************/
+/*! no exports provided */function(module,__webpack_exports__,__webpack_require__){"use strict";eval('__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _streams_StreamManager_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./streams/StreamManager.js */ "./plugins/core/streams/StreamManager.js");\n// Gets compiled into main.js\r\n\r\n\r\n\r\nWimp.init();\r\n\r\nconst parentWimp = new Wimp(window.parent);\r\n\r\nparentWimp.request("registerUrl", {\r\n    data: {\r\n        url: "wallet",\r\n        page: "core/wallet/index.html",\r\n        title: "Wallet",\r\n        icon: "credit-card",\r\n        menus: [],\r\n        parent: false\r\n    }\r\n}, response => {\r\n    //console.log(response);\r\n});\r\n\r\nparentWimp.request("registerTopMenuModal", {\r\n    data: {\r\n        icon: "send",\r\n        page: "core/wallet/send-money.html",\r\n        text: "Send Karma"\r\n    }\r\n}, response => {\r\n    //console.log(response);\r\n});\r\n\r\nconst streams = new _streams_StreamManager_js__WEBPACK_IMPORTED_MODULE_0__["default"](parentWimp)\r\n\r\n/* ====================================\r\nCore streams\r\n==================================== */\r\n\r\n\r\n\r\n\r\n\r\n\r\n// const streamScript = document.createElement("script");\r\n// streamScript.type = "text/javascript";\r\n// // streamScript.type = "module" // In the future :)\r\n// streamScript.async = false;\r\n// streamScript.src = "/plugins/core/addressStream.js";\r\n// document.body.appendChild(streamScript);\r\n\n\n//# sourceURL=webpack:///./plugins/core/main-src.js?')},"./plugins/core/streams/AddressWatcher.js":
+/*!************************************************!*\
+  !*** ./plugins/core/streams/AddressWatcher.js ***!
+  \************************************************/
+/*! exports provided: default */function(module,__webpack_exports__,__webpack_require__){"use strict";eval('__webpack_require__.r(__webpack_exports__);\nconst transactionTests = []\r\nconst blockTests = []\r\n\r\nconst DEFAULT_ADDRESS_INFO = {}\r\n\r\n\r\ntransactionTests.push((tx, addr) => {\r\n    return tx.recipient === addr || tx.sender === addr\r\n})\r\n\r\n\r\nblockTests.push((block, addr) => {\r\n    return block.generator === addr\r\n})\r\n\r\nclass AddressWatcher {\r\n    constructor (parentWimp, addresses) {\r\n        addresses = addresses || []\r\n        this._parentWimp = parentWimp\r\n        this._addresses = {}\r\n        this._addressStreams = {}\r\n\r\n        addresses.forEach(addr => this.addAddress(addr))\r\n    }\r\n\r\n    reset () {\r\n        this._addresses = {}\r\n        this._addressStreams = {}\r\n    }\r\n\r\n    // Adds an address to watch\r\n    addAddress (address) {\r\n        this._addresses[address.address] = address\r\n\r\n        this._addressStreams[address.address] = this._parentWimp.createStream(`address/${address.address}`, (req, res) => {\r\n            res(this._addresses[address.address])\r\n        })\r\n\r\n        this.updateAddress(address.address)\r\n    }\r\n\r\n    // Moved to inside of block test\r\n    // testTransaction (transaction) {\r\n        \r\n    // }\r\n\r\n    testBlock (block) {\r\n        const pendingUpdateAddresses = []\r\n\r\n        blockTests.forEach(fn => {\r\n\r\n        })\r\n\r\n        block.transactions.forEach(transaction => transactionTests.forEach(fn => {\r\n            // fn(transaction, Object.keys(this._addresses))\r\n            for (const addr of Object.keys(this._addresses)) {\r\n                const addrChanged = transactionTests.some(fn => {\r\n                    return fn(transaction, addr)\r\n                })\r\n                if (!addrChanged) return\r\n\r\n                if (!(addr in pendingUpdateAddresses)) pendingUpdateAddresses.push(addr)\r\n                /**\r\n                 * In the future transactions are potentially stored from here...and address is updated excluding transactions...and also somehow manage tx pages...\r\n                 * Probably will just make wallet etc. listen for address change and then do the api call itself. If tx. page is on, say, page 3...and there\'s a new transaction...\r\n                 * it will refresh, changing the "page" to have 1 extra transaction at the top and losing 1 at the bottom (pushed to next page)\r\n                 */\r\n            }\r\n        }))\r\n\r\n        pendingUpdateAddresses.forEach(addr => this.updateAddress(addr))\r\n    }\r\n\r\n    async updateAddress(addr) {\r\n        console.log("UPPPDDAAATTTINGGG AADDDRRR", addr)\r\n        const addressRequest = await this._parentWimp.request("qoraApiCall", {\r\n            data: {\r\n                type: "explorer",\r\n                data: {\r\n                    addr: addr,\r\n                    txOnPage: 10\r\n                }\r\n            }\r\n        })\r\n        console.log("response: ",addressRequest)\r\n\r\n        const addressInfo = addressRequest.success ? addressRequest.data : DEFAULT_ADDRESS_INFO\r\n        addressInfo.transactions = []\r\n\r\n        for (let i = addressInfo.start; i > addressInfo.end; i--) {\r\n            addressInfo.transactions.push(addressInfo[i])\r\n            delete addressInfo[i]\r\n        }\r\n\r\n        if(!this._addresses[addr]) return\r\n\r\n        this._addresses[addr] = addressInfo\r\n        this._addressStreams[addr].emit(addressInfo)\r\n    }\r\n}\r\n\r\n/* harmony default export */ __webpack_exports__["default"] = (AddressWatcher);\r\n\n\n//# sourceURL=webpack:///./plugins/core/streams/AddressWatcher.js?')},"./plugins/core/streams/BlockChecker.js":
+/*!**********************************************!*\
+  !*** ./plugins/core/streams/BlockChecker.js ***!
+  \**********************************************/
+/*! exports provided: default */function(module,__webpack_exports__,__webpack_require__){"use strict";eval('__webpack_require__.r(__webpack_exports__);\n// // DW about logging in before checking blocks\r\n// blockCheck()\r\n\r\nconst BLOCK_CHECK_INTERVAL = 3000\r\nconst BLOCK_CHECK_TIMEOUT = 3000 \r\n\r\nclass BlockChecker {\r\n    constructor (parentWimp) {\r\n        this._eachNewBlockFunctions = []\r\n        this._lastBlock = {\r\n            height: -1\r\n        }\r\n        \r\n        this.blockStream = parentWimp.createStream("New block", (req, res) => {\r\n            res(this._lastBlock)\r\n        })\r\n    }\r\n\r\n    check () {\r\n        this._check()\r\n            .finally(() => {\r\n                setTimeout(() => {\r\n                    this.check()\r\n                }, BLOCK_CHECK_INTERVAL)\r\n        })\r\n    }\r\n\r\n    async _check () {\r\n        let timeout = setTimeout(() => {\r\n            throw new Error("Block check timed out")\r\n        }, BLOCK_CHECK_TIMEOUT)\r\n\r\n        const latestBlock = await parentWimp.request("qoraApiCall", {\r\n            data: {\r\n                type: "api",\r\n                url: "blocks/last"\r\n            }\r\n        })\r\n        clearTimeout(timeout)\r\n\r\n        const parsedBlock = JSON.parse(latestBlock.data)\r\n        if (parsedBlock.height > this._lastBlock.height) {\r\n            this._lastBlock = parsedBlock\r\n            this._blockStream.emit(lastBlock)\r\n            this._eachNewBlockFunctions.forEach(fn => fn(lastBlock))\r\n        }\r\n        return\r\n    }\r\n\r\n    addNewBlockFunction (fn) {\r\n        this._eachNewBlockFunctions.push(fn)\r\n    }\r\n\r\n}\r\n\r\n/* harmony default export */ __webpack_exports__["default"] = (BlockChecker);\n\n//# sourceURL=webpack:///./plugins/core/streams/BlockChecker.js?')},"./plugins/core/streams/StreamManager.js":
+/*!***********************************************!*\
+  !*** ./plugins/core/streams/StreamManager.js ***!
+  \***********************************************/
+/*! exports provided: default */function(module,__webpack_exports__,__webpack_require__){"use strict";eval('__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _BlockChecker_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BlockChecker.js */ "./plugins/core/streams/BlockChecker.js");\n/* harmony import */ var _AddressWatcher_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AddressWatcher.js */ "./plugins/core/streams/AddressWatcher.js");\n\r\n\r\n\r\nclass StreamManager {\r\n    constructor (parentWimp) {\r\n        this._parentWimp = parentWimp\r\n\r\n        this._blockCheck = new _BlockChecker_js__WEBPACK_IMPORTED_MODULE_0__["default"](parentWimp)\r\n        this._addressWatcher = new _AddressWatcher_js__WEBPACK_IMPORTED_MODULE_1__["default"](parentWimp)\r\n\r\n        parentWimp.on(\'login\', async () => {\r\n            const addressesResponse = await parentWimp.request("getQoraAddresses")\r\n            this.update(addressesResponse.data)\r\n        })\r\n        \r\n        this._blockCheck.addNewBlockFunction(this._addressWatcher.testBlock)\r\n    }\r\n\r\n    update(addresses) {\r\n        this._addressWatcher.reset()\r\n        addresses.forEach(addr => this._addressWatcher.addAddress(addr))\r\n    }\r\n}\r\n\r\n/* harmony default export */ __webpack_exports__["default"] = (StreamManager);\n\n//# sourceURL=webpack:///./plugins/core/streams/StreamManager.js?')}});

@@ -109,12 +109,12 @@
             
             <div id="sendMoneyWrapper">
                 
-                <div style$="background-color: {{address.color}}; padding:12px 15px; width:100%; margin:0; color: {{textColor(address.textColor)}};">
+                <div style$="background-color: {{selectedAddress.color}}; padding:12px 15px; width:100%; margin:0; color: {{textColor(selectedAddress.textColor)}};">
 
                     <h3 style="margin:0; padding:8px 0;">Send money</h3>
                     
-                    <div class="selectedBalance">
-                        <span class="balance">{{address.balance}} </span>Karma available for transfer from <span style$="color: {{selectedAddress.color}}">{{address.address}}</span>
+                    <div class="selectedBalance"> <!--  style$="color: {{selectedAddress.color}}" -->
+                        <span class="balance">{{selectedAddressInfo.balance.total.0}} </span>Karma available for transfer from <span>{{selectedAddress.address}}</span>
                     </div>
                 </div>
                 
@@ -140,7 +140,7 @@
 
                 <paper-input label="To" type="text" value="{{recipient}}"></paper-input>
 
-                <paper-input label="Fee" type="text" value="{{fee}}"></paper-input>
+                <!-- <paper-input label="Fee" type="text" value="{{fee}}"></paper-input> -->
 
                 <p>{{sendMoneyError}}</p>
 
@@ -171,10 +171,10 @@
                             type: Array,
                             value: []
                         },
-                        fee: {
-                            type: Number,
-                            value: 1
-                        },
+                        // fee: {
+                        //     type: Number,
+                        //     value: 1
+                        // },
                         amount: {
                             type: Number
                         },
@@ -189,8 +189,27 @@
                         data: {
                             type: Object,
                             value: {}
+                        },
+                        addressesInfo: {
+                            type: Object,
+                            value: {}
+                        },
+                        selectedAddress: {
+                            type: Object,
+                            value: {}
+                        },
+                        selectedAddressInfo: {
+                            type: Object,
+                            value: {},
+                            computed: "_getSelectedAddressInfo(addressesInfo, selectedAddress)"
                         }
                     }
+                }
+
+                static get observers () {
+                    return [
+                        // "_setSelectedAddressInfo(selectedAddress.*, addressesInfo)"
+                    ]
                 }
                 
                 constructor() {
@@ -202,12 +221,13 @@
                 }
                 
                 _checkAmount() {
-                    if (this.amount > this.selectedAddress.balance - this.fee || this.amount <= 0) {
-                        this.validAmount = true;
-                    }
-                    else {
-                        this.validAmount = false;
-                    }
+                    this.validAmount = this.amount <= this.selectedAddress.balance
+                    // if (this.amount > this.selectedAddress.balance - this.fee || this.amount <= 0) {
+                    //     this.validAmount = true;
+                    // }
+                    // else {
+                    //     this.validAmount = false;
+                    // }
                 }
                 
                 textColor(color){
@@ -218,7 +238,7 @@
                     var address = this.selectedAddress;
                     var amount = this.amount;
                     var recipient = this.recipient;
-                    var fee = this.fee;
+                    // var fee = this.fee
 
                     // Check for valid...^
 
@@ -232,8 +252,9 @@
                             nonce: this.selectedAddress.nonce,
                             params: {
                                 recipient,
-                                amount,
-                                fee
+                                amount
+                                // ,
+                                // fee
                             }
                         }
                     }).then(response => {
@@ -274,38 +295,40 @@
                         expectResponse: false
                     })
                 }
+
+                _getSelectedAddressInfo(addressesInfo, selectedAddress) {
+                    console.log(this.addressesInfo)
+                    console.log("Trying to set...", this.addressesInfo[selectedAddress.address], selectedAddress.address, addressesInfo)
+                    return this.addressesInfo[selectedAddress.address]
+                }
                 
                 ready(){
                     super.ready();
                     
                     // Communication with plugins/core/main.js. Uses window.parent as a proxy.
                     this.coreWimp = new Wimp("core", window.parent);
-
-                    this.coreWimp.ready(() => {
-                        this.coreWimp.listen("balances", balances => {
-                            console.log("=== BALANCESSS ===")
-                            this.addresses = balances;
-                            console.log(balances)
-                            
-                            if(!this.selectedAddress){
-                                this.resize();
-                            }
-                            
-                            // Preselect an address...
-                            this.selectedAddress = this.selectedAddress || this.addresses[this.data.index ? this.data.index : 0]
-                            
-                        });
-                    });
                     
                     this.parentWimp = new Wimp(window.parent);
 
                     this.parentWimp.ready(() => {
                         this.resize();
                         
-                        this.parentWimp.listen("Selected address", address => {
-                            console.log(address)
-                            this.address = {}
-                            this.address = address
+                        this.parentWimp.listen("Selected address", selectedAddress => {
+                            console.log(selectedAddress)
+                            this.selectedAddress = {}
+                            this.selectedAddress = selectedAddress
+
+                            this.coreWimp.ready(() => {
+                                // console.log("===CORE READY====", selectedAddress.address)
+                                this.coreWimp.listen(`address/${selectedAddress.address}`, addrInfo => {
+                                    console.log("RECIEVED", addrInfo)
+                                    this.set(`addressesInfo.${selectedAddress.address}`, addrInfo)
+                                    const addressesInfoStore = this.addressesInfo
+                                    this.addressesInfo = {}
+                                    this.addressesInfo = addressesInfoStore
+                                    console.log(this.addressesInfo)
+                                })
+                            })
                         })
                     })
                     

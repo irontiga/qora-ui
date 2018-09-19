@@ -1,5 +1,5 @@
 const path = require('path')
-const webpack = require('webpack')
+// const webpack = require('webpack') // Unneeded
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 // const HTMLWebpackPlugin = require('html-webpack-plugin')
 
@@ -13,7 +13,8 @@ module.exports = {
         'src/elements/login-screen/login-screen-bundle.js': './src/elements/login-screen/login-screen.js',
         'src/elements/login-screen/login-page/login-page-bundle.js': './src/elements/login-screen/login-page/login-page.js',
         'src/elements/login-screen/create-account-page/create-account-page-bundle.js': './src/elements/login-screen/create-account-page/create-account-page.js',
-        'src/elements/login-screen/login-handler/login-handler-bundle.js' : './src/elements/login-screen/login-handler/login-handler.js'
+        'src/elements/login-screen/login-handler/login-handler-bundle.js' : './src/elements/login-screen/login-handler/login-handler.js',
+        'plugins/core/main.js': './plugins/core/main-src.js' // Should have it's own webpack (eerrrhhhmmm rollup) config the itself
     },
     output: {
         path: path.resolve(__dirname),

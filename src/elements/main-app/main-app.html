@@ -173,7 +173,7 @@
                 <app-drawer swipe-open slot="drawer" id="appdrawer">
                     <app-header-layout has-scrolling-region>
                         <div id="accountDrawer" style$="background-color: {{selectedAddress.color}}">
-                            <iron-icon style$="color: {{textColor(selectedAddress.textColor)}};height:60px; width:60px; padding:12px;" icon="account-circle"></iron-icon>
+                            <iron-icon style$="color: {{textColor(selectedAddress.textColor)}};height:60px; width:60px; padding:12px;" icon="account-circle"></iron-icon>                            
                             <paper-menu-button horizontal-align="left" id="accountMenu" style="padding:0; max-width:100%;">
                                 <div slot="dropdown-trigger" style="position:relative">
                                     <!--                                <paper-icon-button noink icon="account-circle"></paper-icon-button>-->
@@ -245,7 +245,7 @@
                             </template>
 
                             <div style="display:inline">
-                                <paper-icon-button icon="icons:settings" on-tap="openSettings"></paper-icon-button>
+                                <!-- <paper-icon-button icon="icons:settings" on-tap="openSettings"></paper-icon-button> -->
                                 <paper-tooltip position="top">Logout</paper-tooltip>
                                 <paper-icon-button icon="power-settings-new" on-tap="logOut"></paper-icon-button>
                             </div>
@@ -264,7 +264,7 @@
                     <paper-icon-button class="close-dialog-button" icon="icons:close" on-tap="closeTopMenuModal"></paper-icon-button>
                 </div>
                 
-                <show-modal modal-frame="{{modalFrame}}" config="{{config}}" item="{{selectedModal}}" frame-size="{{modalFrameSize}}"></show-modal>
+                <show-modal style="background:#fff;" modal-frame="{{modalFrame}}" config="{{config}}" item="{{selectedModal}}" frame-size="{{modalFrameSize}}"></show-modal>
             </paper-dialog>
             <!-- -->
             

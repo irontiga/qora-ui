@@ -22,7 +22,11 @@ const TX_TYPES = {
     
     16: "Deploy AT",
     
-    17: "Message"
+    17: "Message",
+
+    18: "Delegation",
+    19: "Supernode",
+    20: "Airdrop"
 }
 
 const QORA_DECIMALS = 100000000

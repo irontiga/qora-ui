@@ -1,39 +1,41 @@
 "use strict";
-/*
-    TO DO
-*/
-(function(){
-    function generateSignatureRegisterNameTransaction(keyPair, lastReference, owner, name, value, fee, timestamp) => {
-        const data = generateRegisterNameTransactionBase(keyPair.publicKey, lastReference, owner, name, value, fee, timestamp);
-        return nacl.sign.detached(data, keyPair.privateKey);
+import TransactionBase from "./TransactionBase.js"
+import { QORA_DECIMALS } from "../constants.js"
+
+export default class PaymentTransaction extends TransactionBase {
+    constructor() {
+        super();
+        this.type = 3
+        this.tests.push(
+            () => {
+                if (!this._amount >= 0) {
+                    return "Invalid amount " + this._amount / QORA_DECIMALS
+                }
+                return true
+            },
+            () => {
+                if (!(this._recipient instanceof Uint8Array && this._recipient.length == 25)) {
+                    return "Invalid recipient " + Base58.encode(this._recipient)
+                }
+                return true
+            }
+        )
     }
 
-    function generateRegisterNameTransaction(keyPair, lastReference, owner, name, value, fee, timestamp, signature) => {
-        return appendBuffer( generateRegisterNameTransactionBase(keyPair.publicKey, lastReference, owner, name, value, fee, timestamp),
-                            signature );
+    set recipient(recipient) {// Always Base58 encoded. Accepts Uint8Array or Base58 string.
+        this._recipient = recipient instanceof Uint8Array ? recipient : this.constructor.Base58.decode(recipient);
     }
-
-    function generateRegisterNameTransactionBase(publicKey, lastReference, owner, name, value, fee, timestamp) => {
-        const txType = TYPES.REGISTER_NAME_TRANSACTION;
-        const typeBytes = int32ToBytes(txType);
-        const timestampBytes = int64ToBytes(timestamp);
-        const feeBytes = int64ToBytes(fee * 100000000);
-        const nameSizeBytes = int32ToBytes(name.length);
-        const valueSizeBytes = int32ToBytes(value.length);
-
-        let data = new Uint8Array();
-
-        data = appendBuffer(data, typeBytes);
-        data = appendBuffer(data, timestampBytes);
-        data = appendBuffer(data, lastReference);
-        data = appendBuffer(data, publicKey);
-        data = appendBuffer(data, owner);
-        data = appendBuffer(data, nameSizeBytes);
-        data = appendBuffer(data, name);
-        data = appendBuffer(data, valueSizeBytes);
-        data = appendBuffer(data, value);
-        data = appendBuffer(data, feeBytes);
-
-        return data;
+    set amount(amount) {
+        this._amount = amount * QORA_DECIMALS;
+        this._amountBytes = this.constructor.utils.int64ToBytes(amount);
     }
-}())
+    get params() {
+        const params = super.params;
+        params.push(
+            this._recipient,
+            this._amountBytes,
+            this._feeBytes
+        )
+        return params;
+    }
+}

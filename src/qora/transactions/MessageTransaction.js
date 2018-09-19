@@ -9,7 +9,7 @@ EXTEND THE PAYMENT TRANSACTION YOU CLOWN
 export default class MessageTransaction extends PaymentTransaction{
     constructor(){
         super();
-        this.type = "MESSAGE_TRANSACTION";
+        this.type = 17
         this._key = this.constructor.utils.int64ToBytes(0);
         this._isEncrypted = new Uint8Array(1); // Defaults to false
         this._isText = new Uint8Array(1); // Defaults to false
@@ -21,8 +21,8 @@ export default class MessageTransaction extends PaymentTransaction{
         
         // Not sure about encoding here...
         //this._message = message instanceof Uint8Array ? message : this.constructor.Base58.decode(message);
-        this._message = this.constructor.utils.stringtoUTF8Array(message);
-        this._messageLength = this.constructor.utils.int64ToBytes(this._message.length);
+        this._message = this.constructor.utils.stringtoUTF8Array(message)
+        this._messageLength = this.constructor.utils.int64ToBytes(this._message.length)
     }
     set isEncrypted(isEncrypted){
         this._isEncrypted[0] = isEncrypted;

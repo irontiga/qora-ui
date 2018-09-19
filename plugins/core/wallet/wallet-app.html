@@ -16,6 +16,7 @@
         <link rel="import" href="/bower_components/iron-icon/iron-icon.html">
         
         <link rel="import" href="/bower_components/paper-spinner/paper-spinner-lite.html">
+        <link rel="import" href="/bower_components/paper-button/paper-button.html">
         
 
         <link rel="stylesheet" href="/src/fonts/roboto.css">
@@ -64,6 +65,9 @@
                         <span class="mono weight-1300">
                             <iron-icon icon="account-balance-wallet"></iron-icon> {{address.address}}
                         </span>
+                        <!-- <template is="dom-if" if="{{!address.name}}">
+                            <paper-button on-tap="setName"><i>Set name</i></paper-button>
+                        </template> -->
                         <br>
                         <span class="mono weight-100" style="font-size: 70px;">{{floor(address.balance)}}<span style="font-size:24px; vertical-align: top; line-height:60px;">.{{decimals(address.balance)}} KMX</span></span>
                     </div>
@@ -101,7 +105,8 @@
 
                                     <vaadin-grid-column>
                                         <template class="header">
-                                            Amount + fee
+                                            Amount
+                                             <!-- + fee -->
                                         </template>
                                         <template>
                                             <span class$="mono {{txColor(item.transaction)}}">
@@ -110,9 +115,9 @@
                                                     ><iron-icon hidden$="{{!sendOrRecieve(item.transaction)}}" icon="icons:remove-circle" style="height:16px;"></iron-icon
                                                 ><span>[[floor(item.transaction.amount)]]</span
                                                 ><span style="font-size:8px; vertical-align:top; line-height:16px;">[[decimals(item.transaction.amount)]]</span>
-                                                +
+                                                <!-- +
                                                 <span>[[floor(item.transaction.fee)]]</span
-                                                    ><span style="font-size:8px; vertical-align:top; line-height:16px;">[[decimals(item.transaction.fee)]]</span>
+                                                    ><span style="font-size:8px; vertical-align:top; line-height:16px;">[[decimals(item.transaction.fee)]]</span> -->
                                             </span>
                                         </template>
                                     </vaadin-grid-column>

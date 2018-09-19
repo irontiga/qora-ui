@@ -19,17 +19,17 @@ export default class TransactionBase{
     
     constructor(){
         // Defaults
-        this.fee = 1;
+        this.fee = 0;
         this.timestamp = Date.now();
         this.tests = [
             () => {
-                if(!(1 <= this._type && this._type <= 17)){
+                if(!(1 <= this._type && this._type <= Object.keys(TX_TYPES).length)){
                     return "Invalid type: " + this.type
                 }
                 return true
             },
             () => {
-                if(!(this._fee >= 1)){
+                if(this._fee < 0){
                     return "Invalid fee: " + this._fee / QORA_DECIMALS;
                 }
                 return true

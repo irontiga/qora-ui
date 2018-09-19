@@ -1,3 +1,4 @@
+import AddressTransactionsChecker from 'addressTransactions.js'
 // USE MAPSSS
 
 const addresses = []
@@ -29,7 +30,7 @@ parentWimp.on("login", () => {
     parentWimp.request("getQoraAddresses", response => {
         //addresses = response.data
         response.data.forEach(address => addressCheck(address, true))
-        
+
         response.data.forEach(address => {
             addressTransactionStreams[address.nonce] = parentWimp.createStream("transactions/" + address.nonce, (req, res) => {
                 res(addressTransactions[address.nonce])
@@ -58,7 +59,7 @@ const addressInfoStream = parentWimp.createStream("Address info", (req, res) => 
 })
 
 const addressTransactionStream = parentWimp.createStream("Address transactions", (req, res) => {
-    
+
 })
 
 
@@ -66,7 +67,7 @@ const addressTransactionStream = parentWimp.createStream("Address transactions",
 // DW about logging in before checking blocks
 blockCheck()
 
-function blockCheck(){
+function blockCheck() {
     return parentWimp.request("qoraApiCall", {
         data: {
             type: "api",
@@ -74,15 +75,15 @@ function blockCheck(){
         }
     }).then(response => {
         // If the JSON doesn't parse due to an error we don't want to stop polling
-        try{
+        try {
             const responseBlock = JSON.parse(response.data)
-            if(responseBlock.height > lastBlock.height){
+            if (responseBlock.height > lastBlock.height) {
                 lastBlock = responseBlock;
                 newBlockStream.emit(lastBlock);
                 newBlockFunctions.forEach(fn => fn(lastBlock))
             }
         }
-        catch(e){
+        catch (e) {
             console.error(e)
         }
         // Check for a new block every three seconds
@@ -97,8 +98,8 @@ newBlockFunctions.push(block => {
     addresses.forEach(addr => {
         addressIDs[addr.address] = addr
     })
-    
-    if(block.assetTrades){
+
+    if (block.assetTrades) {
         // Fetch all trades in this block
         parentWimp.request("qoraApiCall", {
             data: {
@@ -113,16 +114,16 @@ newBlockFunctions.push(block => {
 
     const addressesToCheck = [];
 
-    if(block.generator in addressIDs){
+    if (block.generator in addressIDs) {
         addressToCheck.push(addressIDs[block.generator])
         delete addressIDs[block.generator]
     }
     block.transactions.some(tx => {
-        if(tx.recipient in addressIDs){
+        if (tx.recipient in addressIDs) {
             addressesToCheck.push(addressIDs[tx.recipient])
             delete addressIDs[tx.recipient]
         }
-        if(tx.sender in addressIDs){
+        if (tx.sender in addressIDs) {
             addressesToCheck.push(addressIDs[tx.sender])
             delete addressIDs[tx.sender]
         }
@@ -132,8 +133,8 @@ newBlockFunctions.push(block => {
     addressesToCheck.forEach(address => addressCheck(address))
 })
 
-function addressCheck(address, firstCheck){
-    
+function addressCheck(address, firstCheck) {
+
     parentWimp.request("qoraApiCall", {
         data: {
             type: "explorer",
@@ -148,12 +149,12 @@ function addressCheck(address, firstCheck){
             address.balance = 0
             addressTransactions[address.nonce] = []
             address.info = {}
-        } else{
+        } else {
             address.balance = response.data.balance.total[0];
             address.info = response.data;
         }
-        
-        if(firstCheck) {
+
+        if (firstCheck) {
             let biggestKey = 0;
             let txKeys = 0;
             // Find the highest number for most recent tx.
@@ -178,7 +179,7 @@ function addressCheck(address, firstCheck){
                 delete address.info[i]
             }
         }
-        
+
         addresses[address.nonce] = address
         addressInfoStream.emit([
             address

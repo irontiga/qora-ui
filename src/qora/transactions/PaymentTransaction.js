@@ -5,7 +5,7 @@ import { QORA_DECIMALS } from "../constants.js"
 export default class PaymentTransaction extends TransactionBase{
     constructor(){
         super();
-        this.type = "PAYMENT_TRANSACTION";
+        this.type = 2
         this.tests.push(
             () => {
                 if(!this._amount >= 0){
