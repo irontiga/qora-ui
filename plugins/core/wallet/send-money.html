@@ -205,6 +205,22 @@
                             value: {},
                             computed: "_getSelectedAddressInfo(addressesInfo, selectedAddress)"
                         },
+                        selectedAddressTransactions: {
+                            value: [],
+                            computed: "_getAllTransactions(selectedAddress.transactions, unconfirmedTransactions)"
+                        },
+                        addressesUnconfirmedTransactions: {
+                            type: Object,
+                            value: {}
+                        },
+                        addressInfoStreams : {
+                            type: Object,
+                            value: {}
+                        },
+                        unconfirmedTransactionStreams: {
+                            type: Object,
+                            value: {}
+                        },
                         maxWidth: {
                             type: String,
                             value: "600"
@@ -282,27 +298,6 @@
                         this.resize()
                         // console.error("GRRR: ", err)
                     })
-//                    this.parentWimp.request("sendMoney", {
-//                        data: {
-//                            // Why is it index not nonce?
-//                            nonce: address.nonce,
-//                            //address: address.address,
-//                            amount: amount,
-//                            recipient: recipient,
-//                            fee: fee
-//                        }
-//                    }, response => {
-//                        console.log(response);
-//                        this.sendMoneyLoading = false;
-//                        if (!response.success) {
-//                            this.sendMoneyError = response.errorText;
-//                        }
-//                        else {
-//                            //this.$.sendMoneyDialog.close();
-//                        }
-//                    });
-
-                    //this.$.sendMoneyDialog.close();
                 }
                 
                 resize () {
@@ -342,16 +337,24 @@
                             console.log(selectedAddress)
                             this.selectedAddress = {}
                             this.selectedAddress = selectedAddress
-
+                            const addr = selectedAddress.address
+                            
                             this.coreWimp.ready(() => {
-                                // console.log("===CORE READY====", selectedAddress.address)
-                                this.coreWimp.listen(`address/${selectedAddress.address}`, addrInfo => {
-                                    console.log("RECIEVED", addrInfo)
-                                    this.set(`addressesInfo.${selectedAddress.address}`, addrInfo)
-                                    const addressesInfoStore = this.addressesInfo
-                                    this.addressesInfo = {}
-                                    this.addressesInfo = addressesInfoStore
-                                })
+                                if (!this.addressInfoStreams[addr]) {
+                                    this.addressInfoStreams[addr] = this.coreWimp.listen(`address/${addr}`, addrInfo => {
+                                        console.log("RECIEVED", addrInfo)
+                                        this.set(`addressesInfo.${addr}`, addrInfo)
+                                        const addressesInfoStore = this.addressesInfo
+                                        this.addressesInfo = {}
+                                        this.addressesInfo = addressesInfoStore
+                                    })
+                                }
+                               if (!this.unconfirmedTransactionStreams[addr]){
+                                   this.unconfirmedTransactionStreams[addr] = this.coreWimp.listen(`unconfirmedOfAddress/${addr}`, unconfirmedTransactions => {
+                                       this.addressesUnconfirmedTransactions[addr] = unconfirmedTransactions
+                                   })
+                               }
+                                
                             })
                         })
                     })

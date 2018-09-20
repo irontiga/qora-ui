@@ -6,22 +6,26 @@ const BLOCK_CHECK_TIMEOUT = 3000
 
 class BlockChecker {
     constructor (parentWimp) {
+        this._parentWimp = parentWimp
         this._eachNewBlockFunctions = []
         this._lastBlock = {
             height: -1
         }
         
-        this.blockStream = parentWimp.createStream("New block", (req, res) => {
+        this._blockStream = parentWimp.createStream("New block", (req, res) => {
             res(this._lastBlock)
         })
     }
 
     check () {
-        this._check()
-            .finally(() => {
-                setTimeout(() => {
-                    this.check()
-                }, BLOCK_CHECK_INTERVAL)
+        const c = this._check()
+        // console.log(c)
+        // CHANGE TO Promise.prototype.finally
+        c.then(() => {
+            setTimeout(() => this.check(), BLOCK_CHECK_INTERVAL)
+        })
+        c.catch(() => {
+            setTimeout(() => this.check(), BLOCK_CHECK_INTERVAL)
         })
     }
 
@@ -30,7 +34,7 @@ class BlockChecker {
             throw new Error("Block check timed out")
         }, BLOCK_CHECK_TIMEOUT)
 
-        const latestBlock = await parentWimp.request("qoraApiCall", {
+        const latestBlock = await this._parentWimp.request("qoraApiCall", {
             data: {
                 type: "api",
                 url: "blocks/last"
@@ -41,8 +45,8 @@ class BlockChecker {
         const parsedBlock = JSON.parse(latestBlock.data)
         if (parsedBlock.height > this._lastBlock.height) {
             this._lastBlock = parsedBlock
-            this._blockStream.emit(lastBlock)
-            this._eachNewBlockFunctions.forEach(fn => fn(lastBlock))
+            this._blockStream.emit(this._lastBlock)
+            this._eachNewBlockFunctions.forEach(fn => fn(this._lastBlock))
         }
         return
     }

@@ -8,10 +8,10 @@
 ```
 
 ## Config
-You can find a config file in config/config.js. Edit this based on default-config.js
+You can find a config file in `config/config.js`. Edit this based on `default-config.js`
 
 ## Electron
 ```
-## npm start
+# npm start
 ```
 This will launch the wallet using electron on the local machine, as well as starting the server

@@ -30,10 +30,10 @@ class WalletApp extends Polymer.Element {
     }
     static get properties(){
         return {
-            address: {
-                type: Object,
-                value: {}
-            },
+            // address: {
+            //     type: Object,
+            //     value: {}
+            // },
             lastAddress: {
                 type: String,
                 value: ""
@@ -47,7 +47,37 @@ class WalletApp extends Polymer.Element {
                 value: {
                     height:0
                 }
-            }
+            },
+
+            addressesInfo: {
+                type: Object,
+                value: {}
+            },
+            selectedAddress: {
+                type: Object,
+                value: {}
+            },
+            selectedAddressInfo: {
+                type: Object,
+                value: {},
+                computed: "_getSelectedAddressInfo(addressesInfo, selectedAddress)"
+            },
+            selectedAddressTransactions: {
+                value: [],
+                computed: "_getAllTransactions(selectedAddressInfo.transactions, addressesUnconfirmedTransactions)"
+            },
+            addressesUnconfirmedTransactions: {
+                type: Object,
+                value: {}
+            },
+            addressInfoStreams: {
+                type: Object,
+                value: {}
+            },
+            unconfirmedTransactionStreams: {
+                type: Object,
+                value: {}
+            },
         }
     }
     static get observers(){
@@ -60,6 +90,18 @@ class WalletApp extends Polymer.Element {
         super();
     }
 
+    _getAllTransactions(transactions, unconfirmedTransactions) {
+        console.log("UPDATING TRANSACTIONS")
+        unconfirmedTransactions = unconfirmedTransactions[this.selectedAddress.address]
+        // console.log(transactions, unconfirmedTransactions)
+        if(!(transactions && unconfirmedTransactions)) return []
+        return [].concat(transactions, unconfirmedTransactions)
+    }
+
+    _getSelectedAddressInfo(addressesInfo, selectedAddress) {
+        return this.addressesInfo[selectedAddress.address]
+    }
+
     ready(){
         super.ready();
 
@@ -69,26 +111,54 @@ class WalletApp extends Polymer.Element {
         
         this.parentWimp.ready().then(() => {
             // console.log("==========READYYY")
-            this.parentWimp.listen("Selected address", address => {
+            this.parentWimp.listen("Selected address", selectedAddress => {
                 // console.log(address)
-                this.address = address
+                // this.address = address
+                this.selectedAddress = {}
+                this.selectedAddress = selectedAddress
+                const addr = selectedAddress.address
+
+                this.coreWimp.ready(() => {
+                    if (!this.addressInfoStreams[addr]) {
+                        this.addressInfoStreams[addr] = this.coreWimp.listen(`address/${addr}`, addrInfo => {
+                            this.loading = false
+                            this.set(`addressesInfo.${addr}`, addrInfo)
+
+                            const addressesInfoStore = this.addressesInfo
+                            this.addressesInfo = {}
+                            this.addressesInfo = addressesInfoStore
+                        })
+                    }
+                    if (!this.unconfirmedTransactionStreams[addr]) {
+                        this.addressesUnconfirmedTransactions[addr] = []
+                        this.unconfirmedTransactionStreams[addr] = this.coreWimp.listen(`unconfirmedOfAddress/${addr}`, unconfirmedTransactions => {
+                            console.log("RECEIVED UNCONFIRED TX INFO", unconfirmedTransactions)
+                            this.addressesUnconfirmedTransactions[addr] = unconfirmedTransactions
+                            const addressesUnconfirmedTransactionsStore = this.addressesUnconfirmedTransactions
+                            this.addressesUnconfirmedTransactions = {}
+                            this.addressesUnconfirmedTransactions = addressesUnconfirmedTransactionsStore
+                        })
+                    }
+
+                })
             })
         })
 
-        setInterval(() => {
-            this.parentWimp.request("toast", {
-                data: {
-                    text: "**QMLGFLi9Y5VWiu2AMJeyn4fWW6HeWurYyG** received **15** Qora from **QMLGFLi9Y5VWiu2AMJeyn4fWW6HeWurYyG**",
-                    action: false
-                }
-            }, res => {
-                console.log(res)
-            })
-        }, 3000)
+        // setInterval(() => {
+        //     this.parentWimp.request("toast", {
+        //         data: {
+        //             text: "**QMLGFLi9Y5VWiu2AMJeyn4fWW6HeWurYyG** received **15** Qora from **QMLGFLi9Y5VWiu2AMJeyn4fWW6HeWurYyG**",
+        //             action: false
+        //         }
+        //     }, res => {
+        //         console.log(res)
+        //     })
+        // }, 3000)
         
-        this.coreWimp.listen("New block", block => {
+        this.coreWimp.ready().then(() => this.coreWimp.listen("New block", block => {
+            // console.log("---- BLOCK ----" ,block)
             this.lastBlock = block;
-        })
+        }))
         
         Wimp.init();
     }
@@ -97,6 +167,8 @@ class WalletApp extends Polymer.Element {
         return arr.length == 0
     }
     timestampToISO(timestamp){
+        // console.log(timestamp)
+        // console.log(this.selectedAddressTransactions)
         return new Date(timestamp).toISOString();
     }
     floor(num){
@@ -109,7 +181,7 @@ class WalletApp extends Polymer.Element {
     }
     
     sendOrRecieve(tx){
-        return tx.sender == this.address.address
+        return tx.sender == this.selectedAddress.address
     }
     
     senderOrRecipient(tx){

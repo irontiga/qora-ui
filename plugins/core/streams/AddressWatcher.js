@@ -17,8 +17,7 @@ class AddressWatcher {
     constructor (parentWimp, addresses) {
         addresses = addresses || []
         this._parentWimp = parentWimp
-        this._addresses = {}
-        this._addressStreams = {}
+        this.reset()
 
         addresses.forEach(addr => this.addAddress(addr))
     }
@@ -30,13 +29,14 @@ class AddressWatcher {
 
     // Adds an address to watch
     addAddress (address) {
-        this._addresses[address.address] = address
+        const addr = address.address
+        this._addresses[addr] = address
 
-        this._addressStreams[address.address] = this._parentWimp.createStream(`address/${address.address}`, (req, res) => {
-            res(this._addresses[address.address])
+        this._addressStreams[addr] = this._parentWimp.createStream(`address/${addr}`, (req, res) => {
+            res(this._addresses[addr])
         })
 
-        this.updateAddress(address.address)
+        this.updateAddress(addr)
     }
 
     // Moved to inside of block test
@@ -47,11 +47,13 @@ class AddressWatcher {
     testBlock (block) {
         const pendingUpdateAddresses = []
 
-        blockTests.forEach(fn => {
+        // blockTests.forEach(fn => {
 
-        })
+        // })
+// transactionTests.forEach(fn => {
 
-        block.transactions.forEach(transaction => transactionTests.forEach(fn => {
+        block.transactions.forEach(transaction => {
+            console.log(this)
             // fn(transaction, Object.keys(this._addresses))
             for (const addr of Object.keys(this._addresses)) {
                 const addrChanged = transactionTests.some(fn => {
@@ -66,7 +68,7 @@ class AddressWatcher {
                  * it will refresh, changing the "page" to have 1 extra transaction at the top and losing 1 at the bottom (pushed to next page)
                  */
             }
-        }))
+        })
 
         pendingUpdateAddresses.forEach(addr => this.updateAddress(addr))
     }
@@ -87,7 +89,7 @@ class AddressWatcher {
         const addressInfo = addressRequest.success ? addressRequest.data : DEFAULT_ADDRESS_INFO
         addressInfo.transactions = []
 
-        for (let i = addressInfo.start; i > addressInfo.end; i--) {
+        for (let i = addressInfo.start; i >= addressInfo.end; i--) {
             addressInfo.transactions.push(addressInfo[i])
             delete addressInfo[i]
         }

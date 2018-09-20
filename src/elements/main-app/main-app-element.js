@@ -119,15 +119,27 @@ export default class MainApp extends Polymer.Element {
                     },
                     res: () => {}
                 }
+            },
+            streams: {
+                type: Object,
+                value: {}
             }
         }
     }
 
     static get observers(){
         return  [
-            '_addressChanged(selectedAddress)'
+            '_addressChanged(selectedAddress)',
+            '_configChanged(config)'
         ]
 
+    }
+
+    _configChanged(config) {
+        if(!this.streams.config) return
+        this.streams.config.forEach(stream => {
+            stream.emit(config || {})
+        })
     }
     
     constructor() {
@@ -327,6 +339,11 @@ export default class MainApp extends Polymer.Element {
                 })
             })
         })
+        this.streams.config = Object.values(this.wimps).map(w=> {
+            return w.createStream('config', (req, res) => {
+                res(this.config)
+            })
+        })
     }
 
     _addressChanged(selectedAddress){
@@ -339,6 +356,7 @@ export default class MainApp extends Polymer.Element {
             "--active-menu-item-color" : selectedAddress.color
         })
         
+        if(!this.streams.selectedAddress) return
         this.streams.selectedAddress.forEach(w => {
             w.emit({
                 address: selectedAddress.address,

@@ -34,7 +34,7 @@ export default function parentWimpAPI (target) {
     mainWimp.on("pluginsLoaded", (req, res) => {
         App.pluginsLoaded = true;
         res();
-    });
+    })
 
     mainWimp.on("registerUrl", (req, res) => {
         console.log(req)
@@ -179,9 +179,11 @@ export default function parentWimpAPI (target) {
         // In pixels
         res(getWindowDimensions())
     })
+
     windowSizeStreams.push(windowSizeStream)
 
     allWimps.push(mainWimp)
+
     return mainWimp;
 }
 

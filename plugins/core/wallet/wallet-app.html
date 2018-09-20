@@ -61,15 +61,14 @@
 
                 
                 <div hidden$="{{loading}}">
-                    <div id="topbar" style$="background:{{address.color}}; color: {{textColor(address.textColor)}}; padding: 40px;">
+                    <div id="topbar" style$="background:{{selectedAddress.color}}; color: {{textColor(selectedAddress.textColor)}}; padding: 40px;">
                         <span class="mono weight-1300">
-                            <iron-icon icon="account-balance-wallet"></iron-icon> {{address.address}}
-                        </span>
+                            <iron-icon icon="account-balance-wallet"></iron-icon> {{selectedAddress.address}}</span>
                         <!-- <template is="dom-if" if="{{!address.name}}">
                             <paper-button on-tap="setName"><i>Set name</i></paper-button>
                         </template> -->
                         <br>
-                        <span class="mono weight-100" style="font-size: 70px;">{{floor(address.balance)}}<span style="font-size:24px; vertical-align: top; line-height:60px;">.{{decimals(address.balance)}} KMX</span></span>
+                        <span class="mono weight-100" style="font-size: 70px;">{{floor(selectedAddressInfo.balance.total.0)}}<span style="font-size:24px; vertical-align: top; line-height:60px;">.{{decimals(selectedAddressInfo.balance.total.0)}} KMX</span></span>
                     </div>
                     
                     <div id="contentDiv" style="margin: 8px;">
@@ -79,11 +78,12 @@
                         <div class="layout horizontal">
                             <paper-card style="width:100%">
                                 
-                                <div class="card-content"  hidden$="{{!isEmptyArray(address.transactions)}}">
+                                <!-- <div class="card-content"  hidden$="{{!isEmptyArray(address.transactions)}}"> -->
+                                <div class="card-content"  hidden$="{{!isEmptyArray(selectedAddressTransactions)}}">
                                     Address has no transactions yet. Start by sending some Qora to <b>{{address.address}}</b>
                                 </div>
                                 
-                                <vaadin-grid hidden$="{{isEmptyArray(address.transactions)}}" height-by-rows style="height:auto;" aria-label="Transactions" items="{{address.transactions}}">
+                                <vaadin-grid hidden$="{{isEmptyArray(selectedAddressTransactions)}}" height-by-rows style="height:auto;" aria-label="Transactions" items="{{selectedAddressTransactions}}">
 
                                     <vaadin-grid-column flex-grow="x">
                                         <template class="header">
