@@ -29,7 +29,6 @@
                 padding: 0;
                 margin: 0;
             }
-
         </style>
     </head>
 
@@ -50,6 +49,10 @@
                             --paper-spinner-color: var(--primary-color);
                             --paper-spinner-stroke-width: 2px;
                         }
+                        .unconfirmed{
+                            font-style: italic;
+                        }
+                        
                     </style>
                 </custom-style>
                 
@@ -90,9 +93,11 @@
                                             <iron-icon style="height:16px" icon="device:access-time"></iron-icon>
                                         </template>
                                         <template>
-                                            <time-ago datetime$="{{timestampToISO(item.transaction.timestamp)}}">
-                                                {{item.transaction.dateTime}}
-                                            </time-ago>
+                                            <span class$="{{_unconfirmedClass(item.unconfirmed)}}">
+                                                <time-ago datetime$="{{timestampToISO(item.transaction.timestamp)}}">
+                                                    {{item.transaction.dateTime}}
+                                                </time-ago>
+                                            </span>
                                         </template>
                                     </vaadin-grid-column>
                                     
@@ -100,7 +105,11 @@
                                         <template class="header">
                                             Type
                                         </template>
-                                        <template>{{getTxType(item.transaction.type)}}</template>
+                                        <template>
+                                            <span class$="{{_unconfirmedClass(item.unconfirmed)}}">
+                                                {{getTxType(item.transaction.type)}}
+                                            </span>
+                                        </template>
                                     </vaadin-grid-column>
 
                                     <vaadin-grid-column>
@@ -109,7 +118,7 @@
                                              <!-- + fee -->
                                         </template>
                                         <template>
-                                            <span class$="mono {{txColor(item.transaction)}}">
+                                            <span class$="mono {{txColor(item.transaction)}} {{_unconfirmedClass(item.unconfirmed)}}">
                                                 <!-- Ugly to avoid the space -->
                                                 <iron-icon hidden$="{{sendOrRecieve(item.transaction)}}" icon="icons:add-circle" style="height:16px;"></iron-icon
                                                     ><iron-icon hidden$="{{!sendOrRecieve(item.transaction)}}" icon="icons:remove-circle" style="height:16px;"></iron-icon
@@ -127,7 +136,7 @@
                                             Sender/Recipient
                                         </template>
                                         <template>
-                                            <span>{{senderOrRecipient(item.transaction)}}</span>
+                                            <span class$="{{_unconfirmedClass(item.unconfirmed)}}">{{senderOrRecipient(item.transaction)}}</span>
                                         </template>
                                     </vaadin-grid-column>
                                     
@@ -136,7 +145,14 @@
                                             Confirmations
                                         </template>
                                         <template>
-                                            <span>{{getConfirmations(item.transaction.blockHeight, lastBlock.height)}}</span>
+                                            <span class$="{{_unconfirmedClass(item.unconfirmed)}}">
+                                                <template is="dom-if" if="{{!item.unconfirmed}}">
+                                                     {{getConfirmations(item.transaction.blockHeight, lastBlock.height)}}
+                                                </template>
+                                                <template is="dom-if" if="{{item.unconfirmed}}">
+                                                    0
+                                                </template>
+                                        </span>
                                         </template>
                                     </vaadin-grid-column>
                                     

@@ -91,11 +91,11 @@ class WalletApp extends Polymer.Element {
     }
 
     _getAllTransactions(transactions, unconfirmedTransactions) {
-        console.log("UPDATING TRANSACTIONS")
+        // console.log("UPDATING TRANSACTIONS")
         unconfirmedTransactions = unconfirmedTransactions[this.selectedAddress.address]
         // console.log(transactions, unconfirmedTransactions)
         if(!(transactions && unconfirmedTransactions)) return []
-        return [].concat(transactions, unconfirmedTransactions)
+        return [].concat(unconfirmedTransactions, transactions)
     }
 
     _getSelectedAddressInfo(addressesInfo, selectedAddress) {
@@ -131,8 +131,18 @@ class WalletApp extends Polymer.Element {
                     }
                     if (!this.unconfirmedTransactionStreams[addr]) {
                         this.addressesUnconfirmedTransactions[addr] = []
+
                         this.unconfirmedTransactionStreams[addr] = this.coreWimp.listen(`unconfirmedOfAddress/${addr}`, unconfirmedTransactions => {
-                            console.log("RECEIVED UNCONFIRED TX INFO", unconfirmedTransactions)
+
+                            unconfirmedTransactions = unconfirmedTransactions.map(tx => {
+                                return { 
+                                    transaction: tx,
+                                    unconfirmed: true
+                                }
+                            })
+
+                            console.log("RECEIVED UNCONFIRMED TX INFO", unconfirmedTransactions)
+                            
                             this.addressesUnconfirmedTransactions[addr] = unconfirmedTransactions
                             const addressesUnconfirmedTransactionsStore = this.addressesUnconfirmedTransactions
                             this.addressesUnconfirmedTransactions = {}
@@ -217,7 +227,9 @@ class WalletApp extends Polymer.Element {
     textColor(color){
         return color == 'light' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.87)'
     }
-    
+    _unconfirmedClass(unconfirmed) {
+        return unconfirmed ? "unconfirmed" : ""
+    }
     _updateAccount(addr){
         this.loading = true;
         this.parentWimp.request("qoraApiCall",{

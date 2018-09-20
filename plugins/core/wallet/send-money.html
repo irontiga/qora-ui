@@ -342,18 +342,18 @@
                             this.coreWimp.ready(() => {
                                 if (!this.addressInfoStreams[addr]) {
                                     this.addressInfoStreams[addr] = this.coreWimp.listen(`address/${addr}`, addrInfo => {
-                                        console.log("RECIEVED", addrInfo)
+                                        console.log("Dialog RECIEVED", addrInfo)
                                         this.set(`addressesInfo.${addr}`, addrInfo)
                                         const addressesInfoStore = this.addressesInfo
                                         this.addressesInfo = {}
                                         this.addressesInfo = addressesInfoStore
                                     })
                                 }
-                               if (!this.unconfirmedTransactionStreams[addr]){
-                                   this.unconfirmedTransactionStreams[addr] = this.coreWimp.listen(`unconfirmedOfAddress/${addr}`, unconfirmedTransactions => {
-                                       this.addressesUnconfirmedTransactions[addr] = unconfirmedTransactions
-                                   })
-                               }
+                            //    if (!this.unconfirmedTransactionStreams[addr]){
+                            //        this.unconfirmedTransactionStreams[addr] = this.coreWimp.listen(`unconfirmedOfAddress/${addr}`, unconfirmedTransactions => {
+                            //            this.addressesUnconfirmedTransactions[addr] = unconfirmedTransactions
+                            //        })
+                            //    }
                                 
                             })
                         })
