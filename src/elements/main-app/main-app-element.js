@@ -394,6 +394,7 @@ export default class MainApp extends Polymer.Element {
         const loadConfig = () => fetch("/getConfig")
             .then(response => response.json())
             .then(response => {
+                console.log("LOADDED CONFIG", response.config)
                 this.config = response.config
                 return
             })

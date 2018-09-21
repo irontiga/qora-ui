@@ -1,4 +1,5 @@
 import { ERROR_CODES } from "../../../src/qora/constants.js"
+import { resolve } from "path";
 
 class SendMoneyPage extends Polymer.Element {
     static get is() {
@@ -64,6 +65,7 @@ class SendMoneyPage extends Polymer.Element {
     static get observers() {
         return [
             // "_setSelectedAddressInfo(selectedAddress.*, addressesInfo)"
+            "_usdKeyUp(usdAmount)"
         ]
     }
 
@@ -132,9 +134,46 @@ class SendMoneyPage extends Polymer.Element {
             this.errorMessage = err
         })
     }
+    _usdKeyUp(){
+        this.amount = this.usdAmount / this.BTCUSD
+    }
+    _kmxKeyUp(){
+
+    }
+
+
+    updateBTCPrice(){
+        this._getBTCPrice().then(data => {
+            console.log(data)
+            this.BTCUSD = data.USD.last
+        }, err=> {})
+    }
+
+    _getBTCPrice(){
+        return new Promise((resolve,reject)=> {
+            var xhttp = new XMLHttpRequest()
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    // Typical action to be performed when the document is ready:
+                    // document.getElementById("demo").innerHTML = xhttp.responseText
+                    console.log("RESPONSESESESSESESS", xhttp)
+                    if (!(this.status == 200)) {
+                        reject()
+                    }
+                    resolve(JSON.parse(xhttp.responseText))
+                }
+            };
+            xhttp.open("GET", "https://blockchain.info/ticker", true);
+            xhttp.send();
+        })
+    }
 
     _getSelectedAddressInfo(addressesInfo, selectedAddress) {
         return this.addressesInfo[selectedAddress.address]
+    }
+
+    kmxToUSD (kmx, price) {
+        return kmx * price
     }
 
     ready() {
@@ -177,6 +216,10 @@ class SendMoneyPage extends Polymer.Element {
                 })
             })
         })
+
+        this.updateBTCPrice()
+
+        setInterval(()=> this.updateBTCPrice(), 10000)
 
         Wimp.init();
     }

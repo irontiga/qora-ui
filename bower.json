@@ -55,7 +55,8 @@
     "paper-checkbox": "PolymerElements/paper-checkbox#^2.0.3",
     "iron-label": "PolymerElements/iron-label#^2.1.0",
     "marked-element": "PolymerElements/marked-element#^2.4.0",
-    "random-sentence-generator": "polymer-random-sentence-generator#*"
+    "random-sentence-generator": "polymer-random-sentence-generator#*",
+    "paper-toggle-button": "PolymerElements/paper-toggle-button#2.0.0"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#^6.0.0",

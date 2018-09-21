@@ -10,12 +10,12 @@ routes.push(
         path: '/',
         handler: (request, h) => {
             console.log(request.params);
-            return h.redirect('/qora/')
+            return h.redirect('/karma/')
         }
     },
     {
         method: 'GET',
-        path: '/qora/{path*}',
+        path: '/karma/{path*}',
         handler: {
             file: path.join(__dirname, "../../src/index.html")
             // file: path.join(__dirname, "../../build/src/index.html") // Production

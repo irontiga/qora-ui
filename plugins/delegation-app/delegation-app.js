@@ -23,11 +23,7 @@ class DelegationApp extends Polymer.Element {
             superNodes: {
                 type: Array,
                 value: [
-                    {
-                        name: "Test",
-                        address: "123123123123",
-                        delegations: 12
-                    }
+                    
                 ]
             }
         }

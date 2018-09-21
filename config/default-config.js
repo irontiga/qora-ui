@@ -16,9 +16,9 @@ const config = {
     },
     icon: "./src/img/icon.png",
     addressColors: [
-        "#3f51b5",
         "#212121",
-        "#009688",
+        "#002530",
+        "#02564e",
         "#d32f2f",
         "#795548",
         "#004d40",

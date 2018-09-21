@@ -15,6 +15,8 @@
 <link rel="import" href="/bower_components/paper-progress/paper-progress.html">
 <link rel="import" href="/bower_components/paper-button/paper-button.html">
 <link rel="import" href="/bower_components/paper-card/paper-card.html">
+<link rel="import" href="/bower_components/paper-toggle-button/paper-toggle-button.html">
+
 
 <link rel="import" href="/src/styles/app-theme.html">
 
@@ -95,16 +97,21 @@
                 
                         <div class="selectedBalance">
                             <!--  style$="color: {{selectedAddress.color}}" -->
-                            <span class="balance">{{selectedAddressInfo.balance.total.0}} KMX</span> available for transfer from
+                            <span class="balance">{{selectedAddressInfo.balance.total.0}} KMX (${{kmxToUSD(selectedAddressInfo.balance.total.0, BTCUSD)}} USD)</span> available for transfer from
                             <span>{{selectedAddress.address}}</span>
                         </div>
                     </div>
                 
                     <div class="card-content">
+                        <!-- KMX <paper-toggle-button checked="{{useUSDAmount}}" style="cursor:pointer; display: inline"></paper-toggle-button> USD -->
+
+                        <paper-input id="USDAmountInput" label="Amount (USD)" hidden$="{{!useUSDAmount}}" value="{{usdAmount}}" type="number">
+                            <div slot="prefix">$ &nbsp;</div>
+                        </paper-input>
                         <paper-input id="amountInput" required label="Amount" type="number" invalid={{validAmount}} value="{{amount}}" error-message="Insufficient funds"
                             on-keyup="_checkAmount"></paper-input>
                 
-                        <paper-input label="To" type="text" value="{{recipient}}"></paper-input>
+                        <paper-input label="To (address or name)" type="text" value="{{recipient}}"></paper-input>
                 
                         <!-- <paper-input label="Fee" type="text" value="{{fee}}"></paper-input> -->
                 

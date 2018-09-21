@@ -175,7 +175,7 @@ class LoginHandler extends Polymer.Element {
         this.addresses = []
         this.addresses = this.wallet.addresses.map(address => {
             address.color = this.config.addressColors[address.nonce % this.config.addressColors.length]
-
+            
             const hexSplit = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(address.color)
             const rgb = hexSplit.map(color => {
                 return parseInt(color, 16) / 255

@@ -31,7 +31,7 @@ function createWindow () {
     }))*/
     console.log(config)
     win.loadURL(url.format({
-        pathname: config.primary.domain + ":" + config.primary.port + "/qora/" + config.plugins.default,
+        pathname: config.primary.domain + ":" + config.primary.port + "/karma/" + config.plugins.default,
         protocol: config.primary.protocol + ":",
         slashes: true
     }))
