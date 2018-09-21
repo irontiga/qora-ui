@@ -360,7 +360,8 @@ export default class MainApp extends Polymer.Element {
         this.showName = true
         console.log(addr)
         if(addr in this.addressNameStore) {
-            this.selectedAddress.name = this.addressNameStore[addr]
+            this.set("selectedAddress.name", this.addressNameStore[addr])
+            // this.selectedAddress.name = this.addressNameStore[addr]
             this.showName = true
             return ""
         }
@@ -372,13 +373,14 @@ export default class MainApp extends Polymer.Element {
         names = JSON.parse(names)
         if (names.length > 0) {
             this.addressNameStore[addr] = names[0]
-            this.selectedAddress.name = names[0]
+            this.set("selectedAddress.name", names[0])
+            // this.selectedAddress.name = names[0]
             this.set("selectedAddress.hasName", true)
         } else {
             throw ""
         }
         this.showName = true
-        return
+        return ""
     }
 
     objectKeys(obj){

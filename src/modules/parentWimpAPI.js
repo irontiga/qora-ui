@@ -133,6 +133,8 @@ export default function parentWimpAPI (target) {
             return res.error("Transaction request already pending");
         }
         
+        req.address = App.wallet.getAddress(req.nonce).address
+        
         req.accept = () => {
             console.log("ACCEPTED")
             console.log(req.params)

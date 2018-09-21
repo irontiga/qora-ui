@@ -302,7 +302,7 @@
                 <table>
                     <tbody>
                         <tr><th>Type</th><td>{{transactionRequest.typeText}}</td></tr>
-                        <tr><th>From</th><td>{{transactionRequest.nonce}}</td></tr>
+                        <tr><th>From</th><td>{{transactionRequest.address}}</td></tr>
                         <template is="dom-repeat" items="{{objectKeys(transactionRequest.params)}}">
                             <tr><th class="capitalize">{{item.key}}</th><td>{{item.value}}</td></tr>
                         </template>

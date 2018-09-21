@@ -57,6 +57,7 @@ class DelegationApp extends Polymer.Element {
         this._delegate(nodeAddress)
         .then((response) =>{
             this.successMessage = `Success! ${response.data}`
+            this.errorMessage = ""
             this.showProgress = false
         }, err => {
             this.errorMessage = `Error! ${err}`

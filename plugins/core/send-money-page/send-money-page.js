@@ -65,7 +65,8 @@ class SendMoneyPage extends Polymer.Element {
     static get observers() {
         return [
             // "_setSelectedAddressInfo(selectedAddress.*, addressesInfo)"
-            "_usdKeyUp(usdAmount)"
+            "_usdKeyUp(usdAmount)",
+            "_kmxKeyUp(amount)"
         ]
     }
 
@@ -92,8 +93,8 @@ class SendMoneyPage extends Polymer.Element {
     }
 
     async _sendMoney(e) {
-        var amount = this.amount * Math.pow(10, 8);
-        var recipient = this.recipient;
+        const amount = this.amount * Math.pow(10, 8);
+        let recipient = this.recipient;
         // var fee = this.fee
 
         // Check for valid...^
@@ -109,6 +110,19 @@ class SendMoneyPage extends Polymer.Element {
             }
         })
         lastRef = lastRef.data
+
+        let recipientAsNameInfo = await this.parentWimp.request("qoraApiCall", {
+            data: {
+                type: "api",
+                url: `names/${recipient}`
+            }
+        })
+        console.log(recipientAsNameInfo)
+        recipientAsNameInfo = JSON.parse(recipientAsNameInfo.data)
+
+        if(recipientAsNameInfo.value){
+            recipient = recipientAsNameInfo.value
+        }
 
         this.parentWimp.request("createTransaction", {
             data: {
@@ -138,7 +152,7 @@ class SendMoneyPage extends Polymer.Element {
         this.amount = this.usdAmount / this.BTCUSD
     }
     _kmxKeyUp(){
-
+        this.usdAmount = this.amount * this.BTCUSD
     }
 
 
