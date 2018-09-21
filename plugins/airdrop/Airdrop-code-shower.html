@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+        <link href="https://fonts.googleapis.com/css?family=Raleway:100,300,400,600,700,800,900" rel="stylesheet">
+        
+        <style>
+            html, body {
+                margin:0;
+                font-family: 'Raleway', sans-serif;
+                background: #00607C
+            }
+            
+            #code {
+                font-size: 300px;
+                margin:0;
+                line-height:200px;
+                padding: 20px;
+                font-weight:300;
+            }
+            .message {
+                font-size:28px;
+                font-weight:300;
+                text-shadow: none;
+            }   
+            
+            .container {
+                height:100vh;
+                width:100vw;
+                position: relative;
+                text-align:center
+            }
+            .container div {
+                position: relative;
+                top: 50%;
+                transform: translateY(-50%);
+                
+                color:rgba(255,255,255,0.8);
+                text-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+            }
+        </style>
+    </head>
+    <body>
+        
+        <div class="container">
+            
+            <div>
+                <span class="message">
+                    Current airdrop code (changes hourly)
+                    <br><br>
+                </span>
+                
+                <span id="code"></span>
+            </div>
+            
+        </div>
+        <script>
+            const UPDATE_CODE_INTERVAL = 10 * 1000
+            
+            const SHA256={K:[1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453635748,2870763221,3624381080,310598401,607225278,1426881987,1925078388,2162078206,2614888103,3248222580,3835390401,4022224774,264347078,604807628,770255983,1249150122,1555081692,1996064986,2554220882,2821834349,2952996808,3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298],digest:function(r){var n=1779033703,t=3144134277,a=1013904242,e=2773480762,o=1359893119,v=2600822924,f=528734635,g=1541459225,i=SHA256.K;if("string"==typeof r){var h=unescape(encodeURIComponent(r));r=new Uint8Array(h.length);for(var A=0;A<h.length;A++)r[A]=255&h.charCodeAt(A)}var s=r.length,l=64*Math.floor((s+72)/64),u=l/4,c=8*s,y=new Uint8Array(l);y.set(r),y[s]=128,y[l-4]=c>>>24,y[l-3]=c>>>16&255,y[l-2]=c>>>8&255,y[l-1]=255&c;var d=new Int32Array(u),w=0;for(A=0;A<d.length;A++){var S=y[w++]<<24;S|=y[w++]<<16,S|=y[w++]<<8,S|=y[w++],d[A]=S}for(var p=new Int32Array(64),H=0;H<u;H+=16){for(A=0;A<16;A++)p[A]=d[H+A];for(A=16;A<64;A++){var U=p[A-15],I=U>>>7|U<<25;I^=U>>>18|U<<14,I^=U>>>3;var C=(U=p[A-2])>>>17|U<<15;C^=U>>>19|U<<13,C^=U>>>10,p[A]=p[A-16]+I+p[A-7]+C&4294967295}var K=n,b=t,m=a,x=e,M=o,R=v,j=f,k=g;for(A=0;A<64;A++){C=M>>>6|M<<26,C^=M>>>11|M<<21;var q=k+(C^=M>>>25|M<<7)+(M&R^~M&j)+i[A]+p[A]&4294967295;I=K>>>2|K<<30,I^=K>>>13|K<<19;var z=K&b^K&m^b&m;k=j,j=R,R=M,M=x+q&4294967295,x=m,m=b,b=K,K=q+((I^=K>>>22|K<<10)+z&4294967295)&4294967295}n=n+K&4294967295,t=t+b&4294967295,a=a+m&4294967295,e=e+x&4294967295,o=o+M&4294967295,v=v+R&4294967295,f=f+j&4294967295,g=g+k&4294967295}var B=new Uint8Array(32);for(A=0;A<4;A++)B[A]=n>>>8*(3-A)&255,B[A+4]=t>>>8*(3-A)&255,B[A+8]=a>>>8*(3-A)&255,B[A+12]=e>>>8*(3-A)&255,B[A+16]=o>>>8*(3-A)&255,B[A+20]=v>>>8*(3-A)&255,B[A+24]=f>>>8*(3-A)&255,B[A+28]=g>>>8*(3-A)&255;return B},hash:function(r){for(var n=SHA256.digest(r),t="",a=0;a<n.length;a++){var e="0"+n[a].toString(16);t+=e.length>2?e.substring(1):e}return t}}
+            
+            function getCode () {
+                const hoursFromEpoch = Math.floor((Date.now() - 1535760000000) / 1000 / 60 / 60)
+
+                const hash = new SHA256.digest("" + hoursFromEpoch)
+                
+                let lastNumbers = hash[0] + ""
+                // Pad
+                while(lastNumbers.length < 3) lastNumbers = "0" + lastNumbers
+                
+                let total = 0;
+                lastNumbers.split("").forEach(char => {
+                    total = total + parseInt(char)
+                })
+                
+                const firstNumber = 10 - (total % 10)
+                const code = firstNumber + "" + lastNumbers
+                
+                return code
+            }
+            
+            function updateCode () {
+                const code = getCode()
+
+                const codeSpan = document.getElementById("code")
+
+                codeSpan.innerHTML = code
+            }
+            
+            updateCode()
+
+            setInterval(updateCode, UPDATE_CODE_INTERVAL)
+        </script>
+        
+        
+    </body>
+</html>

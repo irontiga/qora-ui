@@ -566,9 +566,24 @@ export default class MainApp extends Polymer.Element {
             saveSeedData = await this.loginHandler.generateSaveSeedData(this.wallet.seed, this.wallet._walletVersion, this.backupSeedID, this.backupSeedPassword)
         }
 
-        this.downloadBackSeedAnchorURL = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(saveSeedData))
+        const blob = new Blob([JSON.stringify(saveSeedData)], { type: 'application/json' });
+        if (window.navigator.msSaveOrOpenBlob) {
+            window.navigator.msSaveBlob(blob, `${backupSeedID}_KARMA_SEED_BACKUP.json`);
+        }
+        else {
+            // var elem = window.document.createElement('a');
+            this.downloadBackSeedAnchorURL = window.URL.createObjectURL(blob)
+            // elem.download = filename;
+            // document.body.appendChild(elem);
+            // elem.click();
+            // document.body.removeChild(elem);
+            this.$.downloadBackupSeedAnchor.click()
+        }
+        this.$.backupSeedDialog.close()
+
+        // this.downloadBackSeedAnchorURL = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(saveSeedData))
         
-        this.$.downloadBackupSeedAnchor.click()
+        // this.$.downloadBackupSeedAnchor.click()
 
 
     }
