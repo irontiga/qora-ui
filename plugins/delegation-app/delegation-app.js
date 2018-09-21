@@ -41,6 +41,10 @@ class DelegationApp extends Polymer.Element {
         this.progressMessage = "Setting up data..."
         const nodeAddress = e.model.item.address
 
+        // this.parentWimp.request(data: {
+        //     type: "api",
+        //     url: `addresses/lastreference/${this.selectedAddress.address}/unconfirmed`
+        // })
         this._delegate(nodeAddress)
         .then((response) =>{
             this.successMessage = `Success! ${response.data}`
@@ -60,6 +64,10 @@ class DelegationApp extends Polymer.Element {
             }
         })
         lastRef = lastRef.data
+        if(lastRef === "false"){
+            throw("Address must have a transaction before it can delegate. Try claiming airdrop")
+        }
+        console.log(lastRef)
         this.progressMessage = "Requesting transaction..."
         
         return await this.parentWimp.request("createTransaction", {
