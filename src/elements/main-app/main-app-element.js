@@ -295,7 +295,7 @@ export default class MainApp extends Polymer.Element {
             }
         }, e => {
             return QoraAPI.request.api({
-                url: `addresses/lastreference/${this.selectedAddress.address}`,
+                url: `addresses/lastreference/${this.selectedAddress.address}/unconfirmed`,
                 method: "GET"
             })
         })
@@ -554,21 +554,22 @@ export default class MainApp extends Polymer.Element {
     }
 
     async _downloadBackupSeed () {
+        this.backupSeedID = ""
         console.log(this.loginHandler)
         let saveSeedData
         if (this.saveSeedUseExistingIDAndPassword) {
             saveSeedData = this.wallet.savedSeedData
         } else {
             // Check the password/id
-            if (this.backupSeedID.length < 1 || this.backupSeedPassword.length < 1) {
+            if (this.backupSeedPassword.length < 1) {
                 throw new Error("Invalid identifier or password  length")
             }
-            saveSeedData = await this.loginHandler.generateSaveSeedData(this.wallet.seed, this.wallet._walletVersion, this.backupSeedID, this.backupSeedPassword)
+            saveSeedData = await this.loginHandler.generateSaveSeedData(this.wallet.seed, this.wallet._walletVersion, "Karma wallet seed backup", this.backupSeedPassword)
         }
 
         const blob = new Blob([JSON.stringify(saveSeedData)], { type: 'application/json' });
         if (window.navigator.msSaveOrOpenBlob) {
-            window.navigator.msSaveBlob(blob, `${backupSeedID}_KARMA_SEED_BACKUP.json`);
+            window.navigator.msSaveBlob(blob, `${backupSeedID}KARMA_SEED_BACKUP.json`);
         }
         else {
             // var elem = window.document.createElement('a');

@@ -1,0 +1,136 @@
+<script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+
+<link rel="import" href="/bower_components/polymer/polymer.html">
+
+<link rel="stylesheet" href="/src/fonts/roboto.css">
+<link rel="stylesheet" href="/src/fonts/roboto-mono.css">
+
+<link rel="import" href="/bower_components/web-animations-js/web-animations-next.min.js">
+<link rel="import" href="/bower_components/neon-animation/web-animations.html">
+
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="/bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="/bower_components/paper-item/paper-item.html">
+<link rel="import" href="/bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="/bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/bower_components/paper-card/paper-card.html">
+
+<link rel="import" href="/src/styles/app-theme.html">
+
+
+<dom-module id="send-money-page">
+    <template>
+        <custom-style>
+            <style is="custom-style" include="burst-styles">
+                #sendMoneyWrapper {
+                    /* Extra 3px for left border */
+                    /* overflow: hidden; */
+                }
+
+                /* #sendMoneyWrapper>* {
+                    width: auto !important;
+                    padding: 0 15px;
+                } */
+
+                #sendMoneyWrapper paper-button {
+                    float: right;
+                }
+
+                #sendMoneyWrapper .buttons {
+                    /* --paper-button-ink-color: var(--paper-green-500);
+                        color: var(--paper-green-500); */
+                    width: auto !important;
+                }
+
+                .address-item {
+                    --paper-item-focused: {
+                        background: transparent;
+                    }
+                    ;
+                    --paper-item-focused-before: {
+                        opacity: 0;
+                    }
+                    ;
+                }
+
+                .address-balance {
+                    font-size: 42px;
+                    font-weight: 100;
+                }
+
+                .show-transactions {
+                    cursor: pointer;
+                }
+
+                .address-icon {
+                    border-radius: 50%;
+                    border: 5px solid;
+                    /*border-left: 4px solid;*/
+                    padding: 8px;
+                }
+
+                paper-input {
+                    margin: 0;
+                }
+
+                .selectedBalance {
+                    font-size: 14px;
+                    display: block;
+                }
+
+                .selectedBalance .balance {
+                    font-size: 22px;
+                    font-weight: 100;
+                }
+            </style>
+        </custom-style>
+
+        <div id="sendMoneyWrapper" style="width:auto; margin:10px;" >
+            <div class="layout horizontal center">
+                <paper-card style="width:100%; max-width:740px;">
+                    <div style$="background-color: {{selectedAddress.color}}; padding:12px 15px; margin:0; color: {{textColor(selectedAddress.textColor)}};">
+                
+                        <h3 style="margin:0; padding:8px 0;">Send money</h3>
+                
+                        <div class="selectedBalance">
+                            <!--  style$="color: {{selectedAddress.color}}" -->
+                            <span class="balance">{{selectedAddressInfo.balance.total.0}} KMX</span> available for transfer from
+                            <span>{{selectedAddress.address}}</span>
+                        </div>
+                    </div>
+                
+                    <div class="card-content">
+                        <paper-input id="amountInput" required label="Amount" type="number" invalid={{validAmount}} value="{{amount}}" error-message="Insufficient funds"
+                            on-keyup="_checkAmount"></paper-input>
+                
+                        <paper-input label="To" type="text" value="{{recipient}}"></paper-input>
+                
+                        <!-- <paper-input label="Fee" type="text" value="{{fee}}"></paper-input> -->
+                
+                        <p style="color:red">{{errorMessage}}</p>
+                        <p style="color:green;">{{successMessage}}</p>
+                
+                        <div class="buttons">
+                            <div>
+                                <paper-button autofocus on-tap="_sendMoney">Send &nbsp;
+                                    <iron-icon icon="send"></iron-icon>
+                                </paper-button>
+                            </div>
+                        </div>
+                
+                        <template is="dom-if" if="{{sendMoneyLoading}}">
+                            <paper-progress auto></paper-progress>
+                        </template>
+                    </div>
+                </paper-card>
+
+            </div>
+
+        </div>
+
+    </template>
+
+    <script src="/src/modules/wimp/wimp.js"></script>
+    <script src="send-money-page-bundle.js"></script>
+</dom-module>

@@ -87,8 +87,12 @@ class AirdropApp extends Polymer.Element {
 
     _claim(e) {
         const _this = this
-        
         this.showProgress = true
+        if (this.hasClaimedAirdrop) {
+            this.showProgress = false;
+            this.errorMessage = "Sorry, you have already claimed the airdrop."
+        }
+
         console.log(this.code)
         if (!this._checkCode(this.code)) {
             this.showProgress = false;
@@ -104,7 +108,7 @@ class AirdropApp extends Polymer.Element {
             if (this.readyState == 4) {
                 // Typical action to be performed when the document is ready:
                 // document.getElementById("demo").innerHTML = xhttp.responseText
-
+                console.log("RESPONSESESESSESESS", xhttp)
                 if (!(this.status == 200)){
                     _this.showProgress = false
                     _this.errorMessage = xhttp.statusText
@@ -119,6 +123,9 @@ class AirdropApp extends Polymer.Element {
                 _this.message = "Parsing response..."
                 try {
                     const response = JSON.parse(xhttp.responseText)
+                    _this.showProgress = false;
+                    _this.successMessage = `Success! ${xhttp.responseText}`
+                    _this.$.claimDialog.refit()
                 }
                 catch (e) {
                     _this.showProgress = false
@@ -127,7 +134,7 @@ class AirdropApp extends Polymer.Element {
                 _this.errorMessage = ""
             }
         };
-        xhttp.open("GET", `http://159.89.132.89:4999/airdrop/123123${this.selectedAddress.address}`, true);
+        xhttp.open("GET", `http://159.89.132.89:4999/airdrop/${this.selectedAddress.address}`, true);
         xhttp.send();
     }
 }

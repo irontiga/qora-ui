@@ -350,13 +350,14 @@
                 </paper-checkbox>
 
                 <div style="margin-top:0;" hidden$="{{saveSeedUseExistingIDAndPassword}}">
-                    <paper-input value="{{backupSeedID}}" style="margin-top:0;" label="Identifier (can be anything)" type="text"></paper-input>
+                    <!-- Don't put an identifier...not needed -->
+                    <!-- <paper-input value="{{backupSeedID}}" style="margin-top:0;" label="Identifier (can be anything)" type="text"></paper-input> -->
                     <paper-input value="{{backupSeedPassword}}" style="margin-top:0;" label="Password (required to decrypt the account on restoration)" type="password"></paper-input>
                 </div>
                 
                 <div id="backupSeedErrorMessage" style="color:red;">{{backupSeedErrorMessage}}</div>
 
-                <a href$="{{downloadBackSeedAnchorURL}}" target="_blank" download$="{{backupSeedID}}_KARMA_SEED_BACKUP.json" id="downloadBackupSeedAnchor" hidden></a>
+                <a href$="{{downloadBackSeedAnchorURL}}" target="_blank" download$="{{backupSeedID}}KARMA_SEED_BACKUP.json" id="downloadBackupSeedAnchor" hidden></a>
 
                 <div class="buttons">
                     <paper-button dialog-dismiss class="deny">Cancel</paper-button>

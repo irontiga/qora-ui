@@ -15,7 +15,8 @@ module.exports = {
         'src/elements/login-screen/create-account-page/create-account-page-bundle.js': './src/elements/login-screen/create-account-page/create-account-page.js',
         'src/elements/login-screen/login-handler/login-handler-bundle.js' : './src/elements/login-screen/login-handler/login-handler.js',
         'plugins/core/main.js': './plugins/core/main-src.js', // Should have it's own webpack (eerrrhhhmmm rollup) config the itself
-        'plugins/airdrop/airdrop-app-bundle.js': './plugins/airdrop/airdrop-app.js' // Should have it's own webpack (eerrrhhhmmm rollup) config the itself
+        'plugins/airdrop/airdrop-app-bundle.js': './plugins/airdrop/airdrop-app.js', // Should have it's own webpack (eerrrhhhmmm rollup) config the itself
+        'plugins/core/send-money-page/send-money-page-bundle.js': './plugins/core/send-money-page/send-money-page.js'
     },
     output: {
         path: path.resolve(__dirname),
