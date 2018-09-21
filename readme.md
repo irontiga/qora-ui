@@ -1,6 +1,7 @@
 ## Installation
 ```
 # git clone https://github.com/irontiga/qora-ui.git
+# cd qora-ui
 # npm install
 # bower install
 # npm run build
