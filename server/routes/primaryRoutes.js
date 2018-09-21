@@ -10,7 +10,7 @@ routes.push(
         path: '/',
         handler: (request, h) => {
             console.log(request.params);
-            return h.redirect('/karma/')
+            return h.redirect('/karma/wallet')
         }
     },
     {

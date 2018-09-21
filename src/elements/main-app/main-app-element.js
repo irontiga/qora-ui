@@ -180,7 +180,7 @@ export default class MainApp extends Polymer.Element {
     }
 
     _genIframeUrl(url) {
-        return "/qora/" + url
+        return "/karma/" + url
     }
 
     _getActiveUrl(routeData, urls) {
