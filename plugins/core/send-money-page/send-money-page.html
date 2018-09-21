@@ -108,7 +108,7 @@
                         <paper-input id="USDAmountInput" label="Amount (USD)" hidden$="{{!useUSDAmount}}" value="{{usdAmount}}" type="number">
                             <div slot="prefix">$ &nbsp;</div>
                         </paper-input>
-                        <paper-input id="amountInput" required label="Amount" type="number" invalid={{validAmount}} value="{{amount}}" error-message="Insufficient funds"
+                        <paper-input id="amountInput" required label="Amount (KMX)" type="number" invalid={{validAmount}} value="{{amount}}" error-message="Insufficient funds"
                             on-keyup="_checkAmount"></paper-input>
                 
                         <paper-input label="To (address or name)" type="text" value="{{recipient}}"></paper-input>

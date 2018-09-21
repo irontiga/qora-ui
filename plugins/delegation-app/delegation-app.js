@@ -36,15 +36,24 @@ class DelegationApp extends Polymer.Element {
         super();
     }
 
+    async _checkIfAddressHasName(addr) {
+
+        let names = await this.parentWimp.request("qoraApiCall", {
+            data: {
+                type: "api",
+                url: `names/address/${addr}`
+            }
+        })
+        console.log(names)
+        names = JSON.parse(names.data)
+        return names.length > 0
+    }
+
     _delegateClick(e){
         this.showProgress = true
         this.progressMessage = "Setting up data..."
         const nodeAddress = e.model.item.address
 
-        // this.parentWimp.request(data: {
-        //     type: "api",
-        //     url: `addresses/lastreference/${this.selectedAddress.address}/unconfirmed`
-        // })
         this._delegate(nodeAddress)
         .then((response) =>{
             this.successMessage = `Success! ${response.data}`
@@ -57,6 +66,11 @@ class DelegationApp extends Polymer.Element {
 
     async _delegate(address) {
         this.progressMessage = "Fetching last ref..."
+
+        const addrHasName = await this._checkIfAddressHasName(this.selectedAddress.address)
+        if(!addrHasName) {
+            throw("Error! You must set a name for your account before you can delegate.")
+        }
         let lastRef = await this.parentWimp.request("qoraApiCall", {
             data: {
                 type: "api",

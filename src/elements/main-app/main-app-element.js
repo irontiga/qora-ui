@@ -328,7 +328,7 @@ export default class MainApp extends Polymer.Element {
                 return
             }
 
-            this.setNameSuccessMessage = `Success! ${response}. It may take a few minutes before the newly set name shows. If it does not show within 10 minutes, try setting it again.`
+            this.setNameSuccessMessage = `Success! It may take a few minutes before the newly set name shows. If it does not show within 10 minutes, try setting it again. ${response.data}. `
             this.addressNameCheck(this.selectedAddress.address)
             this.setNameShowProgress = false
         })

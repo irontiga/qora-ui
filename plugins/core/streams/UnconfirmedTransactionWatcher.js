@@ -29,8 +29,8 @@ class UnconfirmedTransactionWatcher {
 
     check() {
         const c = this._addressTransactionCheck()
-            .then(() => setTimeout(() => this.check(), 10000))
-            .catch(() => setTimeout(() => this.check(), 10000))
+            .then(() => setTimeout(() => this.check(), 50000))
+            .catch(() => setTimeout(() => this.check(), 50000))
             console.log(c)
     }
 
