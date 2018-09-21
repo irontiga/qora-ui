@@ -79,7 +79,7 @@ class AirdropApp extends Polymer.Element {
         lastNumbers.split("").forEach(char => {
             total = total + parseInt(char)
         })
-        const firstNumber = 10 - (total % 10)
+        const firstNumber = (10 - (total % 10)) % 10
         const finalNumber = firstNumber + "" + lastNumbers
         console.log(finalNumber)
         return code === finalNumber
