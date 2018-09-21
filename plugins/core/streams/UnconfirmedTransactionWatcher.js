@@ -28,9 +28,10 @@ class UnconfirmedTransactionWatcher {
     }
 
     check() {
+        console.log("checkin for unconfirmed")
         const c = this._addressTransactionCheck()
-            .then(() => setTimeout(() => this.check(), 50000))
-            .catch(() => setTimeout(() => this.check(), 50000))
+            .then(() => setTimeout(() => this.check(), 5000))
+            .catch(() => setTimeout(() => this.check(), 5000))
             console.log(c)
     }
 
@@ -47,9 +48,9 @@ class UnconfirmedTransactionWatcher {
             }).then(unconfirmedTransactions => {
                 unconfirmedTransactions = JSON.parse(unconfirmedTransactions.data)
                 console.log(unconfirmedTransactions, unconfirmedTransactions.length)
-                if(unconfirmedTransactions.length === 0) {
-                    return
-                }
+                // if(unconfirmedTransactions.length === 0) {
+                //     return
+                // }
                 this._unconfirmedTransactionStreams[addr].emit(unconfirmedTransactions)
                 console.log(this._unconfirmedTransactionStreams[addr])
                 return

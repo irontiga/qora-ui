@@ -126,8 +126,8 @@ class WalletApp extends Polymer.Element {
 
                 this.coreWimp.ready()
                 .then(() => {
-                    console.log("READY EVENT FIRED")
-                    console.log(this.addressInfoStreams[addr])
+                    // console.log("READY EVENT FIRED")
+                    // console.log(this.addressInfoStreams[addr])
                     if (!(addr in this.addressInfoStreams)) {
                         console.log('AND DIDN\'T FIND AN EXISTING ADDRESS STREAM')
                         this.addressInfoStreams[addr] = this.coreWimp.listen(`address/${addr}`, addrInfo => {

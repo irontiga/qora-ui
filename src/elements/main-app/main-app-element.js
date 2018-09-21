@@ -321,14 +321,15 @@ export default class MainApp extends Polymer.Element {
             return QoraAPI.processTransaction(txBytes)
         })
         .then((response) => {
-            response = JSON.parse(response)
-            if (typeof response !== "object") {
-                this.setNameErrorMessage = `Error! ${ERROR_CODES[response]}. Error code ${response}`
+            const parsedResponse = JSON.parse(response)
+            if (typeof parsedResponse !== "object") {
+                this.setNameErrorMessage = `Error! ${ERROR_CODES[parsedResponse]}. Error code ${parsedResponse}`
                 this.setNameShowProgress = false
                 return
             }
-
-            this.setNameSuccessMessage = `Success! It may take a few minutes before the newly set name shows. If it does not show within 10 minutes, try setting it again. ${response.data}. `
+            console.log(response)
+            this.setNameErrorMessage = ""
+            this.setNameSuccessMessage = `Success! It may take a few minutes before the newly set name shows. If it does not show within 10 minutes, try setting it again. ${response}. `
             this.addressNameCheck(this.selectedAddress.address)
             this.setNameShowProgress = false
         })
@@ -341,20 +342,27 @@ export default class MainApp extends Polymer.Element {
     }
     
     addressNameCheck(addr){
+        console.log("CHECKING IF NAME HAS BEEN SET")
         this.set("selectedAddress.hasName", false)
-        this._addressNameCheck(addr).catch(err => {
+        this._addressNameCheck(addr).then(response => {
+            console.log(response)
+            // this.addressNameCheck(addr)
+        }, err => {
             console.error(err)
-            this._addressNameCheck(addr)
+            setTimeout(() => {
+                this.addressNameCheck(addr)
+            }, 5000);
         })
     }
 
     async _addressNameCheck(addr) {
-        this.showName = false
-
+        // this.showName = false
+        this.showName = true
+        console.log(addr)
         if(addr in this.addressNameStore) {
             this.selectedAddress.name = this.addressNameStore[addr]
             this.showName = true
-            return
+            return ""
         }
 
         let names =  await QoraAPI.request.api({
@@ -366,6 +374,8 @@ export default class MainApp extends Polymer.Element {
             this.addressNameStore[addr] = names[0]
             this.selectedAddress.name = names[0]
             this.set("selectedAddress.hasName", true)
+        } else {
+            throw ""
         }
         this.showName = true
         return

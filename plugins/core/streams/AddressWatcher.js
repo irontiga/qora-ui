@@ -56,9 +56,10 @@ class AddressWatcher {
             console.log(this)
             // fn(transaction, Object.keys(this._addresses))
             for (const addr of Object.keys(this._addresses)) {
-                const addrChanged = transactionTests.some(fn => {
-                    return fn(transaction, addr)
-                })
+                // const addrChanged = transactionTests.some(fn => {
+                //     return fn(transaction, addr)
+                // })
+                const addrChanged = true
                 if (!addrChanged) return
 
                 if (!(addr in pendingUpdateAddresses)) pendingUpdateAddresses.push(addr)
