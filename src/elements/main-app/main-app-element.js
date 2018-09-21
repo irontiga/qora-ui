@@ -342,10 +342,12 @@ export default class MainApp extends Polymer.Element {
     }
     
     addressNameCheck(addr){
+        this.addressNameCheckRunning = true
         console.log("CHECKING IF NAME HAS BEEN SET")
         this.set("selectedAddress.hasName", false)
         this._addressNameCheck(addr).then(response => {
             console.log(response)
+            this.addressNameCheckRunning = false
             // this.addressNameCheck(addr)
         }, err => {
             console.error(err)
@@ -363,7 +365,7 @@ export default class MainApp extends Polymer.Element {
             this.set("selectedAddress.name", this.addressNameStore[addr])
             // this.selectedAddress.name = this.addressNameStore[addr]
             this.showName = true
-            return ""
+            return this.addressNameStore[addr]
         }
 
         let names =  await QoraAPI.request.api({
@@ -500,12 +502,16 @@ export default class MainApp extends Polymer.Element {
         }
         // this.lastSelectedAddress = selectedAddress
         
+        if (!this.addressNameCheckRunning){
+            this.addressNameCheck(selectedAddress.address)
+        }
+
         this.updateStyles({
             "--active-menu-item-color" : selectedAddress.color
         })
 
-        clearInterval(this._addressCheckInterval)
-        this._addressCheckInterval = setInterval(this.addressNameCheck(selectedAddress.address), 10000)
+        // clearInterval(this._addressCheckInterval)
+        // this._addressCheckInterval = setInterval(this.addressNameCheck(selectedAddress.address), 10000)
         
         if(!this.streams.selectedAddress) return
         console.log(this.streams)

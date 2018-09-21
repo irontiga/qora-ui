@@ -79,7 +79,7 @@ class SendMoneyPage extends Polymer.Element {
     }
 
     _checkAmount() {
-        this.validAmount = this.amount <= this.selectedAddress.balance
+        this.validAmount = this.amount <= this.selectedAddress.nativeBalance.total[0]
         // if (this.amount > this.selectedAddress.balance - this.fee || this.amount <= 0) {
         //     this.validAmount = true;
         // }
@@ -214,7 +214,7 @@ class SendMoneyPage extends Polymer.Element {
                             console.log("Send money page received", addrInfo)
                             this.set(`addressesInfo.${addr}`, addrInfo)
                             // Ahh....actually if no balance....no last reference and so you can't send money
-                            addrInfo.balance = addrInfo.balance || {
+                            addrInfo.nativeBalance = addrInfo.nativeBalance || {
                                 total: {
                                     0: 0,
                                     1: 0
