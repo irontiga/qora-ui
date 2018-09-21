@@ -2,6 +2,7 @@ import Wimp from "../../modules/wimp/wimp.js"
 import parentWimpAPI from "../../modules/parentWimpAPI.js"
 import pluginLoader from "../../modules/pluginLoader.js"
 import addModalRoutes from "./modal-routes.js"
+import QoraAPI from "../../qora/QoraAPI.js"
 
 export default class MainApp extends Polymer.Element {
     static get is() {
@@ -123,6 +124,14 @@ export default class MainApp extends Polymer.Element {
             streams: {
                 type: Object,
                 value: {}
+            },
+            lastSelectedAddress: {
+                type:Object,
+                value: {}
+            },
+            setNameShowProgress: {
+                type:Boolean,
+                value: false
             }
         }
     }
@@ -239,6 +248,62 @@ export default class MainApp extends Polymer.Element {
         console.log(color)
         return color == 'light' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.87)'
     }
+
+    _openSetNameDialog(){
+        this.$.setNameDialog.open()
+    }
+
+    _setName(e){
+        this.setNameShowProgress = true
+        this.setNameProgressMessage = "Fetching last reference"
+
+        let txBytes
+
+        QoraAPI.request.api({
+            url: `addresses/lastreference/${this.selectedAddress.address}`,
+            method: "GET"
+        }).then(lastRef => {
+            this.setNameProgressMessage = "Signing transaction...."
+            
+            try {
+                const name = this.newAddressName.toLowerCase()
+
+                txBytes = QoraAPI.createTransaction(
+                    3,
+                    this.selectedAddress.keyPair,
+                    {
+                        registrantPublicKey: this.selectedAddress.keyPair.publicKey,
+                        registrantAddress: this.selectedAddress.address,
+                        name,
+                        value: this.selectedAddress.address,
+                        lastReference: lastRef
+                    }
+                )
+            } catch (e) {
+                this.setNameShowProgress = false
+                this.setNameErrorMessage = `Error! ${e}`
+                return
+            }
+            this.setNameProgressMessage = "Processing transaction...."
+            
+            console.log(txBytes)
+            
+            QoraAPI.processTransaction(txBytes).then((response) => {
+                this.setNameSuccessMessage = `Success! ${response}`
+                this.setNameShowProgress = false
+            }).catch(err => {
+                this.setNameShowProgress = false
+                this.setNameErrorMessage = `Error! ${err}`
+                // return res.error(err);
+            })
+        })
+        .catch(err => {
+            this.setNameShowProgress = false
+            this.setNameErrorMessage = `Error! ${err}`
+        })
+
+        
+    }
     
     objectKeys(obj){
         if(!obj){
@@ -258,6 +323,7 @@ export default class MainApp extends Polymer.Element {
 
     ready() {
         super.ready()
+        console.log("======================================READY EVENNT FIRED====================")
         let retryLoadConfigInterval = 0
         const loadConfig = () => fetch("/getConfig")
             .then(response => response.json())
@@ -326,6 +392,7 @@ export default class MainApp extends Polymer.Element {
             this.$.accountMenu.close()
         })
 
+        console.log(this.wimps)
         this.streams.selectedAddress = Object.values(this.wimps).map(w => {
             return w.createStream("Selected address", (req, res) => {
                 if(!this.selectedAddress){
@@ -347,17 +414,21 @@ export default class MainApp extends Polymer.Element {
     }
 
     _addressChanged(selectedAddress){
+        console.log(selectedAddress)
+        //  || selectedAddress == this.lastSelectedAddress
         if(!selectedAddress){
             return
         }
-        console.log(selectedAddress)
+        // this.lastSelectedAddress = selectedAddress
         
         this.updateStyles({
             "--active-menu-item-color" : selectedAddress.color
         })
         
         if(!this.streams.selectedAddress) return
+        console.log(this.streams)
         this.streams.selectedAddress.forEach(w => {
+            console.log("EEMMMITTTINNNGGGG NEEEWWWLLLYY SEEELLLECTEEDD AADDDREESSSS")
             w.emit({
                 address: selectedAddress.address,
                 color: selectedAddress.color,

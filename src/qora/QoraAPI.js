@@ -7,6 +7,7 @@ const QoraAPI = (function(){
     const QoraAPI = {
         transactions: transactions,
         processTransaction: (bytes) => {
+            console.log(Base58.encode(bytes))
             return request({
                 url: "transactions/process",
                 method: "POST",

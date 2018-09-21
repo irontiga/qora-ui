@@ -112,7 +112,7 @@ SHA256.digest = function(message) {
         h7 = (h7 + h) & 0xffffffff;
     }
     var hash = new Uint8Array(32);
-    for (i = 0; i < 4; i++) {
+    for (var i = 0; i < 4; i++) {
         hash[i] = (h0 >>> (8 * (3 - i))) & 0xff;
         hash[i + 4] = (h1 >>> (8 * (3 - i))) & 0xff;
         hash[i + 8] = (h2 >>> (8 * (3 - i))) & 0xff;
@@ -130,7 +130,7 @@ SHA256.digest = function(message) {
 SHA256.hash = function(message) {
     var digest = SHA256.digest(message);
     var hex = '';
-	for (i = 0; i < digest.length; i++) {
+	for (var i = 0; i < digest.length; i++) {
 		var s = '0' + digest[i].toString(16);
         hex += s.length > 2 ? s.substring(1) : s;
 	}

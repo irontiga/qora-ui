@@ -118,8 +118,14 @@ class WalletApp extends Polymer.Element {
                 this.selectedAddress = selectedAddress
                 const addr = selectedAddress.address
 
-                this.coreWimp.ready(() => {
-                    if (!this.addressInfoStreams[addr]) {
+                console.log("SELECTED AN ADDRESSS>>>>", selectedAddress)
+
+                this.coreWimp.ready()
+                .then(() => {
+                    console.log("READY EVENT FIRED")
+                    console.log(this.addressInfoStreams[addr])
+                    if (!(addr in this.addressInfoStreams)) {
+                        console.log('AND DIDN\'T FIND AN EXISTING ADDRESS STREAM')
                         this.addressInfoStreams[addr] = this.coreWimp.listen(`address/${addr}`, addrInfo => {
                             this.loading = false
                             this.set(`addressesInfo.${addr}`, addrInfo)
@@ -129,7 +135,8 @@ class WalletApp extends Polymer.Element {
                             this.addressesInfo = addressesInfoStore
                         })
                     }
-                    if (!this.unconfirmedTransactionStreams[addr]) {
+                    if (!(addr in this.unconfirmedTransactionStreams)) {
+                        console.log('AND DIDN\'T FIND AN EXISTING UNCONFIRMED TX STREAM')
                         this.addressesUnconfirmedTransactions[addr] = []
 
                         this.unconfirmedTransactionStreams[addr] = this.coreWimp.listen(`unconfirmedOfAddress/${addr}`, unconfirmedTransactions => {

@@ -29,14 +29,14 @@ class UnconfirmedTransactionWatcher {
 
     check() {
         const c = this._addressTransactionCheck()
-            .then(() => setTimeout(() => this.check(), 3000))
-            .catch(() => setTimeout(() => this.check(), 3000))
+            .then(() => setTimeout(() => this.check(), 10000))
+            .catch(() => setTimeout(() => this.check(), 10000))
             console.log(c)
     }
 
     async _addressTransactionCheck(){
         console.log("Checking for unconfirmed transactions")
-        console.log(this._addresses)
+        console.log(this._addresses, Object.keys(this._addresses))
         return Promise.all(Object.keys(this._addresses).map(addr => {
             console.log(`checking ${addr}`)
             return this._parentWimp.request("qoraApiCall", {

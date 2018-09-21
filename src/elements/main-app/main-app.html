@@ -17,6 +17,7 @@
 <link rel="import" href="/bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="/bower_components/iron-icons/av-icons.html">
 <link rel="import" href="/bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="/bower_components/iron-icons/editor-icons.html">
 <link rel="import" href="/bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="/bower_components/paper-menu-button/paper-menu-button.html">
 <link rel="import" href="/bower_components/paper-item/paper-item.html">
@@ -172,8 +173,20 @@
             <app-drawer-layout>
                 <app-drawer swipe-open slot="drawer" id="appdrawer">
                     <app-header-layout has-scrolling-region>
-                        <div id="accountDrawer" style$="background-color: {{selectedAddress.color}}">
-                            <iron-icon style$="color: {{textColor(selectedAddress.textColor)}};height:60px; width:60px; padding:12px;" icon="account-circle"></iron-icon>                            
+                        <div id="accountDrawer" style$="background-color: {{selectedAddress.color}}; color: {{textColor(selectedAddress.textColor)}};">
+                            
+                            <iron-icon style$="color: {{textColor(selectedAddress.textColor)}};height:60px; width:60px; padding:12px;" icon="account-circle"></iron-icon>
+
+                            <template is="dom-if" if="{{!selectedAddress.name}}">
+                                <span><i>No name set</i></span>
+                                <paper-icon-button icon="editor:mode-edit" on-tap="_openSetNameDialog"></paper-icon-button>
+                            </template>
+
+                            <template is="dom-if" if="{{selectedAddress.name}}">
+                                <span>{{selectedAddress.name}}</span>
+                            </template>
+                            
+
                             <paper-menu-button horizontal-align="left" id="accountMenu" style="padding:0; max-width:100%;">
                                 <div slot="dropdown-trigger" style="position:relative">
                                     <!--                                <paper-icon-button noink icon="account-circle"></paper-icon-button>-->
@@ -296,6 +309,29 @@
                 <div class="buttons">
                     <paper-button autofocus dialog-dismiss on-tap="rejectTransactionRequest" class="deny">Deny</paper-button>
                     <paper-button dialog-confirm on-tap="acceptTransactionRequest" class="confirm">Confirm</paper-button>
+                </div>
+            </paper-dialog>
+
+            <paper-dialog with-backdrop id="setNameDialog" style="max-width:400px;">
+                <h2>Set name</h2>
+                <p style="margin-bottom:0;">
+                    Note that this can only ever be done <strong>once</strong>. Name can contain any utf-8 character, however letters will be converted to lowercase.
+                </p>
+                <paper-input value="{{newAddressName}}" maxlength="400" char-counter style="margin-top:0;" label="Name" type="text"></paper-input>
+                <br>
+                <div id="progress" hidden$="{{!setNameShowProgress}}">
+                    <div style="display:inline-block">
+                        <paper-spinner active></paper-spinner>
+                    </div>
+                    <div id="message">{{setNameProgressMessage}}<br></div>
+                    <br>
+                </div>
+                <div id="setNameErrorMessage" style="color:red;">{{setNameErrorMessage}}</div>
+                <div id="setNameSuccessMessage" style="color:green;" style="word-wrap:break-word;">{{setNameSuccessMessage}}</div>
+                <div class="buttons">
+                    <paper-button dialog-dismiss on-tap="acceptTransactionRequest" class="deny">Close</paper-button>
+                    <!-- dialog-confirm -->
+                    <paper-button class="confirm" on-tap="_setName">Go</paper-button>
                 </div>
             </paper-dialog>
             

@@ -19,15 +19,29 @@ parentWimp.request("registerUrl", {
     //console.log(response);
 });
 
-parentWimp.request("registerTopMenuModal", {
+parentWimp.request("registerUrl", {
     data: {
+        url: "send-money",
+        page: "core/send-money-page/index.html",
+        title: "Send money",
         icon: "send",
-        page: "core/wallet/send-money.html",
-        text: "Send KMX"
+        menus: [],
+        parent: false
     }
 }, response => {
     //console.log(response);
 });
+
+// Changing to a whole page for sending...better for mobile, and otherwise i'd need to fix wimp proxies....which sounds like a nightmare
+// parentWimp.request("registerTopMenuModal", {
+//     data: {
+//         icon: "send",
+//         page: "core/wallet/send-money.html",
+//         text: "Send KMX"
+//     }
+// }, response => {
+//     //console.log(response);
+// });
 
 const streams = new StreamManager(parentWimp)
 

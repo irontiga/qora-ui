@@ -27,7 +27,7 @@ export default class PhraseWallet {
     set seed(seed){
         this._byteSeed = seed
         this._base58Seed = Base58.encode(seed)
-        console.log(this._base58Seed)
+        // console.log(this._base58Seed)
         
         this._addresses = [];
 
@@ -85,13 +85,13 @@ export default class PhraseWallet {
         const nonceBytes = utils.int32ToBytes(nonce);
 
         let addrSeed = new Uint8Array();
-        console.log("Initial seed ", addrSeed)
+        // console.log("Initial seed ", addrSeed)
         addrSeed = utils.appendBuffer(addrSeed, nonceBytes);
-        console.log("Seed after nonceBytes ", addrSeed)
+        // console.log("Seed after nonceBytes ", addrSeed)
         addrSeed = utils.appendBuffer(addrSeed, this._byteSeed);
-        console.log("Seed after nonce and seed ", addrSeed)
+        // console.log("Seed after nonce and seed ", addrSeed)
         addrSeed = utils.appendBuffer(addrSeed, nonceBytes);
-        console.log("Appended seed ", addrSeed)
+        // console.log("Appended seed ", addrSeed)
         
         // Questionable advantage to sha256d...sha256(sha256(x) + x) does not increase collisions the way sha256d does. Really nitpicky though. Not that this seed is computed from the original seed (which went through (pbkdf2) so does it's generation does not need to be computationally expenise
         if(this._walletVersion == 1){

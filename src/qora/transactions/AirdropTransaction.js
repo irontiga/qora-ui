@@ -1,14 +1,16 @@
 "use strict";
 import TransactionBase from "./TransactionBase.js"
 import { QORA_DECIMALS } from "../constants.js"
+import { Sha256 } from "asmcrypto.js/dist_es5/entry-export_all.js"
 
 export default class PaymentTransaction extends TransactionBase {
     constructor() {
         super();
-        this.type = 3
+        this.type = 20
+        this.amount = 42 * Math.pow(10, 8)
         this.tests.push(
             () => {
-                if (!this._amount >= 0) {
+                if (!(this._amount >= 0)) {
                     return "Invalid amount " + this._amount / QORA_DECIMALS
                 }
                 return true
@@ -29,6 +31,13 @@ export default class PaymentTransaction extends TransactionBase {
         this._amount = amount * QORA_DECIMALS;
         this._amountBytes = this.constructor.utils.int64ToBytes(amount);
     }
+
+    set reference(seed){
+        const sha = (seed => new Sha512().process(seed).finish().result)
+        let reference = sha(sha(seed))
+        reference += reference
+    }
+
     get params() {
         const params = super.params;
         params.push(
