@@ -1,0 +1,125 @@
+<script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+<link rel="import" href="/bower_components/polymer/polymer.html">
+
+<link rel="import" href="/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="/bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="/bower_components/paper-card/paper-card.html">
+<link rel="import" href="/bower_components/paper-input/paper-input.html">
+<link rel="import" href="/bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="/bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="/bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="/bower_components/paper-item/paper-item.html">
+<link rel="import" href="/bower_components/paper-ripple/paper-ripple.html">
+
+<link rel="import" href="/bower_components/vaadin-material-theme/vaadin-grid.html">
+<link rel="import" href="/bower_components/vaadin-grid/vaadin-grid.html">
+
+<link rel="import" href="/src/styles/app-styles.html">
+
+<dom-module id="delegation-app">
+    <template>
+        <custom-style>
+            <style is="custom-style" include="app-styles">
+                #main {
+
+                }
+
+                #claim-button {
+                    background: #fff;
+                    /* font-weight: 600; */
+                    font-size: 20px;
+                    padding: 0 30px;
+                    /* height:120px; */
+                }
+
+                #message {
+                    padding-left: 8px;
+                    display: inline-block;
+                    line-height: 40px;
+                    text-align: center
+                }
+
+            </style>
+        </custom-style>
+
+        <app-localstorage-document key="hasClaimedAirdrop" data="{{hasClaimedAirdrop}}"></app-localstorage-document>
+
+        <div id="main">
+            <br>
+            <div class="layout horizontal center" style="height:100%; padding:10px">
+                <div class="layout vertical center" style="width:100%;">
+                    <paper-card style="width:100%;">
+                       <div class="card-content">
+                            <h2 style="font-size:20px; color:#333;">Delegate KEX to a supernode</h2>
+                            <p>Choose a supernode to delegate to...and then hit delegate :)</p>
+                            <p>Currently delegating to: {{currentSuperNode}}</p>
+
+                            <div id="progress" hidden$="{{!showProgress}}">
+                                <div style="display:inline-block">
+                                    <paper-spinner active></paper-spinner>
+                                </div>
+                                <div id="progressMessage">{{progressMessage}}<br></div>
+                                <br>
+                            </div>
+                            <div id="errorMessage" style="color:red;">{{errorMessage}}</div>
+                            <div id="successMessage" style="word-wrap: break-word; color:green;">{{successMessage}}</div>
+
+                            <vaadin-grid 
+                                height-by-rows 
+                                aria-label="Supernodes"
+                                items="{{superNodes}}">
+                            
+                                <vaadin-grid-column flex-grow="4">
+                                    <template class="header">
+                                        <span>Name</span>
+                                    </template>
+                                    <template>
+                                        <span >
+                                            {{item.name}}
+                                        </span>
+                                    </template>
+                                </vaadin-grid-column>
+                            
+                                <vaadin-grid-column flex-grow="8">
+                                    <template class="header" >
+                                        Address
+                                    </template>
+                                    <template>
+                                        <span>
+                                             {{item.address}}
+                                        </span>
+                                    </template>
+                                </vaadin-grid-column>
+                            
+                                <vaadin-grid-column flex-grow="0">
+                                    <template class="header">
+                                        Delegations
+                                    </template>
+                                    <template>
+                                        <span>{{item.delegations}}</span>
+                                    </template>
+                                </vaadin-grid-column>
+
+                                <vaadin-grid-column flex-grow="0" width="120px">
+                                    <template class="header">
+                                        Delegate
+                                    </template>
+                                    <template>
+                                        <paper-button disabled="{{disabledButtons}}" on-tap="_delegateClick" style="background:#333; color:#fff;">Delegate</paper-button>
+                                    </template>
+                                </vaadin-grid-column>
+                            
+                            </vaadin-grid>
+
+                            
+                            
+                       </div>
+                    </paper-card>
+                </div>
+            </div>
+        </div>
+    </template>
+    <script src="/src/modules/wimp/wimp.js"></script>
+    <script src="delegation-app.js"></script>
+</dom-module>
