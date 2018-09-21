@@ -360,9 +360,10 @@ export default class MainApp extends Polymer.Element {
     async _addressNameCheck(addr) {
         // this.showName = false
         this.showName = true
-        console.log(addr)
+        
         if(addr in this.addressNameStore) {
             this.set("selectedAddress.name", this.addressNameStore[addr])
+            this.set("selectedAddress.hasName", true)
             // this.selectedAddress.name = this.addressNameStore[addr]
             this.showName = true
             return this.addressNameStore[addr]
@@ -511,7 +512,7 @@ export default class MainApp extends Polymer.Element {
         })
 
         // clearInterval(this._addressCheckInterval)
-        // this._addressCheckInterval = setInterval(this.addressNameCheck(selectedAddress.address), 10000)
+        // this._addressCheckInterval = setInterval(this.addressNameCheck(selectedAddress.address), 5000)
         
         if(!this.streams.selectedAddress) return
         console.log(this.streams)
