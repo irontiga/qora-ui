@@ -57,7 +57,8 @@ class LoginPage extends Polymer.Element {
                 value: {
                     existingSeed: 0,
                     passphrase : 1,
-                    seed: 2
+                    seed: 2,
+                    backedUpAccount: 3
                 }
             },
             addresses : {
@@ -113,6 +114,7 @@ class LoginPage extends Polymer.Element {
             this.unlockSeedPassword = ""
             this.rememberMe = false
             this.errorMessage = ""
+            this.backedUpAccountPassword = ""
             // this.seed = ""
             this.loading = false
         }
@@ -185,6 +187,27 @@ class LoginPage extends Polymer.Element {
                     seed = await this.loginHandler.decryptEncryptedSeed(this.selectedEncryptedSeed, this.unlockSeedPassword)
                     walletVersion = this.selectedEncryptedSeed.version
                     break;
+                case "backedUpAccount":
+                    const file = this.$.backedUpAccountInput.files[0]
+                    const password = this.backedUpAccountPassword
+                    const result = await new Promise((resolve, reject) => {
+                        const reader = new FileReader()
+                        reader.onload = () => {
+                            resolve(reader.result)
+                        }
+                        reader.readAsText(file)
+                    })
+                    const savedData = JSON.parse(result)
+
+                    seed = await this.loginHandler.decryptEncryptedSeed(savedData, password)
+                    walletVersion = savedData.version
+                    
+                    // If we wanted to re use original password/name....TODO...need to not show the inputs when remember me is ticked then
+                    // if(this.rememberMe) {
+                    //     this.name = savedData.name
+                    //     this.password = password
+                    // }
+                    break
             }
 
             const wallet = this.loginHandler.newWallet(seed, walletVersion)

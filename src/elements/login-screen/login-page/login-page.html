@@ -117,6 +117,7 @@
                         <paper-tab type="existingSeed" hidden$="{{!encryptedSeedsExist}}">Existing account</paper-tab>
                         <paper-tab type="passphrase">Passphrase</paper-tab>
                         <paper-tab type="seed">Qora wallet Seed</paper-tab>
+                        <paper-tab type="backedUpAccount">Backed up account</paper-tab>
                         <!--<paper-tab>Address</paper-tab>-->
                     </paper-tabs>
 
@@ -162,6 +163,16 @@
                                 <paper-input class="flex" char-counter label="Qora generation seed" type="password" id="generationSeed" value="{{generationSeed}}" on-keydown="_loginKeyDown"></paper-input>
                             </div>
 
+                            <div type="backedUpAccount">
+                                <div class="layout horizontal wrap">
+                                    <input class="flex" type="file" id="backedUpAccountInput" accept=".json, application/json"> 
+                                </div>
+                                <div class="layout horizontal wrap">
+                                    <iron-icon icon="icons:lock" slot="prefix" style="color:#333; padding-right: 12px; margin-top: 28px;"></iron-icon>
+                                    <paper-input class="flex" char-counter label="Password" type="password" id="backedUpAccountPassword" value="{{backedUpAccountPassword}}" on-keydown="_loginKeyDown"></paper-input>
+                                </div>
+                            </div>
+
                         </iron-pages>
 
                         <div hidden$="{{_equals(loginType, 'existingSeed')}}" >
@@ -196,7 +207,6 @@
                         </div>
 
                         <span class="error-message">{{errorMessage}}</span>
-                        
                     </div>
                     <div class="card-actions" style="height:36px;">
                         <paper-button style="float:right" on-tap="_loginClick">Login</paper-button>

@@ -302,8 +302,9 @@ export default class MainApp extends Polymer.Element {
         .then(lastRef => {
             this.setNameProgressMessage = "Signing transaction...."
             if (lastRef === "false"){
-                lastRef = Sha256.digest(Sha256.digest(this.selectedAddress.keyPair.privateKey))
-                lastRef = utils.appendBuffer(lastRef, lastRef)
+                // lastRef = Sha256.digest(Sha256.digest(this.selectedAddress.keyPair.privateKey))
+                // lastRef = utils.appendBuffer(lastRef, lastRef)
+                throw("Can not set name until account has had an incoming transaction. Try claiming airdrop first :)")
             }
             const txBytes = QoraAPI.createTransaction(
                 3,
@@ -322,7 +323,6 @@ export default class MainApp extends Polymer.Element {
         .then((response) => {
             response = JSON.parse(response)
             if (typeof response !== "object") {
-                this.setNameShowProgress = false
                 this.setNameErrorMessage = `Error! ${ERROR_CODES[response]}. Error code ${response}`
                 this.setNameShowProgress = false
                 return
