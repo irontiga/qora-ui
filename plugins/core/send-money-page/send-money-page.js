@@ -116,11 +116,15 @@ class SendMoneyPage extends Polymer.Element {
                 type: "api",
                 url: `names/${recipient}`
             }
+        }).catch(err => {
+            return JSON.stringify({
+                
+            })
         })
         console.log(recipientAsNameInfo)
-        recipientAsNameInfo = JSON.parse(recipientAsNameInfo.data)
 
-        if(recipientAsNameInfo.value){
+        if(recipientAsNameInfo.success){
+            recipientAsNameInfo = JSON.parse(recipientAsNameInfo.data)
             recipient = recipientAsNameInfo.value
         }
 
