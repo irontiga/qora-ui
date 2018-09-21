@@ -20,6 +20,10 @@ export default class PhraseWallet {
         // walletVersion 2 = "new" Qora ui seed generation
         this._walletVersion = walletVersion || 2;
         this.seed = seed; 
+        
+        // Probably put getters/setters to validate...
+        this.savedSeedData = {}
+        this.hasBeenSaved = false
     }
     /*
     seed is a byte array

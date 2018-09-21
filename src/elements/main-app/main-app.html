@@ -168,23 +168,26 @@
 
             <!-- LOGIN PAGE -->
 <!--            <login-page loginpage="{{loginpage}}"passphrase="{{passphrase}}" pin="{{pin}}" address-count="{{addressCount}}"  open-settings='{{getOpenSettings()}}'></login-page>-->
-            <login-screen id="login-container" class="fade-hide" hidden$="{{loggedIn}}" logged-in="{{loggedIn}}" wallet="{{wallet}}" config="{{config}}" addresses="{{addresses}}" open-settings='{{getOpenSettings()}}'></login-screen>
+            <login-screen id="login-container" login-handler="{{loginHandler}}" class="fade-hide" hidden$="{{loggedIn}}" logged-in="{{loggedIn}}" wallet="{{wallet}}" config="{{config}}" addresses="{{addresses}}" open-settings='{{getOpenSettings()}}'></login-screen>
             
             <app-drawer-layout>
                 <app-drawer swipe-open slot="drawer" id="appdrawer">
                     <app-header-layout has-scrolling-region>
                         <div id="accountDrawer" style$="background-color: {{selectedAddress.color}}; color: {{textColor(selectedAddress.textColor)}};">
                             
-                            <iron-icon style$="color: {{textColor(selectedAddress.textColor)}};height:60px; width:60px; padding:12px;" icon="account-circle"></iron-icon>
-
-                            <template is="dom-if" if="{{!selectedAddress.name}}">
-                                <span><i>No name set</i></span>
-                                <paper-icon-button icon="editor:mode-edit" on-tap="_openSetNameDialog"></paper-icon-button>
-                            </template>
-
-                            <template is="dom-if" if="{{selectedAddress.name}}">
-                                <span>{{selectedAddress.name}}</span>
-                            </template>
+                            
+                                <iron-icon style$="color: {{textColor(selectedAddress.textColor)}};height:60px; width:60px; padding:12px;" icon="account-circle"></iron-icon>
+                                
+                                <div style="display:inline" hidden$="{{!showName}}">
+                                    <template is="dom-if" if="{{!selectedAddress.hasName}}">
+                                        <span><i>No name set</i></span>
+                                        <paper-icon-button icon="editor:mode-edit" on-tap="_openSetNameDialog"></paper-icon-button>
+                                    </template>
+                                    
+                                    <template is="dom-if" if="{{selectedAddress.hasName}}">
+                                        <span>{{selectedAddress.name}}</span>
+                                    </template>
+                                </div>
                             
 
                             <paper-menu-button horizontal-align="left" id="accountMenu" style="padding:0; max-width:100%;">
@@ -259,6 +262,7 @@
 
                             <div style="display:inline">
                                 <!-- <paper-icon-button icon="icons:settings" on-tap="openSettings"></paper-icon-button> -->
+                                <paper-button on-tap="_openBackupSeedDialog" style="font-size:14px;">Backup account</paper-button>
                                 <paper-tooltip position="top">Logout</paper-tooltip>
                                 <paper-icon-button icon="power-settings-new" on-tap="logOut"></paper-icon-button>
                             </div>
@@ -329,9 +333,35 @@
                 <div id="setNameErrorMessage" style="color:red;">{{setNameErrorMessage}}</div>
                 <div id="setNameSuccessMessage" style="color:green;" style="word-wrap:break-word;">{{setNameSuccessMessage}}</div>
                 <div class="buttons">
-                    <paper-button dialog-dismiss on-tap="acceptTransactionRequest" class="deny">Close</paper-button>
+                    <paper-button dialog-dismiss class="deny">Close</paper-button>
                     <!-- dialog-confirm -->
                     <paper-button class="confirm" on-tap="_setName">Go</paper-button>
+                </div>
+            </paper-dialog>
+
+            <paper-dialog with-backdrop id="backupSeedDialog" style="max-width:400px;">
+                <h2>Backup your account</h2>
+                <p style="margin-bottom:0;">
+                    Here you can download a backup of your account. It will be encrypted with a password of your choice.
+                </p>
+
+                <paper-checkbox hidden$="{{!wallet.hasBeenSaved}}" checked="{{saveSeedUseExistingIDAndPassword}}">
+                    Use ID / password used to remember in browser
+                </paper-checkbox>
+
+                <div style="margin-top:0;" hidden$="{{saveSeedUseExistingIDAndPassword}}">
+                    <paper-input value="{{backupSeedID}}" style="margin-top:0;" label="Identifier (can be anything)" type="text"></paper-input>
+                    <paper-input value="{{backupSeedPassword}}" style="margin-top:0;" label="Password (required to decrypt the account on restoration)" type="password"></paper-input>
+                </div>
+                
+                <div id="backupSeedErrorMessage" style="color:red;">{{backupSeedErrorMessage}}</div>
+
+                <a href$="{{downloadBackSeedAnchorURL}}" download$="{{backupSeedID}}_KARMA_SEED_BACKUP.json" id="downloadBackupSeedAnchor" hidden></a>
+
+                <div class="buttons">
+                    <paper-button dialog-dismiss class="deny">Cancel</paper-button>
+                    <!-- dialog-confirm -->
+                    <paper-button class="confirm" on-tap="_downloadBackupSeedClick">Download</paper-button>
                 </div>
             </paper-dialog>
             

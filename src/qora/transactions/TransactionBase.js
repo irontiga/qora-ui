@@ -42,6 +42,7 @@ export default class TransactionBase{
             },
             () => {
                 if(!(this._lastReference instanceof Uint8Array && this._lastReference.byteLength == 64)){
+                    console.log(this._lastReference)
                     return "Invalid last reference: " + this._lastReference
                 }
                 return true

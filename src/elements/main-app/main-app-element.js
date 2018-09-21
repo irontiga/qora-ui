@@ -3,6 +3,9 @@ import parentWimpAPI from "../../modules/parentWimpAPI.js"
 import pluginLoader from "../../modules/pluginLoader.js"
 import addModalRoutes from "./modal-routes.js"
 import QoraAPI from "../../qora/QoraAPI.js"
+import Sha256 from "../../qora/deps/sha256.js"
+import utils from '../../qora/deps/utils.js'
+import { ERROR_CODES } from "../../qora/constants.js"
 
 export default class MainApp extends Polymer.Element {
     static get is() {
@@ -132,6 +135,21 @@ export default class MainApp extends Polymer.Element {
             setNameShowProgress: {
                 type:Boolean,
                 value: false
+            },
+            addressNameStore: {
+                type: Object,
+                value: {}
+            },
+            showName: {
+                type: Boolean,
+                value: false
+            },
+            saveSeedUseExistingIDAndPassword: {
+                type: Boolean,
+                value: false
+            },
+            loginHandler: {
+                type: Object
             }
         }
     }
@@ -249,53 +267,70 @@ export default class MainApp extends Polymer.Element {
         return color == 'light' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.87)'
     }
 
+    _openBackupSeedDialog(e) {
+        this.$.backupSeedDialog.open()
+    }
+
     _openSetNameDialog(){
         this.$.setNameDialog.open()
     }
 
     _setName(e){
         this.setNameShowProgress = true
+        this.setNameProgressMessage = "Lowercasing name"
+        const name = this.newAddressName.toLowerCase()
+        console.log(name)
         this.setNameProgressMessage = "Fetching last reference"
 
-        let txBytes
-
+        // First check name is available
         QoraAPI.request.api({
-            url: `addresses/lastreference/${this.selectedAddress.address}`,
+            url: `names/${name}`,
             method: "GET"
-        }).then(lastRef => {
+        })
+        // Throws an error if the name does not exist...so error = good, success = name already in use
+        .then(nameInfo => {
+            nameInfo = JSON.parse(nameInfo)
+            if (nameInfo.owner){
+                throw ("Name already regsitered. Please pick another.")
+            }
+        }, e => {
+            return QoraAPI.request.api({
+                url: `addresses/lastreference/${this.selectedAddress.address}`,
+                method: "GET"
+            })
+        })
+        .then(lastRef => {
             this.setNameProgressMessage = "Signing transaction...."
-            
-            try {
-                const name = this.newAddressName.toLowerCase()
-
-                txBytes = QoraAPI.createTransaction(
-                    3,
-                    this.selectedAddress.keyPair,
-                    {
-                        registrantPublicKey: this.selectedAddress.keyPair.publicKey,
-                        registrantAddress: this.selectedAddress.address,
-                        name,
-                        value: this.selectedAddress.address,
-                        lastReference: lastRef
-                    }
-                )
-            } catch (e) {
+            if (lastRef === "false"){
+                lastRef = Sha256.digest(Sha256.digest(this.selectedAddress.keyPair.privateKey))
+                lastRef = utils.appendBuffer(lastRef, lastRef)
+            }
+            const txBytes = QoraAPI.createTransaction(
+                3,
+                this.selectedAddress.keyPair,
+                {
+                    registrantPublicKey: this.selectedAddress.keyPair.publicKey,
+                    registrantAddress: this.selectedAddress.address,
+                    name,
+                    value: this.selectedAddress.address,
+                    lastReference: lastRef
+                }
+            )
+            this.setNameProgressMessage = "Processing transaction...."
+            return QoraAPI.processTransaction(txBytes)
+        })
+        .then((response) => {
+            response = JSON.parse(response)
+            if (typeof response !== "object") {
                 this.setNameShowProgress = false
-                this.setNameErrorMessage = `Error! ${e}`
+                this.setNameErrorMessage = `Error! ${ERROR_CODES[response]}. Error code ${response}`
+                this.setNameShowProgress = false
                 return
             }
-            this.setNameProgressMessage = "Processing transaction...."
-            
-            console.log(txBytes)
-            
-            QoraAPI.processTransaction(txBytes).then((response) => {
-                this.setNameSuccessMessage = `Success! ${response}`
-                this.setNameShowProgress = false
-            }).catch(err => {
-                this.setNameShowProgress = false
-                this.setNameErrorMessage = `Error! ${err}`
-                // return res.error(err);
-            })
+
+            this.setNameSuccessMessage = `Success! ${response}. It may take a few minutes before the newly set name shows. If it does not show within 10 minutes, try setting it again.`
+            this.addressNameCheck(this.selectedAddress.address)
+            this.setNameShowProgress = false
         })
         .catch(err => {
             this.setNameShowProgress = false
@@ -305,6 +340,37 @@ export default class MainApp extends Polymer.Element {
         
     }
     
+    addressNameCheck(addr){
+        this.set("selectedAddress.hasName", false)
+        this._addressNameCheck(addr).catch(err => {
+            console.error(err)
+            this._addressNameCheck(addr)
+        })
+    }
+
+    async _addressNameCheck(addr) {
+        this.showName = false
+
+        if(addr in this.addressNameStore) {
+            this.selectedAddress.name = this.addressNameStore[addr]
+            this.showName = true
+            return
+        }
+
+        let names =  await QoraAPI.request.api({
+            url: `names/address/${addr}`
+        })
+        console.log(names)
+        names = JSON.parse(names)
+        if (names.length > 0) {
+            this.addressNameStore[addr] = names[0]
+            this.selectedAddress.name = names[0]
+            this.set("selectedAddress.hasName", true)
+        }
+        this.showName = true
+        return
+    }
+
     objectKeys(obj){
         if(!obj){
             return []
@@ -424,6 +490,9 @@ export default class MainApp extends Polymer.Element {
         this.updateStyles({
             "--active-menu-item-color" : selectedAddress.color
         })
+
+        clearInterval(this._addressCheckInterval)
+        this._addressCheckInterval = setInterval(this.addressNameCheck(selectedAddress.address), 10000)
         
         if(!this.streams.selectedAddress) return
         console.log(this.streams)
@@ -478,6 +547,30 @@ export default class MainApp extends Polymer.Element {
 
         // const toastElement = this.$.querySelector("#toastElement")
         // toastElement.close()
+    }
+
+    _downloadBackupSeedClick (e){
+        this._downloadBackupSeed()
+    }
+
+    async _downloadBackupSeed () {
+        console.log(this.loginHandler)
+        let saveSeedData
+        if (this.saveSeedUseExistingIDAndPassword) {
+            saveSeedData = this.wallet.savedSeedData
+        } else {
+            // Check the password/id
+            if (this.backupSeedID.length < 1 || this.backupSeedPassword.length < 1) {
+                throw new Error("Invalid identifier or password  length")
+            }
+            saveSeedData = await this.loginHandler.generateSaveSeedData(this.wallet.seed, this.wallet._walletVersion, this.backupSeedID, this.backupSeedPassword)
+        }
+
+        this.downloadBackSeedAnchorURL = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(saveSeedData))
+        
+        this.$.downloadBackupSeedAnchor.click()
+
+
     }
 
 }

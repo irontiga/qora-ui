@@ -35,6 +35,10 @@ class LoginContainer extends Polymer.Element {
             },
             addressColors: {
                 type: Array
+            },
+            loginHandler: {
+                type: Object,
+                notify: true
             }
         }
     }

@@ -113,15 +113,14 @@ class LoginPage extends Polymer.Element {
             this.unlockSeedPassword = ""
             this.rememberMe = false
             this.errorMessage = ""
-
             // this.seed = ""
-            // this.loading = false
+            this.loading = false
         }
     }
     
     _deleteEncryptedSeed(e){
-        // this.splice("encryptedSeeds", e.model.index, 1)
-        this.loginHandler.deleteEncryptedSeed(e.model.index)
+        this.splice("encryptedSeeds", e.model.index, 1)
+        // this.loginHandler.deleteEncryptedSeed(e.model.index)
     }
 
     _equals(a, b){
@@ -193,7 +192,13 @@ class LoginPage extends Polymer.Element {
 
             if (this.rememberMe && this.loginType !== 'existingSeed') {
                 // this._remember(passphraseSeed, 2)
-                this.loginHandler.saveSeed(seed, walletVersion, this.name, this.password)
+                const saveSeedData = await this.loginHandler.generateSaveSeedData(seed, walletVersion, this.name, this.password)
+                console.log("================================================= SSSSSSSSAAAAAAAVVVVVVVVIIIIIIIINNNNNNNNGGGGGGGGGG ============================", saveSeedData)
+                this.push("encryptedSeeds", saveSeedData)
+                wallet.savedSeedData = savedSeedData
+                wallet.hasBeenSaved = true
+                this.loading = false;
+                // this.loginHandler.saveSeed(seed, walletVersion, this.name, this.password)
             }
         }
         catch (e) {
@@ -267,9 +272,9 @@ class LoginPage extends Polymer.Element {
     //     console.log(this.loggedIn)
     // }
 
-    // _encryptedSeedsExist(){
-    //     return this.encryptedSeeds.length != 0
-    // }
+    _encryptedSeedsExist(){
+        return this.encryptedSeeds.length != 0
+    }
 
 }
 

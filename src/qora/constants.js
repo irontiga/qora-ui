@@ -29,6 +29,67 @@ const TX_TYPES = {
     20: "Airdrop"
 }
 
+const ERROR_CODES = {
+    1: "Valid OK",
+    2: "Invalid address",
+    3: "Negative amount",
+    4: "Nagative fee",
+    5: "No balance",
+    6: "Invalid reference",
+
+    7: "Invalid time length",
+    8: "Invalid value length",
+    9: "Name already registered",
+
+    10: "Name does not exist",
+    11: "Invalid name owner",
+    12: "Name already for sale",
+    13: "Name not for sale",
+    14: "Name buyer already owner",
+    15: "Invalid amount",
+    16: "Invalid seller",
+
+    17: "Name not lowercase",
+
+    18: "Invalid description length",
+    19: "Invalid options length",
+    20: "Invalid option length",
+    21: "Duplicate option",
+    22: "Poll already created",
+    23: "Poll already has votes",
+    24: "Poll does not exist",
+    25: "Option does not exist",
+    26: "Already voted for that option",
+    27: "Invalid data length",
+
+    28: "Invalid quantity",
+    29: "Asset does not exist",
+    30: "Invalid return",
+    31: "Have equals want",
+    32: "Order does not exist",
+    33: "Invalid order creator",
+    34: "Invalid payments length",
+    35: "Negative price",
+    36: "Invalid creation bytes",
+    37: "Invalid tags length",
+    38: "Invalid type length",
+    
+    40: "Fee less required",
+    
+    41: "Invalid raw data",
+    
+    42: "Delegation already exists",
+    43: "Supernode invalid",
+    
+    44: "Super node already exists",
+    
+    45: "Spending disallowed",
+    
+    10000: "AT_ERROR",
+
+    1000: "Not yet released.."
+}
+
 const QORA_DECIMALS = 100000000
 
 const PROXY_URL = "/proxy/" // Proxy for api calls
@@ -41,11 +102,11 @@ const STATIC_SALT = new Uint8Array([54, 190, 201, 206, 65, 29, 123, 129, 147, 23
 const BCRYPT_ROUNDS = 10 // Remember that the total work spent on key derivation is BCRYPT_ROUNDS * KDF_THREADS
 const BCRYPT_VERSION = "2a"
 const STATIC_BCRYPT_SALT = `$${BCRYPT_VERSION}$${BCRYPT_ROUNDS}$IxVE941tXVUD4cW0TNVm.O`
-const PBKDF2_ROUNDS = Math.pow(2,17)
+// const PBKDF2_ROUNDS = Math.pow(2,17) // Deprecated
 
 const KDF_THREADS = 16 // 16 Threads seems like a good number :)
 
-export { TX_TYPES, QORA_DECIMALS, PROXY_URL, STATIC_SALT, PBKDF2_ROUNDS, ADDRESS_VERSION, KDF_THREADS, STATIC_BCRYPT_SALT }
+export { TX_TYPES, ERROR_CODES, QORA_DECIMALS, PROXY_URL, STATIC_SALT, ADDRESS_VERSION, KDF_THREADS, STATIC_BCRYPT_SALT }
 
 //const TX_TYPES =  {
 //    GENESIS_TRANSACTION: 1,

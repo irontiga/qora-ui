@@ -49,8 +49,8 @@ export default function request(options){
                     resolve(response);
                 
                 } else {
-                    console.error(xhttp.statusText);
-                    reject(xhttp.statusText);
+                    console.error("SOME ERROR", xhttp.responseText, xhttp.statusText)
+                    reject(xhttp.statusText)
                 }
 
             };
@@ -65,6 +65,8 @@ export default function request(options){
             params += Object.keys(options.data).map(key => {
                 return encodeURIComponent(key) + "=" + encodeURIComponent(options.data[key]);
             }).join('&');
+
+            params = params === "?" ? "" : params // No question mark if no params 
 
             xhttp.open(options.method, url + params, true);
             xhttp.send();

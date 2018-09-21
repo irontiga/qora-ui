@@ -1,6 +1,6 @@
 import PhraseWallet from "../../../qora/PhraseWallet.js"
 import utils from "../../../qora/deps/utils.js"
-import { STATIC_SALT, PBKDF2_ROUNDS, KDF_THREADS, STATIC_BCRYPT_SALT } from "../../../qora/constants.js"
+import { STATIC_SALT, KDF_THREADS, STATIC_BCRYPT_SALT } from "../../../qora/constants.js"
 import Base58 from "../../../qora/deps/Base58.js"
 import bcrypt from 'bcryptjs'
 // import * as asmCrypto from "asmcrypto.js/asmcrypto.all.js"
@@ -87,10 +87,16 @@ class LoginHandler extends Polymer.Element {
     }
 
     // WILL CHANGE TO BEING MULTI-THREADED (USING WEB WORKERS)
-    async kdf (key) {
+    async kdf (key, salt) {
+        console.log("STATIC_SALT BASE58", Base58.encode(STATIC_SALT))
+        console.log("STATIC_SALT BASE64", bytes_to_base64(STATIC_SALT))
+        console.log("STATIC_BCRYPT_SALT BASE64", STATIC_BCRYPT_SALT)
+        salt = new Uint8Array(salt) // No errors if none supplied
         const nonces = Array.from(Array(KDF_THREADS).keys())
         const seedParts = nonces.map(nonce => {
-            const sha512Hash = new Sha512().process(utils.stringtoUTF8Array(STATIC_SALT + key + nonce)).finish().result
+            const combinedBytes = utils.appendBuffer(salt, utils.stringtoUTF8Array(STATIC_SALT + key + nonce))
+            // const sha512Hash = new Sha512().process(utils.stringtoUTF8Array(STATIC_SALT + key + nonce)).finish().result
+            const sha512Hash = new Sha512().process(combinedBytes).finish().result
             const sha512HashBase64 = bytes_to_base64(sha512Hash)
             // console.log(sha512Hash, sha512HashBase64)
             // const sha512Hash = Sha512.base64(STATIC_SALT + key + nonce) // base64, no 00xF starting bytes
@@ -112,7 +118,7 @@ class LoginHandler extends Polymer.Element {
         const iv = Base58.decode(encryptedSeed.iv)
 
         // const key = PBKDF2_HMAC_SHA512.bytes(utils.stringtoUTF8Array(this.unlockSeedPassword), salt, this.selectedEncryptedSeed.pbkdf2Rounds, 64)
-        const key = await this.kdf(password)
+        const key = await this.kdf(password, salt)
         const encryptionKey = key.slice(0, 32)
         const macKey = key.slice(32, 63)
 
@@ -126,14 +132,14 @@ class LoginHandler extends Polymer.Element {
         return decryptedBytes
     }
 
-    async saveSeed (seed, version, name, password) {
+    async generateSaveSeedData(seed, version, name, password) {
         let iv = new Uint8Array(16)
         getRandomValues(iv)
         let salt = new Uint8Array(32)
         getRandomValues(salt)
 
         // const key = PBKDF2_HMAC_SHA512.bytes(utils.stringtoUTF8Array(password), salt, PBKDF2_ROUNDS, 64) // 512bit key to be split in two for mac/encryption
-        const key = await this.kdf(password)
+        const key = await this.kdf(password, salt)
         const encryptionKey = key.slice(0, 32)
         const macKey = key.slice(32, 63)
 
@@ -141,16 +147,21 @@ class LoginHandler extends Polymer.Element {
         // const mac = HmacSha512.bytes(encryptedSeed, macKey)
         const mac = new HmacSha512(macKey).process(encryptedSeed).finish().result
 
-        // Store everything base58 encoded for consistency...except for the name. That'd be pointless
-        this.push("encryptedSeeds", {
+        return {
             name: name,
             encryptedSeed: Base58.encode(encryptedSeed),
             salt: Base58.encode(salt),
             iv: Base58.encode(iv),
             version: version,
             mac: Base58.encode(mac),
-            pbkdf2Rounds: PBKDF2_ROUNDS // Store it so that this number can be increased at any time
-        })
+            KDF_THREADS
+            // pbkdf2Rounds: PBKDF2_ROUNDS // Store it so that this number can be increased at any time
+        }
+    }
+
+    async saveSeed (seed, version, name, password) {
+        const saveSeedData = await this.generateSaveSeedData(seed, version, name, password)
+        this.push("encryptedSeeds", saveSeedData)
     }
 
     async login (wallet) {
