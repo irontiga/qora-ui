@@ -91,7 +91,7 @@
                                 
                                 <!-- <div class="card-content"  hidden$="{{!isEmptyArray(address.transactions)}}"> -->
                                 <div class="card-content"  hidden$="{{!isEmptyArray(selectedAddressTransactions)}}">
-                                    Address has no transactions yet. Start by sending some KMX to <b>{{selectedAddress.address}}</b>
+                                    Address has no transactions yet. Start by sending some KMX to <b>{{selectedAddress.address}}</b> or by claiming KEX from the airdrop.
                                 </div>
                                 
                                 <vaadin-grid hidden$="{{isEmptyArray(selectedAddressTransactions)}}" height-by-rows style="height:auto;" aria-label="Transactions" items="{{selectedAddressTransactions}}">
