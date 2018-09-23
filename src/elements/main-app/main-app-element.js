@@ -185,7 +185,7 @@ export default class MainApp extends Polymer.Element {
 
     _getActiveUrl(routeData, urls) {
         const activeUrl = routeData.currentPluginUrl
-        console.log(activeUrl)
+        // console.log(activeUrl)
         let activePlugin = {
             url: "404",
             title: "404",
@@ -234,7 +234,7 @@ export default class MainApp extends Polymer.Element {
     }
 
     _registerMessageHandler(handlerClass) {
-        console.log("NO WAYYYYY")
+        // console.log("NO WAYYYYY")
 
     }
 
@@ -247,7 +247,7 @@ export default class MainApp extends Polymer.Element {
         this.selectedModal = e.model.item
         
         if(prev){
-            console.log("resseting")
+            // console.log("resseting")
             const reset = true
             this.wimps.modal.readyCheck(reset)
         }
@@ -263,7 +263,7 @@ export default class MainApp extends Polymer.Element {
     }
     
     textColor(color){
-        console.log(color)
+        // console.log(color)
         return color == 'light' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.87)'
     }
 
@@ -279,7 +279,7 @@ export default class MainApp extends Polymer.Element {
         this.setNameShowProgress = true
         this.setNameProgressMessage = "Lowercasing name"
         const name = this.newAddressName.toLowerCase()
-        console.log(name)
+        // console.log(name)
         this.setNameProgressMessage = "Fetching last reference"
 
         // First check name is available
@@ -327,7 +327,7 @@ export default class MainApp extends Polymer.Element {
                 this.setNameShowProgress = false
                 return
             }
-            console.log(response)
+            // console.log(response)
             this.setNameErrorMessage = ""
             this.setNameSuccessMessage = `Success! It may take a few minutes before the newly set name shows. If it does not show within 10 minutes, try setting it again. ${response}. `
             this.addressNameCheck(this.selectedAddress.address)
@@ -343,14 +343,14 @@ export default class MainApp extends Polymer.Element {
     
     addressNameCheck(addr){
         this.addressNameCheckRunning = true
-        console.log("CHECKING IF NAME HAS BEEN SET")
+        // console.log("CHECKING IF NAME HAS BEEN SET")
         this.set("selectedAddress.hasName", false)
         this._addressNameCheck(addr).then(response => {
-            console.log(response)
+            // console.log(response)
             this.addressNameCheckRunning = false
             // this.addressNameCheck(addr)
         }, err => {
-            console.error(err)
+            // console.error(err)
             setTimeout(() => {
                 this.addressNameCheck(addr)
             }, 5000);
@@ -372,7 +372,7 @@ export default class MainApp extends Polymer.Element {
         let names =  await QoraAPI.request.api({
             url: `names/address/${addr}`
         })
-        console.log(names)
+        // console.log(names)
         names = JSON.parse(names)
         if (names.length > 0) {
             this.addressNameStore[addr] = names[0]
@@ -402,14 +402,18 @@ export default class MainApp extends Polymer.Element {
         this.$["login-container"].logOut()
     }
 
+    _closeSideMenu(e) {
+        this.$.accountMenu.close()
+    }
+
     ready() {
         super.ready()
-        console.log("======================================READY EVENNT FIRED====================")
+        // console.log("======================================READY EVENNT FIRED====================")
         let retryLoadConfigInterval = 0
         const loadConfig = () => fetch("/getConfig")
             .then(response => response.json())
             .then(response => {
-                console.log("LOADDED CONFIG", response.config)
+                // console.log("LOADDED CONFIG", response.config)
                 this.config = response.config
                 return
             })
@@ -468,13 +472,15 @@ export default class MainApp extends Polymer.Element {
                 data: this.selectedModal.data
             })
         })
+
+
         
         // Clicking inside the iframe will blur the window and close the menu
         window.addEventListener("blur", e =>{
             this.$.accountMenu.close()
         })
 
-        console.log(this.wimps)
+        // console.log(this.wimps)
         this.streams.selectedAddress = Object.values(this.wimps).map(w => {
             return w.createStream("Selected address", (req, res) => {
                 if(!this.selectedAddress){
@@ -496,7 +502,7 @@ export default class MainApp extends Polymer.Element {
     }
 
     _addressChanged(selectedAddress){
-        console.log(selectedAddress)
+        // console.log(selectedAddress)
         //  || selectedAddress == this.lastSelectedAddress
         if(!selectedAddress){
             return
@@ -515,9 +521,9 @@ export default class MainApp extends Polymer.Element {
         // this._addressCheckInterval = setInterval(this.addressNameCheck(selectedAddress.address), 5000)
         
         if(!this.streams.selectedAddress) return
-        console.log(this.streams)
+        // console.log(this.streams)
         this.streams.selectedAddress.forEach(w => {
-            console.log("EEMMMITTTINNNGGGG NEEEWWWLLLYY SEEELLLECTEEDD AADDDREESSSS")
+            // console.log("EEMMMITTTINNNGGGG NEEEWWWLLLYY SEEELLLECTEEDD AADDDREESSSS")
             w.emit({
                 address: selectedAddress.address,
                 color: selectedAddress.color,
@@ -563,7 +569,7 @@ export default class MainApp extends Polymer.Element {
     _closeToast(e){
         this.$.toastElement.close()
         this.toastOpened = false
-        console.log("TRYING TO CLOSE ", this.$.toastElement)
+        // console.log("TRYING TO CLOSE ", this.$.toastElement)
 
         // const toastElement = this.$.querySelector("#toastElement")
         // toastElement.close()
@@ -575,7 +581,7 @@ export default class MainApp extends Polymer.Element {
 
     async _downloadBackupSeed () {
         this.backupSeedID = ""
-        console.log(this.loginHandler)
+        // console.log(this.loginHandler)
         let saveSeedData
         if (this.saveSeedUseExistingIDAndPassword) {
             saveSeedData = this.wallet.savedSeedData

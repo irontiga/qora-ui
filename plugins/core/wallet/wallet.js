@@ -86,7 +86,7 @@ class WalletApp extends Polymer.Element {
     }
     static get observers(){
         return [
-            "_addressObserver(address.address)"
+            "_addressObserver(selectedAddress.address)"
         ]
     }
 
@@ -242,6 +242,7 @@ class WalletApp extends Polymer.Element {
         return unconfirmed ? "unconfirmed" : ""
     }
     _updateAccount(addr){
+        console.log("UPDATING ACCOUNT")
         this.loading = true;
         this.parentWimp.request("qoraApiCall",{
             data: {
@@ -252,7 +253,7 @@ class WalletApp extends Polymer.Element {
                 }
             }
         }, response => {
-            const address = this.address;
+            const address = this.selectedAddress;
             console.log(response);
             if (!response.success) {
                 address.balance = 0
@@ -266,7 +267,7 @@ class WalletApp extends Polymer.Element {
             let biggestKey = 0;
             let txKeys = 0;
             // Find the highest number for most recent tx.
-            const keys = Object.keys(this.address.info);
+            const keys = Object.keys(this.selectedAddress.info);
             keys.forEach(key => {
                 // Make sure it's a numero
                 if (!isNaN(key)) {
@@ -282,13 +283,13 @@ class WalletApp extends Polymer.Element {
             // Because the keys could be 30-40, rather than 0-10
             for (; i > biggestKey - txKeys; i -= 1) {
                 //console.log(i);
-                address.transactions.push(this.address.info[i]);
+                address.transactions.push(this.selectedAddress.info[i]);
                 delete address.info[i]
             }
-            this.address = {}
-            this.address = address
+            this.selectedAddress = {}
+            this.selectedAddress = address
             this.loading = false;
-            console.log(this.address);
+            console.log(this.selectedAddress);
         })
     }
 }

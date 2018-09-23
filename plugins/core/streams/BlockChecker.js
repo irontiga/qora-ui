@@ -30,7 +30,7 @@ class BlockChecker {
     }
 
     async _check () {
-        console.log("checking block")
+        // console.log("checking block")
         let timeout = setTimeout(() => {
             throw new Error("Block check timed out")
         }, BLOCK_CHECK_TIMEOUT)
@@ -45,7 +45,7 @@ class BlockChecker {
 
         const parsedBlock = JSON.parse(latestBlock.data)
         if (parsedBlock.height > this._lastBlock.height) {
-            console.log("NNEEEWWW BLLOOCCCKKK")
+            // console.log("NNEEEWWW BLLOOCCCKKK")
             this._lastBlock = parsedBlock
             this._blockStream.emit(this._lastBlock)
             this._eachNewBlockFunctions.forEach(fn => fn(this._lastBlock))

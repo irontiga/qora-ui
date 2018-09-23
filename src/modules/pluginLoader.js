@@ -6,7 +6,7 @@ import parentWimpAPI from "./parentWimpAPI.js"
 
 // Called from an instance of MainApp
 export default function pluginLoader(plugins, config){
-    console.log(config)
+    // console.log(config)
     plugins.forEach(plugin => {
         const frame = document.createElement("iframe")
         frame.className += "pluginJSFrame"

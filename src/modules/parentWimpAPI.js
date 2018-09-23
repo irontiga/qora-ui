@@ -27,7 +27,7 @@ export default function parentWimpAPI (target) {
     const mainWimp = new Wimp(target);
 
     mainWimp.on("hello", (req, res) => {
-        console.info("Someone said hi!")
+        // console.info("Someone said hi!")
         res("Hello from Qora! :)");
     })
 
@@ -37,7 +37,7 @@ export default function parentWimpAPI (target) {
     })
 
     mainWimp.on("registerUrl", (req, res) => {
-        console.log(req)
+        // console.log(req)
         let parent = false;
         if (req.parent) { parent = true; }
 
@@ -101,7 +101,7 @@ export default function parentWimpAPI (target) {
     })
 
     mainWimp.on("getQoraAddresses", (req,res) => {
-        console.log(App.addresses)
+        // console.log(App.addresses)
         const addressIDS = App.addresses.map(address => {
             return {
                 address: address.address,
@@ -136,9 +136,9 @@ export default function parentWimpAPI (target) {
         req.address = App.wallet.getAddress(req.nonce).address
         
         req.accept = () => {
-            console.log("ACCEPTED")
-            console.log(req.params)
-            console.log(App.wallet.getAddress(req.nonce))
+            // console.log("ACCEPTED")
+            // console.log(req.params)
+            // console.log(App.wallet.getAddress(req.nonce))
             const txBytes = QoraAPI.createTransaction(
                 req.type, 
                 App.wallet.getAddress(req.nonce).keyPair, 
@@ -165,7 +165,7 @@ export default function parentWimpAPI (target) {
     })
 
     mainWimp.on("createAT", (req, res) => {
-        console.log("Created...not");
+        // console.log("Created...not");
         res();
     })
 

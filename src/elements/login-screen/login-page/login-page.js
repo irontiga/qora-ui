@@ -87,8 +87,8 @@ class LoginPage extends Polymer.Element {
             tabs.notifyResize();
         }, 1)
 
-        console.log(this.loginHandler)
-        setTimeout(() => console.log(this.loginHandler), 1)
+        // console.log(this.loginHandler)
+        // setTimeout(() => console.log(this.loginHandler), 1)
     }
     
     logOut(){
@@ -96,7 +96,7 @@ class LoginPage extends Polymer.Element {
     }
 
     loggedInObserver (loggedIn) {
-        console.log(loggedIn)
+        // console.log(loggedIn)
         if (loggedIn) {
             /**
              * LOGGED IN
@@ -216,7 +216,7 @@ class LoginPage extends Polymer.Element {
             if (this.rememberMe && this.loginType !== 'existingSeed') {
                 // this._remember(passphraseSeed, 2)
                 const saveSeedData = await this.loginHandler.generateSaveSeedData(seed, walletVersion, this.name, this.password)
-                console.log("================================================= SSSSSSSSAAAAAAAVVVVVVVVIIIIIIIINNNNNNNNGGGGGGGGGG ============================", saveSeedData)
+                // console.log("================================================= SSSSSSSSAAAAAAAVVVVVVVVIIIIIIIINNNNNNNNGGGGGGGGGG ============================", saveSeedData)
                 this.push("encryptedSeeds", saveSeedData)
                 wallet.savedSeedData = savedSeedData
                 wallet.hasBeenSaved = true

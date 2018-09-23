@@ -216,7 +216,7 @@
                         
 
                         <paper-listbox class="sideNavMenu" attr-for-selected="item-url" selected="{{route.path}}">
-                            <template is="dom-repeat" items="{{urls}}">
+                            <template is="dom-repeat" items="{{urls}}" on-tap="_closeSideMenu">
                                 <template is="dom-if" if="menus.length > 0">
                                     <template is="dom-repeat" items="{{menus}}">
                                         <a href="{{_genIframeUrl(item.url)}}">{{item.title}}</a>

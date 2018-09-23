@@ -88,9 +88,9 @@ class LoginHandler extends Polymer.Element {
 
     // WILL CHANGE TO BEING MULTI-THREADED (USING WEB WORKERS)
     async kdf (key, salt) {
-        console.log("STATIC_SALT BASE58", Base58.encode(STATIC_SALT))
-        console.log("STATIC_SALT BASE64", bytes_to_base64(STATIC_SALT))
-        console.log("STATIC_BCRYPT_SALT BASE64", STATIC_BCRYPT_SALT)
+        // console.log("STATIC_SALT BASE58", Base58.encode(STATIC_SALT))
+        // console.log("STATIC_SALT BASE64", bytes_to_base64(STATIC_SALT))
+        // console.log("STATIC_BCRYPT_SALT BASE64", STATIC_BCRYPT_SALT)
         salt = new Uint8Array(salt) // No errors if none supplied
         const nonces = Array.from(Array(KDF_THREADS).keys())
         const seedParts = nonces.map(nonce => {
@@ -168,7 +168,7 @@ class LoginHandler extends Polymer.Element {
         this.wallet = wallet
 
         for (let i = 0; i < this.config.addressCount; i++) {
-            console.log("CCCONNNFFFIIGGG", this.config)
+            // console.log("CCCONNNFFFIIGGG", this.config)
             this.wallet.genAddress(i);
         }
 
