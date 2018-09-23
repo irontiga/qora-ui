@@ -331,6 +331,7 @@ export default class MainApp extends Polymer.Element {
             this.setNameErrorMessage = ""
             this.setNameSuccessMessage = `Success! It may take a few minutes before the newly set name shows. If it does not show within 10 minutes, try setting it again. ${response}. `
             this.addressNameCheck(this.selectedAddress.address)
+            this.$.setNameDialog.refit()
             this.setNameShowProgress = false
         })
         .catch(err => {

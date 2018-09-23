@@ -232,7 +232,7 @@
 <a is="pushstate-anchor" href="{{_genIframeUrl(item.url)}}">
 </a>
 -->
-                                        <iron-icon style="opacity:1" icon="{{item.icon}}"></iron-icon>
+                                        <iron-icon drawer-toggle style="opacity:1" icon="{{item.icon}}"></iron-icon>
                                         &nbsp;{{item.title}}
                                         <paper-ripple></paper-ripple>
                                     </paper-item>
@@ -320,22 +320,25 @@
                 </div>
             </paper-dialog>
 
-            <paper-dialog with-backdrop id="setNameDialog" style="max-width:400px;">
+            <paper-dialog with-backdrop id="setNameDialog" style="width:400px; max-width:80vw;">
                 <h2>Set name</h2>
-                <p style="margin-bottom:0;">
-                    Note that this can only ever be done <strong>once</strong>. Name can contain any utf-8 character, however letters will be converted to lowercase.
-                </p>
-                <paper-input value="{{newAddressName}}" maxlength="400" char-counter style="margin-top:0;" label="Name" type="text"></paper-input>
-                <br>
-                <div id="progress" hidden$="{{!setNameShowProgress}}">
-                    <div style="display:inline-block">
-                        <paper-spinner active></paper-spinner>
-                    </div>
-                    <div id="message">{{setNameProgressMessage}}<br></div>
+                <paper-dialog-scrollable>
+                    <p style="margin-bottom:0;">
+                        Note that this can only ever be done <strong>once</strong>. Name can contain any utf-8 character, however letters will
+                        be converted to lowercase.
+                    </p>
+                    <paper-input value="{{newAddressName}}" maxlength="400" char-counter style="margin-top:0;" label="Name" type="text"></paper-input>
                     <br>
-                </div>
-                <div id="setNameErrorMessage" style="color:red;">{{setNameErrorMessage}}</div>
-                <div id="setNameSuccessMessage" style="color:green;" style="word-break:break-word;">{{setNameSuccessMessage}}</div>
+                    <div id="progress" hidden$="{{!setNameShowProgress}}">
+                        <div style="display:inline-block">
+                            <paper-spinner active></paper-spinner>
+                        </div>
+                        <div id="message">{{setNameProgressMessage}}<br></div>
+                        <br>
+                    </div>
+                    <div id="setNameErrorMessage" style="color:red;">{{setNameErrorMessage}}</div>
+                    <div id="setNameSuccessMessage" style="color:green;" style="word-break:break-word;">{{setNameSuccessMessage}}</div>
+                </paper-dialog-scrollable>
                 <div class="buttons">
                     <paper-button dialog-dismiss class="deny">Close</paper-button>
                     <!-- dialog-confirm -->

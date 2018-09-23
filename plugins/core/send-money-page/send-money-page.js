@@ -79,7 +79,7 @@ class SendMoneyPage extends Polymer.Element {
     }
 
     _checkAmount() {
-        this.validAmount = this.amount <= this.selectedAddress.nativeBalance.total[0]
+        this.validAmount = this.amount >= this.selectedAddressInfo.nativeBalance.total[0]
         // if (this.amount > this.selectedAddress.balance - this.fee || this.amount <= 0) {
         //     this.validAmount = true;
         // }
@@ -146,7 +146,12 @@ class SendMoneyPage extends Polymer.Element {
             if(!responseData.reference) {
                 throw(`Error! ${ERROR_CODES[responseData]}. Error code ${responseData}`)
             }
-            this.successMessage = response.data
+
+            this.errorMessage = ""
+            this.recipient = ""
+            this.amount = ""
+            this.successMessage = "Success! " + response.data;
+
         }).catch(err => {
             console.log(err)
             this.errorMessage = err
@@ -221,11 +226,12 @@ class SendMoneyPage extends Polymer.Element {
                             this.addressesInfo = addressesInfoStore
                         })
                     }
-                       if (!this.unconfirmedTransactionStreams[addr]){
-                           this.unconfirmedTransactionStreams[addr] = this.coreWimp.listen(`unconfirmedOfAddress/${addr}`, unconfirmedTransactions => {
-                               this.addressesUnconfirmedTransactions[addr] = unconfirmedTransactions
-                           })
-                       }
+
+                    if (!this.unconfirmedTransactionStreams[addr]){
+                        this.unconfirmedTransactionStreams[addr] = this.coreWimp.listen(`unconfirmedOfAddress/${addr}`, unconfirmedTransactions => {
+                            this.addressesUnconfirmedTransactions[addr] = unconfirmedTransactions
+                        })
+                    }
 
                 })
             })

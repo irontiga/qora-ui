@@ -64,7 +64,7 @@ class WalletApp extends Polymer.Element {
             selectedAddressInfo: {
                 type: Object,
                 value: {},
-                computed: "_getSelectedAddressInfo(addressesInfo, selectedAddress)"
+                // computed: "_getSelectedAddressInfo(addressesInfo, selectedAddress)"
             },
             selectedAddressTransactions: {
                 value: [],
@@ -86,7 +86,8 @@ class WalletApp extends Polymer.Element {
     }
     static get observers(){
         return [
-            "_addressObserver(selectedAddress.address)"
+            // "_addressObserver(selectedAddress.address)"
+            "_getSelectedAddressInfo(addressesInfo, selectedAddress)"
         ]
     }
 
@@ -94,16 +95,19 @@ class WalletApp extends Polymer.Element {
         super();
     }
 
-    _getAllTransactions(transactions, unconfirmedTransactions) {
+    _getAllTransactions(transactions, addressesUnconfirmedTransactions) {
         // console.log("UPDATING TRANSACTIONS")
-        unconfirmedTransactions = unconfirmedTransactions[this.selectedAddress.address]
+        const unconfirmedTransactions = addressesUnconfirmedTransactions[this.selectedAddress.address]
         // console.log(transactions, unconfirmedTransactions)
         if(!(transactions && unconfirmedTransactions)) return []
         return [].concat(unconfirmedTransactions, transactions)
     }
 
     _getSelectedAddressInfo(addressesInfo, selectedAddress) {
-        return this.addressesInfo[selectedAddress.address]
+        console.log("========SETTING SELECTED ADDR INFO", addressesInfo[selectedAddress.address])
+        // return addressesInfo[selectedAddress.address]
+        this.selectedAddressInfo = addressesInfo[selectedAddress.address]
+        this.loading = false
     }
 
     ready(){
@@ -114,32 +118,34 @@ class WalletApp extends Polymer.Element {
         this.parentWimp = new Wimp(window.parent);
         
         this.parentWimp.ready().then(() => {
-            // console.log("==========READYYY")
+            
             this.parentWimp.listen("Selected address", selectedAddress => {
-                // console.log(address)
-                // this.address = address
+                
                 this.selectedAddress = {}
                 this.selectedAddress = selectedAddress
                 const addr = selectedAddress.address
 
-                console.log("SELECTED AN ADDRESSS>>>>", selectedAddress)
-
                 this.coreWimp.ready()
                 .then(() => {
-                    // console.log("READY EVENT FIRED")
-                    // console.log(this.addressInfoStreams[addr])
-                    if (!(addr in this.addressInfoStreams)) {
+                    
+                    if (!this.addressInfoStreams[addr]) {
                         console.log('AND DIDN\'T FIND AN EXISTING ADDRESS STREAM')
                         this.addressInfoStreams[addr] = this.coreWimp.listen(`address/${addr}`, addrInfo => {
-                            this.loading = false
-                            this.set(`addressesInfo.${addr}`, addrInfo)
+                            console.log(addrInfo)
 
+                            this.loading = false
+                            
+                            addrInfo.nativeBalance = addrInfo.nativeBalance || { total: {} }
+                            addrInfo.nativeBalance.total["0"] = addrInfo.nativeBalance.total["0"] || 0
+                            
+                            
+                            this.set(`addressesInfo.${addr}`, addrInfo)
                             const addressesInfoStore = this.addressesInfo
                             this.addressesInfo = {}
                             this.addressesInfo = addressesInfoStore
                         })
                     }
-                    if (!(addr in this.unconfirmedTransactionStreams)) {
+                    if (!this.unconfirmedTransactionStreams[addr]) {
                         console.log('AND DIDN\'T FIND AN EXISTING UNCONFIRMED TX STREAM')
                         this.addressesUnconfirmedTransactions[addr] = []
 
@@ -164,17 +170,6 @@ class WalletApp extends Polymer.Element {
                 })
             })
         })
-
-        // setInterval(() => {
-        //     this.parentWimp.request("toast", {
-        //         data: {
-        //             text: "**QMLGFLi9Y5VWiu2AMJeyn4fWW6HeWurYyG** received **15** Qora from **QMLGFLi9Y5VWiu2AMJeyn4fWW6HeWurYyG**",
-        //             action: false
-        //         }
-        //     }, res => {
-        //         console.log(res)
-        //     })
-        // }, 3000)
         
         this.coreWimp.ready().then(() => this.coreWimp.listen("New block", block => {
             // console.log("---- BLOCK ----" ,block)
@@ -198,7 +193,8 @@ class WalletApp extends Polymer.Element {
     }
     decimals(num){
         num = parseFloat(num) // So that conversion to string can get rid of insignificant zeros
-        return isNaN(num) ? 0 : (num + "").split(".")[1]
+        // return isNaN(num) ? 0 : (num + "").split(".")[1]
+        return num % 1 > 0 ? (num + "").split(".")[1] : "0"
     }
     
     sendOrRecieve(tx){
@@ -222,14 +218,14 @@ class WalletApp extends Polymer.Element {
         return lastBlockHeight - height + 1
     }
     
-    _addressObserver(address){
-        if(!address || this.lastAddress == address){
-            return
-        }
-        console.log("UPDATING")
-        this._updateAccount(address);
-        this.lastAddress = address
-    }
+    // _addressObserver(address){
+    //     if(!address || this.lastAddress == address){
+    //         return
+    //     }
+    //     console.log("UPDATING")
+    //     this._updateAccount(address);
+    //     this.lastAddress = address
+    // }
     
     _format(num){
         return num.toLocaleString()
@@ -241,57 +237,61 @@ class WalletApp extends Polymer.Element {
     _unconfirmedClass(unconfirmed) {
         return unconfirmed ? "unconfirmed" : ""
     }
-    _updateAccount(addr){
-        console.log("UPDATING ACCOUNT")
-        this.loading = true;
-        this.parentWimp.request("qoraApiCall",{
-            data: {
-                type: "explorer",
-                data: {
-                    addr: addr,
-                    txOnPage: 10
-                }
-            }
-        }, response => {
-            const address = this.selectedAddress;
-            console.log(response);
-            if (!response.success) {
-                address.balance = 0
-                address.transactions = []
-                address.info = {}
-            } else{
-                address.balance = parseFloat(response.data.balance.total[0]);
-                address.info = response.data;
-            }
+    // _updateAccount(addr){
+    //     console.log("UPDATING ACCOUNT")
+    //     this.loading = true;
+    //     this.parentWimp.request("qoraApiCall",{
+    //         data: {
+    //             type: "explorer",
+    //             data: {
+    //                 addr: addr,
+    //                 txOnPage: 10
+    //             }
+    //         }
+    //     }, response => {
+    //         const address = this.selectedAddress;
+    //         console.log(response);
+    //         if (!response.success) {
+    //             address.balance = 0
+    //             address.transactions = []
+    //             address.info = {}
+    //         } else{
+    //             address.balance = parseFloat(response.data.balance.total[0]);
+    //             address.info = response.data;
+    //         }
 
-            let biggestKey = 0;
-            let txKeys = 0;
-            // Find the highest number for most recent tx.
-            const keys = Object.keys(this.selectedAddress.info);
-            keys.forEach(key => {
-                // Make sure it's a numero
-                if (!isNaN(key)) {
-                    txKeys++;
-                    key = parseInt(key)
-                    if (key > biggestKey) {
-                        biggestKey = key;
-                    }
-                }
-            })
-            let i = biggestKey;
-            address.transactions = []
-            // Because the keys could be 30-40, rather than 0-10
-            for (; i > biggestKey - txKeys; i -= 1) {
-                //console.log(i);
-                address.transactions.push(this.selectedAddress.info[i]);
-                delete address.info[i]
-            }
-            this.selectedAddress = {}
-            this.selectedAddress = address
-            this.loading = false;
-            console.log(this.selectedAddress);
-        })
-    }
+    //         // let biggestKey = 0;
+    //         // let txKeys = 0;
+    //         // // Find the highest number for most recent tx.
+    //         // const keys = Object.keys(address.info);
+    //         // keys.forEach(key => {
+    //         //     // Make sure it's a numero
+    //         //     if (!isNaN(key)) {
+    //         //         txKeys++;
+    //         //         key = parseInt(key)
+    //         //         if (key > biggestKey) {
+    //         //             biggestKey = key;
+    //         //         }
+    //         //     }
+    //         // })
+    //         // let i = biggestKey;
+    //         // address.transactions = []
+    //         // // Because the keys could be 30-40, rather than 0-10
+    //         // for (; i > biggestKey - txKeys; i -= 1) {
+    //         //     //console.log(i);
+    //         //     address.transactions.push(this.selectedAddress.info[i]);
+    //         //     delete address.info[i]
+    //         // }
+    //         for (let i = address.info.start;i<address.info.end;i--){
+    //             address.transactions.push(this.selectedAddress.info[i]);
+    //             delete address.info[i]
+    //         }
+    //         this.selectedAddress = {}
+    //         this.selectedAddress = address
+    //         this.loading = false;
+    //         console.log(this.selectedAddress);
+    //     })
+    // }
 }
 
 window.customElements.define(WalletApp.is, WalletApp);

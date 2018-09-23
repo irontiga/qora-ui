@@ -127,13 +127,13 @@ class AirdropApp extends Polymer.Element {
                     _this.showProgress = false;
                     _this.successMessage = `Success! ${xhttp.responseText}`
                     _this.set("hasClaimedAirdrop", true)
-                    _this.$.claimDialog.refit()
+                    _this.errorMessage = ""
                 }
                 catch (e) {
                     _this.showProgress = false
                     _this.errorMessage = e
                 }
-                _this.errorMessage = ""
+                _this.$.claimDialog.refit()
             }
         };
         xhttp.open("GET", `http://159.89.132.89:4999/airdrop/${this.selectedAddress.address}`, true);
