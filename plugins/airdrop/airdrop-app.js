@@ -91,6 +91,7 @@ class AirdropApp extends Polymer.Element {
         if (this.hasClaimedAirdrop) {
             this.showProgress = false;
             this.errorMessage = "Sorry, you have already claimed the airdrop."
+            return
         }
 
         console.log(this.code)
@@ -125,6 +126,7 @@ class AirdropApp extends Polymer.Element {
                     const response = JSON.parse(xhttp.responseText)
                     _this.showProgress = false;
                     _this.successMessage = `Success! ${xhttp.responseText}`
+                    _this.set("hasClaimedAirdrop", true)
                     _this.$.claimDialog.refit()
                 }
                 catch (e) {
