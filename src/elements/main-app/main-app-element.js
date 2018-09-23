@@ -230,7 +230,7 @@ export default class MainApp extends Polymer.Element {
     }
     
     _toggleDrawer(e) {
-        this.$.appdrawer.toggle()
+        // this.$.appdrawer.toggle()
     }
 
     _registerMessageHandler(handlerClass) {
@@ -403,7 +403,8 @@ export default class MainApp extends Polymer.Element {
     }
 
     _closeSideMenu(e) {
-        this.$.accountMenu.close()
+        console.log("TAPPED SIDE MENU")
+        this.$.appdrawer.close()
     }
 
     ready() {

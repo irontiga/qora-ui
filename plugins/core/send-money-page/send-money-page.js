@@ -213,6 +213,7 @@ class SendMoneyPage extends Polymer.Element {
                         this.addressInfoStreams[addr] = this.coreWimp.listen(`address/${addr}`, addrInfo => {
                             console.log("Send money page received", addrInfo)
                             // Ahh....actually if no balance....no last reference and so you can't send money
+                            addrInfo.nativeBalance = addrInfo.nativeBalance || {total: {}}
                             addrInfo.nativeBalance.total["0"] = addrInfo.nativeBalance.total["0"] || 0
                             this.set(`addressesInfo.${addr}`, addrInfo)
                             const addressesInfoStore = this.addressesInfo

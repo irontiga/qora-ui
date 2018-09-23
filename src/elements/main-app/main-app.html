@@ -216,15 +216,18 @@
                         
 
                         <paper-listbox class="sideNavMenu" attr-for-selected="item-url" selected="{{route.path}}">
-                            <template is="dom-repeat" items="{{urls}}" on-tap="_closeSideMenu">
+                            <template is="dom-repeat" items="{{urls}}">
                                 <template is="dom-if" if="menus.length > 0">
                                     <template is="dom-repeat" items="{{menus}}">
-                                        <a href="{{_genIframeUrl(item.url)}}">{{item.title}}</a>
+                                         <!-- on-tap="_closeSideMenu" -->
+                                        <span drawer-toggle>
+                                            <a href="{{_genIframeUrl(item.url)}}">{{item.title}}</a>
+                                        </span>
                                     </template>
                                 </template>
 
                                 <template is="dom-if" if="menus.length == 0">
-                                    <paper-item item-url="{{_genIframeUrl(item.url)}}" style="width:auto;">
+                                    <paper-item  drawer-toggle item-url="{{_genIframeUrl(item.url)}}" style="width:auto;">
                                         <!--
 <a is="pushstate-anchor" href="{{_genIframeUrl(item.url)}}">
 </a>
@@ -246,7 +249,8 @@
                     <app-header slot="header">
                         <app-toolbar>
                             
-                            <paper-icon-button icon="menu" drawer-toggle onclick="_toggleDrawer" class="show-only-mobile"></paper-icon-button>
+                            <!-- on-tap="_toggleDrawer" -->
+                            <paper-icon-button icon="menu" drawer-toggle class="show-only-mobile"></paper-icon-button>
                             
                             <div main-title>
                                 <span class="qora-title">
