@@ -38,35 +38,35 @@
             </style>
         </custom-style>
 
-                <paper-dialog id="claimDialog" with-backdrop>
-                    <h2>Claim KEX</h2>
-                    <paper-dialog-scrollable>
-                        <p style="margin-bottom:0;">
-                            You can find a 4 digit code on any super node :)
-                        </p>
-                        <paper-input value={{code}} style="margin-top:0;" label="Code" type="number"></paper-input>
-                        <br>
-                        <div id="progress" hidden$="{{!showProgress}}">
-                            <div style="display:inline-block">
-                                <paper-spinner active></paper-spinner>
-                            </div>
-                            <div id="message">{{message}}<br></div>
-                            <br>
-                        </div>
-                        <div id="errorMessage" style="color:red;">{{errorMessage}}</div>
-                        <div id="successMessage" style="word-break: break-word; color:green;">{{successMessage}}</div>
-                    </paper-dialog-scrollable>
-                
-                    <div class="buttons">
-                        <paper-button dialog-dismiss on-tap="acceptTransactionRequest" disabled="{{showProgress}}">Close</paper-button>
-                        <!-- dialog-confirm -->
-                        <paper-button on-tap="_claim" class="confirm" on-tap="_claim" disabled="{{showProgress}}">Go</paper-button>
-                    </div>
-                
-                </paper-dialog>
-
         <app-localstorage-document key="hasClaimedAirdrop" data="{{hasClaimedAirdrop}}"></app-localstorage-document>
-
+        
+        <paper-dialog id="claimDialog" with-backdrop>
+            <h2>Claim KEX</h2>
+            <paper-dialog-scrollable>
+                <p style="margin-bottom:0;">
+                    You can find a 4 digit code on any super node :)
+                </p>
+                <paper-input value={{code}} style="margin-top:0;" label="Code" type="number"></paper-input>
+                <br>
+                <div id="progress" hidden$="{{!showProgress}}">
+                    <div style="display:inline-block">
+                        <paper-spinner active></paper-spinner>
+                    </div>
+                    <div id="message">{{message}}<br></div>
+                    <br>
+                </div>
+                <div id="errorMessage" style="color:red;">{{errorMessage}}</div>
+                <div id="successMessage" style="word-break: break-word; color:green;">{{successMessage}}</div>
+            </paper-dialog-scrollable>
+        
+            <div class="buttons">
+                <paper-button dialog-dismiss disabled="{{showProgress}}">Close</paper-button>
+                <!-- dialog-confirm -->
+                <paper-button on-tap="_claim" class="confirm" on-tap="_claim" disabled="{{showProgress}}">Go</paper-button>
+            </div>
+        
+        </paper-dialog>
+        
         <div id="main">
             <div class="layout horizontal" style="height:100vh;">
                 <div class="layout vertical center" style="width:100%;">

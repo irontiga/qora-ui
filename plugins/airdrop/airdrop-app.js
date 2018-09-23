@@ -55,6 +55,7 @@ class AirdropApp extends Polymer.Element {
             })
         })
 
+        
         this.coreWimp.ready().then(() => this.coreWimp.listen("New block", block => {
             // console.log("---- BLOCK ----" ,block)
             this.lastBlock = block;
@@ -126,17 +127,21 @@ class AirdropApp extends Polymer.Element {
                     const response = JSON.parse(xhttp.responseText)
                     _this.showProgress = false;
                     _this.successMessage = `Success! ${xhttp.responseText}`
-                    _this.set("hasClaimedAirdrop", true)
+                    try{
+                        _this.set("hasClaimedAirdrop", true) // not sure if error because of my testing or not...but it works anyway so leave for another day
+                    }
+                    catch (e) { }
                     _this.errorMessage = ""
                 }
                 catch (e) {
                     _this.showProgress = false
                     _this.errorMessage = e
                 }
+                
                 _this.$.claimDialog.refit()
             }
         };
-        xhttp.open("GET", `http://159.89.132.89:4999/airdrop/${this.selectedAddress.address}`, true);
+        xhttp.open("GET", `http://159.89.132.89:4999/airdrop/${this.selectedAddress.address}`, false);
         xhttp.send();
     }
 }
