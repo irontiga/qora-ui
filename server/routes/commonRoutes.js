@@ -38,7 +38,11 @@ const routes = [
         method: 'GET',
         path: '/getConfig',
         handler: (request, h) => {
-            return JSON.stringify( { config: config } )
+            const response = {
+                config
+            }
+            delete response.config.tls
+            return JSON.stringify( response )
         }
     }
 ]

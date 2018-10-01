@@ -4,7 +4,6 @@ const config = {
         port: 9080, // Port to access the Qora UI from
         directory: "./src/", // Core Qora-lite code.,
         page404: "./src/404.html",
-        protocol: "http",
         host: "0.0.0.0"
     },
     plugins: {
@@ -40,8 +39,15 @@ const config = {
             tail: "/"
         }
     },
-    pollingInterval: 3000   // How long between checking for new unconfirmed transactions and new blocks (in milliseconds). 
-                            // Might be better increased over a weaker or metered connection, or perhaps lowered when using a local node
+    pollingInterval: 3000,   // How long between checking for new unconfirmed transactions and new blocks (in milliseconds). 
+                            // Might be better increased over a weaker or metered connection, or perhaps lowered when using a local node4
+    tls: {
+        enabled: false,
+        options: {
+            key: "",
+            cert: ""
+        }
+    }
 }
 
 module.exports = config

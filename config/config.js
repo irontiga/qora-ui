@@ -1,4 +1,5 @@
 // Note that qoraNode.explorer.url could be set to 127.0.0.1 even if it's being served to a remote client, as api requests are proxied through this node server
+const fs = require("fs")
 
 const config = {
     primary: {
@@ -19,6 +20,14 @@ const config = {
             tail: "/"
         }
     },
+
+    tls: {
+        enabled: true,
+        options: {
+            key: fs.readFileSync("ssl/localhost.key"),
+            cert: fs.readFileSync("ssl/localhost.crt")
+        }
+    }
 }
 
 module.exports = config
