@@ -11,18 +11,20 @@ const config = {
     qoraNode: {
         explorer: {
             // url: "http://127.0.0.1:9090", // Qora
-            url: "http://159.89.132.89:4940", // Karma
+            // url: "http://159.89.132.89:4940", // Karma
+            url: "http://127.0.0.1:4940", // Karma
             tail: "/index/blockexplorer.json"
         },
         api: {
             // url: "http://127.0.0.1:9085", // Qora
-            url: "http://159.89.132.89:4930", // Karma
+            // url: "http://159.89.132.89:4930", // Karma
+            url: "http://127.0.0.1:4930", // Karma
             tail: "/"
         }
     },
 
     tls: {
-        enabled: true,
+        enabled: false,
         options: {
             key: fs.readFileSync("ssl/localhost.key"),
             cert: fs.readFileSync("ssl/localhost.crt")
