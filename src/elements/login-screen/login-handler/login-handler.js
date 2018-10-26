@@ -116,6 +116,7 @@ class LoginHandler extends Polymer.Element {
         // console.log("STATIC_SALT BASE58", Base58.encode(STATIC_SALT))
         // console.log("STATIC_SALT BASE64", bytes_to_base64(STATIC_SALT))
         // console.log("STATIC_BCRYPT_SALT BASE64", STATIC_BCRYPT_SALT)
+        salt = new Uint8Array(salt)
         console.log(workers)
         const seedParts = await Promise.all(workers.map((worker, index) => {
             const nonce = index
@@ -132,7 +133,7 @@ class LoginHandler extends Polymer.Element {
                 console.log(data)
                 if (key != data.key) throw new Error("Error, incorrect key")
                 if (nonce != data.nonce) throw new Error("Error, incorrect nonce")
-                if (salt != data.salt) throw new Error("Error, incorrect salt")
+                // if (salt != data.salt) throw new Error("Error, incorrect salt")
                 return data.result
             })
         }))

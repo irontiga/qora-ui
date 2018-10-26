@@ -15,7 +15,7 @@ onmessage = async function (e) {
     // })
 
     const data = e.data,
-    salt = data.salt,
+    salt = data.salt, // No errors if none supplied
     nonce = data.nonce,
     key = data.key,
     id = data.id
@@ -26,6 +26,7 @@ onmessage = async function (e) {
         id,
         nonce,
         key,
+        salt,
         result
     })
 }
