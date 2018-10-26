@@ -129,7 +129,7 @@
 
                                 <div class="layout horizontal wrap">
                                     <iron-icon icon="icons:account-circle" slot="prefix" style="color:#333; padding-right: 12px; margin-top: 28px;"></iron-icon>
-                                    <paper-dropdown-menu id="encryptedSeedDropdownMenu" class="flex" label="Account">
+                                    <paper-dropdown-menu id="encryptedSeedDropdownMenu" class="flex" label="Local identifier">
                                         <paper-listbox id="encryptedSeedDropdownMenuListbox" slot="dropdown-content" selected="{{selectedEncryptedSeed}}" attr-for-selected="item" selectable="paper-item">
                                             <template items="{{encryptedSeeds}}" is="dom-repeat">
                                                 <paper-item item="{{item}}" style="display:inline-block">
@@ -148,7 +148,7 @@
 
                                 <div class="layout horizontal wrap">
                                     <iron-icon icon="icons:lock" slot="prefix" style="color:#333; padding-right: 12px; margin-top: 28px;"></iron-icon>
-                                    <paper-input class="flex" char-counter label="Unlock password" type="password" id="unlockSeedPassword" value="{{unlockSeedPassword}}" on-keydown="_loginKeyDown"></paper-input>
+                                    <paper-input class="flex" char-counter label="Local password" type="password" id="unlockSeedPassword" value="{{unlockSeedPassword}}" on-keydown="_loginKeyDown"></paper-input>
                                 </div>
 
                             </div>
