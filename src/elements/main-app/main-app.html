@@ -305,10 +305,10 @@
                 
                 <table>
                     <tbody>
-                        <tr><th>Type</th><td>{{transactionRequest.typeText}}</td></tr>
-                        <tr><th>From</th><td>{{transactionRequest.address}}</td></tr>
+                        <tr><th>Type</th><td style="word-break: break-word;">{{transactionRequest.typeText}}</td></tr>
+                        <tr><th>From</th><td style="word-break: break-word;">{{transactionRequest.address}}</td></tr>
                         <template is="dom-repeat" items="{{objectKeys(transactionRequest.params)}}">
-                            <tr><th class="capitalize">{{item.key}}</th><td>{{item.value}}</td></tr>
+                            <tr><th class="capitalize">{{item.key}}</th><td style="word-break: break-word;">{{item.value}}</td></tr>
                         </template>
                     </tbody>
                 </table>

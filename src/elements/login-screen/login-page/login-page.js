@@ -1,9 +1,9 @@
-import PhraseWallet from "../../../qora/PhraseWallet.js"
-import utils from "../../../qora/deps/utils.js"
-import { STATIC_SALT, PBKDF2_ROUNDS, KDF_THREADS } from "../../../qora/constants.js"
+// import PhraseWallet from "../../../qora/PhraseWallet.js"
+// import utils from "../../../qora/deps/utils.js"
+// import { STATIC_SALT, PBKDF2_ROUNDS, KDF_THREADS } from "../../../qora/constants.js"
 import Base58 from "../../../qora/deps/Base58.js"
-import bcryptjs from 'bcryptjs'
-import { PBKDF2_HMAC_SHA512, HMAC_SHA512, getRandomValues as asmGetRandomValues, AES_CBC, SHA512 } from "asmcrypto.js/dist_es5/entry-export_all.js"
+// import bcryptjs from 'bcryptjs'
+// import { PBKDF2_HMAC_SHA512, HMAC_SHA512, getRandomValues as asmGetRandomValues, AES_CBC, SHA512 } from "asmcrypto.js/dist_es5/entry-export_all.js"
 // const getRandomValues = window.crypto ? crypto.getRandomValues.bind(window.crypto) : asmGetRandomValues - asm no longer has rand number
 
 class LoginPage extends Polymer.Element {
@@ -114,6 +114,7 @@ class LoginPage extends Polymer.Element {
             this.unlockSeedPassword = ""
             this.rememberMe = false
             this.errorMessage = ""
+            this.progressMessage = ''
             this.backedUpAccountPassword = ""
             // this.seed = ""
             this.loading = false
@@ -167,6 +168,7 @@ class LoginPage extends Polymer.Element {
     //_loginClickHandler() {
     async _loginClick() {
         this.loading = true;
+        this.progressMessage = 'Generating account seed...'
 
         let seed, walletVersion
         
@@ -226,6 +228,7 @@ class LoginPage extends Polymer.Element {
         }
         catch (e) {
             this.errorMessage = e
+            this.progressMessage = ''
             this.loading = false
             throw e // Rejects promise
         }

@@ -1,4 +1,4 @@
-"Generated from Java with JSweet 1.0.0 - http://www.jsweet.org";
+// "Generated from Java with JSweet 1.0.0 - http://www.jsweet.org";
 // BAD IMPLEMENTATION. BROKEN, BUT MUST KEEP CAUSE OF NETWORK
 //const RIPEMD160 = (function () {
 // == Convert to ES6 module for export == //

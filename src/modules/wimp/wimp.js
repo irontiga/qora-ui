@@ -2,6 +2,7 @@
 
 // [ON] = TEST THE SELECTOR/TARGETS EVERY SINGLE CALL. If myWimp has a listener (on("blah")) and a target is added...IT SHOULD BE CARRIED ACCROSS. SYKE DON"T REQUERY
 
+// export default Wimp = (function(){
 const Wimp = (function(){
     
     const registeredTargets = {}; // "name" : elements. Quite handy for proxied requests...

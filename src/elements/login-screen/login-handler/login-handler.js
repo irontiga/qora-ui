@@ -1,13 +1,38 @@
 import PhraseWallet from "../../../qora/PhraseWallet.js"
 import utils from "../../../qora/deps/utils.js"
 import { STATIC_SALT, KDF_THREADS, STATIC_BCRYPT_SALT } from "../../../qora/constants.js"
-import Base58 from "../../../qora/deps/Base58.js"
+import Base58 from "../../../qora/deps/Base58.js" 
 import bcrypt from 'bcryptjs'
+// import bcrypt from '../../../../node_modules/bcryptjs/dist/bcrypt.js'
 // import * as asmCrypto from "asmcrypto.js/asmcrypto.all.js"
 // import { PBKDF2_HMAC_SHA512, HMAC_SHA512, getRandomValues as asmGetRandomValues, AES_CBC } from "asmcrypto.js/asmcrypto.all.js"
-import { HmacSha512, AES_CBC, Sha512, base64_to_bytes, bytes_to_base64 } from "asmcrypto.js/dist_es5/entry-export_all.js"
+// import { HmacSha512, AES_CBC, Sha512, base64_to_bytes, bytes_to_base64 } from "asmcrypto.js/dist_es5/entry-export_all.js"
+import { HmacSha512, AES_CBC, Sha512, base64_to_bytes, bytes_to_base64 } from "asmcrypto.js"
+// import { HmacSha512, AES_CBC, Sha512, base64_to_bytes, bytes_to_base64 } from "./../../../../node_modules/asmcrypto.js/dist_es5/entry-export_all.js"
 window.Sha512 = Sha512
 const getRandomValues = window.crypto ? window.crypto.getRandomValues.bind(window.crypto) : window.msCrypto.getRandomValues.bind(window.msCrypto)
+
+// const nonces = Array.from(Array(KDF_THREADS).keys())
+// const workers = nonces.map(nonce => new Worker('kdfWorker.js'))
+
+const workers = []
+const pendingPromises = {}
+
+for (let i = 0; i < KDF_THREADS; i++) {
+    const worker = new Worker('/src/elements/login-screen/login-handler/kdfWorker-bundle.js')
+
+    worker.onmessage = e => {
+        console.log(e)
+        const data = e.data
+        // console.log()
+        // if (data.id && pendingPromises[data.id] !== undefined) {
+        console.log('it\'s here')
+        console.log(pendingPromises)
+        pendingPromises[data.id](data)
+        // }
+    }
+    workers.push(worker)
+}
 
 // const sha512Test = new Sha512()
 // sha512Test.process(utils.stringtoUTF8Array("abcsdfsdafsdfsdfsdfsddsfsdfsd"))
@@ -91,20 +116,47 @@ class LoginHandler extends Polymer.Element {
         // console.log("STATIC_SALT BASE58", Base58.encode(STATIC_SALT))
         // console.log("STATIC_SALT BASE64", bytes_to_base64(STATIC_SALT))
         // console.log("STATIC_BCRYPT_SALT BASE64", STATIC_BCRYPT_SALT)
-        salt = new Uint8Array(salt) // No errors if none supplied
-        const nonces = Array.from(Array(KDF_THREADS).keys())
-        const seedParts = nonces.map(nonce => {
-            const combinedBytes = utils.appendBuffer(salt, utils.stringtoUTF8Array(STATIC_SALT + key + nonce))
-            // const sha512Hash = new Sha512().process(utils.stringtoUTF8Array(STATIC_SALT + key + nonce)).finish().result
-            const sha512Hash = new Sha512().process(combinedBytes).finish().result
-            const sha512HashBase64 = bytes_to_base64(sha512Hash)
-            // console.log(sha512Hash, sha512HashBase64)
-            // const sha512Hash = Sha512.base64(STATIC_SALT + key + nonce) // base64, no 00xF starting bytes
-            // Truncate sha512 output to 72 characters
-            return bcrypt.hashSync(sha512HashBase64.substring(0, 72), STATIC_BCRYPT_SALT)
-        })
+        console.log(workers)
+        const seedParts = await Promise.all(workers.map((worker, index) => {
+            const nonce = index
+            return new Promise (resolve => {
+                const id = Math.random().toString(36).substr(2, 12)
+                pendingPromises[id] = resolve
+                worker.postMessage({
+                    id,
+                    key,
+                    salt,
+                    nonce
+                })
+            }).then(data => {
+                console.log(data)
+                if (key != data.key) throw new Error("Error, incorrect key")
+                if (nonce != data.nonce) throw new Error("Error, incorrect nonce")
+                if (salt != data.salt) throw new Error("Error, incorrect salt")
+                return data.result
+            })
+        }))
+        console.log(seedParts)
         return new Sha512().process(utils.stringtoUTF8Array(STATIC_SALT + seedParts.reduce((a, c) => a + c))).finish().result
     }
+    // async kdf (key, salt) {
+    //     // console.log("STATIC_SALT BASE58", Base58.encode(STATIC_SALT))
+    //     // console.log("STATIC_SALT BASE64", bytes_to_base64(STATIC_SALT))
+    //     // console.log("STATIC_BCRYPT_SALT BASE64", STATIC_BCRYPT_SALT)
+    //     salt = new Uint8Array(salt) // No errors if none supplied
+    //     const nonces = Array.from(Array(KDF_THREADS).keys())
+    //     const seedParts = nonces.map(nonce => {
+    //         const combinedBytes = utils.appendBuffer(salt, utils.stringtoUTF8Array(STATIC_SALT + key + nonce))
+    //         // const sha512Hash = new Sha512().process(utils.stringtoUTF8Array(STATIC_SALT + key + nonce)).finish().result
+    //         const sha512Hash = new Sha512().process(combinedBytes).finish().result
+    //         const sha512HashBase64 = bytes_to_base64(sha512Hash)
+    //         // console.log(sha512Hash, sha512HashBase64)
+    //         // const sha512Hash = Sha512.base64(STATIC_SALT + key + nonce) // base64, no 00xF starting bytes
+    //         // Truncate sha512 output to 72 characters
+    //         return bcrypt.hashSync(sha512HashBase64.substring(0, 72), STATIC_BCRYPT_SALT)
+    //     })
+    //     return new Sha512().process(utils.stringtoUTF8Array(STATIC_SALT + seedParts.reduce((a, c) => a + c))).finish().result
+    // }
 
     async logOut () {
         this.wallet = {}

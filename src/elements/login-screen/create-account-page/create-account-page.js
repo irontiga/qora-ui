@@ -48,12 +48,21 @@ class CreateAccountPage extends Polymer.Element {
     }
 
     _createClick (e) {
-        this.login()
+        this.loading = true
+        this.login().then(response => {
+            this.loading = false
+            this.passphrase = ''
+        }, err => {
+            this.errorMessage = err
+            this.loading = false
+        })
     }
 
     async login () {
         const passphrase = this.passphrase
         if (passphrase == undefined || passphrase.length == 0) throw new Error('No passphrase')
+
+        if (passphrase.length < 15) throw new Error('Passphrase must be longer than 15 characters')
 
         const seed = await this.loginHandler.kdf(passphrase)
         const walletVersion = 2
@@ -65,6 +74,7 @@ class CreateAccountPage extends Polymer.Element {
             // this._remember(passphraseSeed, 2)
             this.loginHandler.saveSeed(seed, walletVersion, this.name, this.password)
         }
+        this.loading = false
     }
 }
 

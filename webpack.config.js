@@ -12,6 +12,7 @@ module.exports = {
         'plugins/pluginLoaderBundle.js': './plugins/pluginLoader.js',
         'src/elements/login-screen/login-screen-bundle.js': './src/elements/login-screen/login-screen.js',
         'src/elements/login-screen/login-page/login-page-bundle.js': './src/elements/login-screen/login-page/login-page.js',
+        'src/elements/login-screen/login-handler/kdfWorker-bundle.js': './src/elements/login-screen/login-handler/kdfWorker.js',
         'src/elements/login-screen/create-account-page/create-account-page-bundle.js': './src/elements/login-screen/create-account-page/create-account-page.js',
         'src/elements/login-screen/login-handler/login-handler-bundle.js' : './src/elements/login-screen/login-handler/login-handler.js',
         'plugins/core/main.js': './plugins/core/main-src.js', // Should have it's own webpack (eerrrhhhmmm rollup) config the itself

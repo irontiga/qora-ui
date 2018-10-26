@@ -108,15 +108,15 @@
         <div id="login-container" class="layout vertical center-justified">
 
             <div class="layout horizontal center-justified">
-                <paper-card heading="Login" style="max-width:96vw; width:600px;" >
+                <paper-card heading="Login" style="max-width:96vw; width:460px;" >
                     <template is="dom-if" if="{{loading}}">
                         <paper-progress indeterminate></paper-progress>
                     </template>
 
                     <paper-tabs id="loginTabs" selected="{{loginType}}" attr-for-selected="type">
                         <paper-tab type="existingSeed" hidden$="{{!encryptedSeedsExist}}">Existing account</paper-tab>
-                        <paper-tab type="passphrase">Passphrase</paper-tab>
-                        <paper-tab type="seed">Karma wallet Seed</paper-tab>
+                        <paper-tab type="passphrase">Seedphrase</paper-tab>
+                        <!-- <paper-tab type="seed">Karma wallet Seed</paper-tab> -->
                         <paper-tab type="backedUpAccount">Backed up account</paper-tab>
                         <!--<paper-tab>Address</paper-tab>-->
                     </paper-tabs>
@@ -155,7 +155,7 @@
 
                             <div class="layout horizontal wrap" type="passphrase">
                                 <iron-icon icon="communication:vpn-key" slot="prefix" style="color:#333; padding-right: 12px; margin-top: 28px;"></iron-icon>
-                                <paper-input class="flex" char-counter label="Passphrase" type="password" id="passphrase" value="{{passphrase}}" autofocus on-keydown="_loginKeyDown"></paper-input>
+                                <paper-input class="flex" char-counter label="Seedphrease" type="password" id="passphrase" value="{{passphrase}}" autofocus on-keydown="_loginKeyDown"></paper-input>
                             </div>
 
                             <div class="layout horizontal wrap" type="seed">
@@ -179,7 +179,7 @@
                             <iron-collapse id="collapse" opened="{{rememberMe}}">
                                 <div class="layout horizontal wrap">
                                     <iron-icon icon="icons:account-circle" slot="prefix" style="color:#333; padding-right: 12px; margin-top: 28px;"></iron-icon>
-                                    <paper-input class="flex" value="{{name}}" id="nameInput" label="Name/Identifier" focused="{{nameFocused}}"></paper-input>
+                                    <paper-input class="flex" value="{{name}}" id="nameInput" label="Login idntifier" focused="{{nameFocused}}"></paper-input>
                                 </div>
                                 <iron-collapse opened="{{nameFocused}}" style="">
                                     <small>Can be anything</small>
@@ -187,7 +187,7 @@
 
                                 <div class="layout horizontal wrap">
                                     <iron-icon icon="icons:lock" slot="prefix" style="color:#333; padding-right: 12px; margin-top:28px"></iron-icon>
-                                    <paper-input class="flex" value="{{password}}" id="passwordInput" label="Password" maxlength="50" type="password" focused="{{passwordFocused}}"></paper-input>
+                                    <paper-input class="flex" value="{{password}}" id="passwordInput" label="Login password" maxlength="50" type="password" focused="{{passwordFocused}}"></paper-input>
                                 </div>
                                 
                                 <iron-collapse opened="{{passwordFocused}}" style="">
@@ -205,7 +205,7 @@
 
 
                         </div>
-
+                        <span class="progress-message">{{progressMessage}}</span>
                         <span class="error-message">{{errorMessage}}</span>
                     </div>
                     <div class="card-actions" style="height:36px;">

@@ -69,9 +69,11 @@ class AirdropApp extends Polymer.Element {
     }
 
     _checkCode(code) {
-        const hoursFromEpoch = Math.floor((Date.now() - 1535760000000) / 1000 / 60 / 60)
-
-        const hash = new Sha256.digest("" + hoursFromEpoch)
+        // const hoursFromEpoch = Math.floor((Date.now() - 1535760000000) / 1000 / 60 / 60)
+        const minutesFromEpoch = Math.floor((Date.now() - 1535760000000) / 1000 / 60)
+        
+        // const hash = new Sha256.digest("" + hoursFromEpoch)
+        const hash = new Sha256.digest("" + minutesFromEpoch)
         // const hash = new Sha256.digest("" + 363)
         let lastNumbers = hash[0] + ""
         while(lastNumbers.length < 3) lastNumbers = "0" + lastNumbers
