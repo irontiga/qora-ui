@@ -69,7 +69,7 @@
                         </div>
                         <div class="layout horizontal wrap">
                             <iron-icon icon="communication:vpn-key" slot="prefix" style="color:#333; padding-right: 12px; margin-top: 28px;"></iron-icon>
-                            <paper-input class="flex" char-counter label="Passphrase" type="{{passphraseInputType}}" id="passphrase" value="{{passphrase}}" autofocus
+                            <paper-input class="flex" char-counter label="Seedphrase" type="{{passphraseInputType}}" id="passphrase" value="{{passphrase}}" autofocus
                                 on-keydown="_loginKeyDown">
                                 <div slot="suffix">
                                     <iron-icon icon="{{passphraseVisibilityIcon}}" style="color:#333; cursor:pointer" on-tap="togglePassphraseVisibility"></iron-icon>
@@ -105,7 +105,7 @@
                         <div class="layout horizontal">
                             <div class="flex"></div>
                             <iron-label style="margin-top:24px; display:block; cursor: pointer">
-                                Remember me &nbsp;
+                                Save in browser &nbsp;
                                 <paper-checkbox iron-label-target style="" class="" checked="{{rememberMe}}"></paper-checkbox>
                             </iron-label>
                         </div>
