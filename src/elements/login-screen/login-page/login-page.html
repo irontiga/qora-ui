@@ -129,7 +129,7 @@
 
                                 <div class="layout horizontal wrap">
                                     <iron-icon icon="icons:account-circle" slot="prefix" style="color:#333; padding-right: 12px; margin-top: 28px;"></iron-icon>
-                                    <paper-dropdown-menu id="encryptedSeedDropdownMenu" class="flex" label="Local identifier">
+                                    <paper-dropdown-menu id="encryptedSeedDropdownMenu" class="flex" label="Browser login name">
                                         <paper-listbox id="encryptedSeedDropdownMenuListbox" slot="dropdown-content" selected="{{selectedEncryptedSeed}}" attr-for-selected="item" selectable="paper-item">
                                             <template items="{{encryptedSeeds}}" is="dom-repeat">
                                                 <paper-item item="{{item}}" style="display:inline-block">
@@ -148,7 +148,7 @@
 
                                 <div class="layout horizontal wrap">
                                     <iron-icon icon="icons:lock" slot="prefix" style="color:#333; padding-right: 12px; margin-top: 28px;"></iron-icon>
-                                    <paper-input class="flex" char-counter label="Local password" type="password" id="unlockSeedPassword" value="{{unlockSeedPassword}}" on-keydown="_loginKeyDown"></paper-input>
+                                    <paper-input class="flex" char-counter label="Browser password" type="password" id="unlockSeedPassword" value="{{unlockSeedPassword}}" on-keydown="_loginKeyDown"></paper-input>
                                 </div>
 
                             </div>
@@ -179,7 +179,7 @@
                             <iron-collapse id="collapse" opened="{{rememberMe}}">
                                 <div class="layout horizontal wrap">
                                     <iron-icon icon="icons:account-circle" slot="prefix" style="color:#333; padding-right: 12px; margin-top: 28px;"></iron-icon>
-                                    <paper-input class="flex" value="{{name}}" id="nameInput" label="Local identifier" focused="{{nameFocused}}"></paper-input>
+                                    <paper-input class="flex" value="{{name}}" id="nameInput" label="Browser login name" focused="{{nameFocused}}"></paper-input>
                                 </div>
                                 <iron-collapse opened="{{nameFocused}}" style="">
                                     <small>Can be anything</small>
@@ -187,11 +187,11 @@
 
                                 <div class="layout horizontal wrap">
                                     <iron-icon icon="icons:lock" slot="prefix" style="color:#333; padding-right: 12px; margin-top:28px"></iron-icon>
-                                    <paper-input class="flex" value="{{password}}" id="passwordInput" label="Local password" maxlength="50" type="password" focused="{{passwordFocused}}"></paper-input>
+                                    <paper-input class="flex" value="{{password}}" id="passwordInput" label="Browser password" maxlength="50" type="password" focused="{{passwordFocused}}"></paper-input>
                                 </div>
                                 
                                 <iron-collapse opened="{{passwordFocused}}" style="">
-                                    <small>Used to encrypt seed when storing in local storage. Will be required to unlock your wallet next time you sign in</small>
+                                    <small>Used to encrypt seed when storing in your browser. Will be required to unlock your wallet next time you login.</small>
                                 </iron-collapse>
                             </iron-collapse>
 

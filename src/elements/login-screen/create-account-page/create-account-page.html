@@ -79,11 +79,11 @@
 
                         <iron-collapse id="collapse" opened="{{rememberMe}}">
                             <div class="layout horizontal wrap">
-                                You can choose a local identifier and a local password to store your seedphrase on your device. The local password will be used to encrypt your seedphrase and store it in your browser.
+                                You can choose a browser login name and a browser password to store your seedphrase in your browser. The browser password will be used to encrypt your seedphrase and store it in your browser, allowing you to login in this browser without your seedphrase.
                             </div>
                             <div class="layout horizontal wrap">
                                 <iron-icon icon="icons:account-circle" slot="prefix" style="color:#333; padding-right: 12px; margin-top: 28px;"></iron-icon>
-                                <paper-input class="flex" value="{{name}}" id="nameInput" label="Local identifier" focused="{{nameFocused}}"></paper-input>
+                                <paper-input class="flex" value="{{name}}" id="nameInput" label="Browser login name" focused="{{nameFocused}}"></paper-input>
                             </div>
                             <iron-collapse opened="{{nameFocused}}" style="">
                                 <small>Can be anything</small>
@@ -91,7 +91,7 @@
                         
                             <div class="layout horizontal wrap">
                                 <iron-icon icon="icons:lock" slot="prefix" style="color:#333; padding-right: 12px; margin-top:28px"></iron-icon>
-                                <paper-input class="flex" value="{{password}}" id="passwordInput" label="Local password" maxlength="50" type="password" focused="{{passwordFocused}}"></paper-input>
+                                <paper-input class="flex" value="{{password}}" id="passwordInput" label="Browser password" maxlength="50" type="password" focused="{{passwordFocused}}"></paper-input>
                             </div>
                         
                             <iron-collapse opened="{{passwordFocused}}" style="">
